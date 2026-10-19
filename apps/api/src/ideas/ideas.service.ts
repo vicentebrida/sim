@@ -1,5 +1,18 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { and, asc, count, desc, eq, inArray, isNull, ne, or, type SQL, sql } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  inArray,
+  isNull,
+  max,
+  ne,
+  or,
+  type SQL,
+  sql,
+} from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { DomainError } from '../common/domain-error';
 import { CustomFieldsService } from '../custom-fields/custom-fields.service';
@@ -8,6 +21,7 @@ import { AuditService } from '../audit/audit.service';
 import { ENV } from '../config/config.module';
 import type { Env } from '../config/env';
 import { SettingsService } from '../settings/settings.service';
+import { isDeepStrictEqual } from 'node:util';
 import { presentPerson } from './domain/authorship';
 import { StatusesService } from '../statuses/statuses.service';
 import { AttachmentStore } from '../attachments/attachment-store';
@@ -22,6 +36,7 @@ import {
   followers,
   type Idea,
   ideaHistory,
+  ideaVersions,
   ideas,
   likes,
   reviewers,
@@ -158,6 +173,35 @@ export class IdeasService {
       page: filter.page,
       pageSize: filter.pageSize,
     };
+  }
+
+  /** The earlier texts of an Idea edited after publication, oldest first. */
+  async versions(collaborator: Collaborator, number: number) {
+    const { idea } = await this.access(collaborator, { number });
+    const [rows, fields] = await Promise.all([
+      this.db
+        .select({ version: ideaVersions, category: { id: categories.id, name: categories.name } })
+        .from(ideaVersions)
+        .innerJoin(categories, eq(ideaVersions.categoryId, categories.id))
+        .where(eq(ideaVersions.ideaId, idea.id))
+        .orderBy(asc(ideaVersions.version)),
+      this.fields.list({ includeInactive: true }),
+    ]);
+    return rows.map(({ version, category }) => ({
+      version: version.version,
+      title: version.title,
+      category,
+      answers: fields
+        .filter((field) => field.id in version.values)
+        .map((field) => ({
+          fieldId: field.id,
+          label: field.label,
+          type: field.type,
+          value: version.values[field.id]!,
+        })),
+      validFrom: version.validFrom.toISOString(),
+      replacedAt: version.replacedAt.toISOString(),
+    }));
   }
 
   async detail(collaborator: Collaborator, number: number) {
@@ -336,7 +380,27 @@ export class IdeasService {
         })
       : undefined;
 
+    const changed =
+      (data.title !== undefined && data.title !== idea.title) ||
+      (data.categoryId !== undefined && data.categoryId !== idea.categoryId) ||
+      (values !== undefined && !isDeepStrictEqual(values, idea.values));
+
     await this.db.transaction(async (tx) => {
+      // After publication, keep what the Idea said before this edit.
+      if (published && changed) {
+        const [last] = await tx
+          .select({ version: max(ideaVersions.version) })
+          .from(ideaVersions)
+          .where(eq(ideaVersions.ideaId, idea.id));
+        await tx.insert(ideaVersions).values({
+          ideaId: idea.id,
+          version: (last?.version ?? 0) + 1,
+          title: idea.title,
+          categoryId: idea.categoryId,
+          values: idea.values,
+          validFrom: idea.editedAt ?? idea.publishedAt ?? idea.createdAt,
+        });
+      }
       await tx
         .update(ideas)
         .set({

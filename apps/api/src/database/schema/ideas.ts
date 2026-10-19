@@ -10,6 +10,7 @@ import {
   pgTable,
   text,
   timestamp,
+  unique,
   uuid,
 } from 'drizzle-orm/pg-core';
 import type { FieldType, FieldValues } from '../../ideas/domain/fields';
@@ -115,3 +116,30 @@ export const ideaHistory = pgTable(
 
 export type CustomField = typeof customFields.$inferSelect;
 export type Idea = typeof ideas.$inferSelect;
+
+/**
+ * What an Idea looked like before an edit made after publication (the Author can edit until it
+ * goes under review). The current text lives on the Idea itself.
+ */
+export const ideaVersions = pgTable(
+  'idea_versions',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    ideaId: uuid()
+      .notNull()
+      .references(() => ideas.id, { onDelete: 'cascade' }),
+    // 1 is the text as first published.
+    version: integer().notNull(),
+    title: text().notNull(),
+    categoryId: uuid()
+      .notNull()
+      .references(() => categories.id),
+    values: jsonb().$type<FieldValues>().notNull(),
+    // When this text became the current one, and when an edit replaced it.
+    validFrom: timestamp({ withTimezone: true }).notNull(),
+    replacedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [unique().on(table.ideaId, table.version)],
+);
+
+export type IdeaVersion = typeof ideaVersions.$inferSelect;

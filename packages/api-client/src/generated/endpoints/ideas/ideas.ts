@@ -30,6 +30,7 @@ import type {
   IdeaDtoOutput,
   IdeaPageDtoOutput,
   IdeaUpdateDto,
+  IdeaVersionDtoOutput,
   IdeasListParams,
   IdeasSimilarParams,
   LikeDtoOutput,
@@ -661,7 +662,113 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getIdeasDeleteMutationOptions(options), queryClient);
     }
-    export type ideasRevealAuthorResponse200 = {
+    export type ideasVersionsResponse200 = {
+  data: IdeaVersionDtoOutput[]
+  status: 200
+}
+
+export type ideasVersionsResponseSuccess = (ideasVersionsResponse200) & {
+  headers: Headers;
+};
+;
+
+export type ideasVersionsResponse = (ideasVersionsResponseSuccess)
+
+export const getIdeasVersionsUrl = (number: number,) => {
+
+
+
+
+  return `/api/ideas/${number}/versions`
+}
+
+export const ideasVersions = async (number: number, options?: Parameters<typeof simFetch>[1]): Promise<ideasVersionsResponse> => {
+
+  return simFetch<ideasVersionsResponse>(getIdeasVersionsUrl(number),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getIdeasVersionsQueryKey = (number: number,) => {
+    return [
+    `/api/ideas/${number}/versions`
+    ] as const;
+    }
+
+
+export const getIdeasVersionsQueryOptions = <TData = Awaited<ReturnType<typeof ideasVersions>>, TError = ErrorType<unknown>>(number: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideasVersions>>, TError, TData>>, request?: SecondParameter<typeof simFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIdeasVersionsQueryKey(number);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof ideasVersions>>> = ({ signal }) => ideasVersions(number, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: number !== null && number !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof ideasVersions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type IdeasVersionsQueryResult = NonNullable<Awaited<ReturnType<typeof ideasVersions>>>
+export type IdeasVersionsQueryError = ErrorType<unknown>
+
+
+export function useIdeasVersions<TData = Awaited<ReturnType<typeof ideasVersions>>, TError = ErrorType<unknown>>(
+ number: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideasVersions>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof ideasVersions>>,
+          TError,
+          Awaited<ReturnType<typeof ideasVersions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIdeasVersions<TData = Awaited<ReturnType<typeof ideasVersions>>, TError = ErrorType<unknown>>(
+ number: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideasVersions>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof ideasVersions>>,
+          TError,
+          Awaited<ReturnType<typeof ideasVersions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIdeasVersions<TData = Awaited<ReturnType<typeof ideasVersions>>, TError = ErrorType<unknown>>(
+ number: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideasVersions>>, TError, TData>>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useIdeasVersions<TData = Awaited<ReturnType<typeof ideasVersions>>, TError = ErrorType<unknown>>(
+ number: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideasVersions>>, TError, TData>>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIdeasVersionsQueryOptions(number,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export type ideasRevealAuthorResponse200 = {
   data: AuthorDtoOutput
   status: 200
 }

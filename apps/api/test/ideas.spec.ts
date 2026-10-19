@@ -382,3 +382,96 @@ describe('Ideas', () => {
     });
   });
 });
+
+describe('Idea versions', () => {
+  let sim: TestApp;
+  let admin: Browser;
+  let ana: Browser;
+  let bruno: Browser;
+  let ti: string;
+  let field: { id: string; label: string };
+  let others: Record<string, string>;
+
+  const newIdea = async (title: string, text = 'Primeiro texto') =>
+    (
+      await ana
+        .post('/api/ideas')
+        .send({
+          title,
+          categoryId: ti,
+          values: { ...others, [field.id]: text },
+          publish: true,
+        })
+        .expect(201)
+    ).body.number as number;
+  const versions = async (who: Browser, number: number) =>
+    (await who.get(`/api/ideas/${number}/versions`).expect(200)).body as {
+      version: number;
+      title: string;
+      answers: { label: string; value: unknown }[];
+    }[];
+
+  beforeAll(async () => {
+    sim = await createApp();
+    admin = await signInAsAdministrator(sim);
+    ana = (await createCollaborator(sim, admin, 'Ana')).browser;
+    bruno = (await createCollaborator(sim, admin, 'Bruno')).browser;
+    ti = (await admin.post('/api/categories').send({ name: 'TI' }).expect(201)).body.id;
+    const fields = (await ana.get('/api/custom-fields').expect(200)).body as {
+      id: string;
+      label: string;
+      required: boolean;
+    }[];
+    field = fields.find((f) => f.required)!;
+    others = Object.fromEntries(fields.filter((f) => f.required).map((f) => [f.id, 'Texto']));
+  });
+
+  afterAll(() => sim.close());
+
+  it('keeps each text as it was before an edit, oldest first', async () => {
+    const number = await newIdea('Título 1');
+    expect(await versions(bruno, number)).toEqual([]);
+
+    await ana.patch(`/api/ideas/${number}`).send({ title: 'Título 2' }).expect(200);
+    await ana
+      .patch(`/api/ideas/${number}`)
+      .send({ values: { ...others, [field.id]: 'Segundo texto' } })
+      .expect(200);
+
+    const list = await versions(bruno, number); // anyone who sees the Idea sees its versions
+    expect(list.map((v) => [v.version, v.title])).toEqual([
+      [1, 'Título 1'],
+      [2, 'Título 2'],
+    ]);
+    expect(list[0]!.answers.find((a) => a.label === field.label)?.value).toBe('Primeiro texto');
+    expect(list[1]!.answers.find((a) => a.label === field.label)?.value).toBe('Primeiro texto');
+    const current = (await bruno.get(`/api/ideas/${number}`).expect(200)).body;
+    expect(current.title).toBe('Título 2');
+    expect(current.answers.find((a: { label: string }) => a.label === field.label).value).toBe(
+      'Segundo texto',
+    );
+  });
+
+  it('does not create a version when nothing changed, nor for Drafts', async () => {
+    const number = await newIdea('Sem mudança');
+    await ana
+      .patch(`/api/ideas/${number}`)
+      .send({ title: 'Sem mudança', values: { ...others, [field.id]: 'Primeiro texto' } })
+      .expect(200);
+    expect(await versions(ana, number)).toEqual([]);
+
+    const draft = (
+      await ana.post('/api/ideas').send({ title: 'Rascunho', categoryId: ti }).expect(201)
+    ).body.number as number;
+    await ana.patch(`/api/ideas/${draft}`).send({ title: 'Rascunho 2' }).expect(200);
+    await ana.patch(`/api/ideas/${draft}`).send({ title: 'Rascunho 3' }).expect(200);
+    expect(await versions(ana, draft)).toEqual([]);
+  });
+
+  it('follows the access to the Idea: a Draft is only for its Author', async () => {
+    const draft = (
+      await ana.post('/api/ideas').send({ title: 'Privado', categoryId: ti }).expect(201)
+    ).body.number as number;
+    await bruno.get(`/api/ideas/${draft}/versions`).expect(404);
+  });
+});

@@ -21,6 +21,7 @@ import {
   IdeaDto,
   IdeaPageDto,
   IdeaUpdateDto,
+  IdeaVersionDto,
   LikeDto,
   LikesDto,
   ListIdeasQueryDto,
@@ -73,6 +74,16 @@ export class IdeasController {
     @Body() data: IdeaUpdateDto,
   ) {
     return this.ideas.update(collaborator, number, data);
+  }
+
+  /** Earlier texts of an Idea edited after publication, oldest first. */
+  @Get(':number/versions')
+  @ZodResponse({ status: 200, type: [IdeaVersionDto] })
+  versions(
+    @CurrentCollaborator() collaborator: Collaborator,
+    @Param('number', ParseIntPipe) number: number,
+  ) {
+    return this.ideas.versions(collaborator, number);
   }
 
   /** Shows who wrote an Idea whose Author chose to hide the name. Recorded in the audit log. */

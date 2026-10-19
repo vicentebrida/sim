@@ -18,6 +18,7 @@ import { Pencil, Send, Trash2 } from 'lucide-react';
 import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Discussion } from '@/components/comments/discussion';
+import { IdeaVersions } from '@/components/idea-versions';
 import { FollowButton } from '@/components/follow-button';
 import { Likes } from '@/components/likes';
 import { NativeSelect } from '@/components/native-select';
@@ -92,6 +93,8 @@ function IdeaPage() {
           </AlertDescription>
         </Alert>
       )}
+
+      <IdeaVersions idea={idea} />
 
       <HiddenAuthorship idea={idea} />
 
