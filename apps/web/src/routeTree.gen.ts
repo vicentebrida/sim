@@ -17,6 +17,7 @@ import { Route as AppAdminRouteRouteImport } from './routes/_app/admin/route'
 import { Route as AppAdminCategoriesRouteImport } from './routes/_app/admin/categories'
 import { Route as AppAdminCollaboratorsRouteImport } from './routes/_app/admin/collaborators'
 import { Route as AppAdminCustomFieldsRouteImport } from './routes/_app/admin/custom-fields'
+import { Route as AppAdminDashboardRouteImport } from './routes/_app/admin/dashboard'
 import { Route as AppIdeasNewRouteImport } from './routes/_app/ideas/new'
 import { Route as AppIdeasNumberIndexRouteImport } from './routes/_app/ideas/$number/index'
 import { Route as AppIdeasNumberEditRouteImport } from './routes/_app/ideas/$number/edit'
@@ -60,6 +61,11 @@ const AppAdminCustomFieldsRoute = AppAdminCustomFieldsRouteImport.update({
   path: '/custom-fields',
   getParentRoute: () => AppAdminRouteRoute,
 } as any)
+const AppAdminDashboardRoute = AppAdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppAdminRouteRoute,
+} as any)
 const AppIdeasNewRoute = AppIdeasNewRouteImport.update({
   id: '/ideas/new',
   path: '/ideas/new',
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/admin/categories': typeof AppAdminCategoriesRoute
   '/admin/collaborators': typeof AppAdminCollaboratorsRoute
   '/admin/custom-fields': typeof AppAdminCustomFieldsRoute
+  '/admin/dashboard': typeof AppAdminDashboardRoute
   '/ideas/new': typeof AppIdeasNewRoute
   '/ideas/$number/edit': typeof AppIdeasNumberEditRoute
   '/ideas/$number/': typeof AppIdeasNumberIndexRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/admin/categories': typeof AppAdminCategoriesRoute
   '/admin/collaborators': typeof AppAdminCollaboratorsRoute
   '/admin/custom-fields': typeof AppAdminCustomFieldsRoute
+  '/admin/dashboard': typeof AppAdminDashboardRoute
   '/ideas/new': typeof AppIdeasNewRoute
   '/ideas/$number/edit': typeof AppIdeasNumberEditRoute
   '/ideas/$number': typeof AppIdeasNumberIndexRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/_app/admin/categories': typeof AppAdminCategoriesRoute
   '/_app/admin/collaborators': typeof AppAdminCollaboratorsRoute
   '/_app/admin/custom-fields': typeof AppAdminCustomFieldsRoute
+  '/_app/admin/dashboard': typeof AppAdminDashboardRoute
   '/_app/ideas/new': typeof AppIdeasNewRoute
   '/_app/ideas/$number/edit': typeof AppIdeasNumberEditRoute
   '/_app/ideas/$number/': typeof AppIdeasNumberIndexRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/collaborators'
     | '/admin/custom-fields'
+    | '/admin/dashboard'
     | '/ideas/new'
     | '/ideas/$number/edit'
     | '/ideas/$number/'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/collaborators'
     | '/admin/custom-fields'
+    | '/admin/dashboard'
     | '/ideas/new'
     | '/ideas/$number/edit'
     | '/ideas/$number'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/_app/admin/categories'
     | '/_app/admin/collaborators'
     | '/_app/admin/custom-fields'
+    | '/_app/admin/dashboard'
     | '/_app/ideas/new'
     | '/_app/ideas/$number/edit'
     | '/_app/ideas/$number/'
@@ -218,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminCustomFieldsRouteImport
       parentRoute: typeof AppAdminRouteRoute
     }
+    '/_app/admin/dashboard': {
+      id: '/_app/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AppAdminDashboardRouteImport
+      parentRoute: typeof AppAdminRouteRoute
+    }
     '/_app/ideas/new': {
       id: '/_app/ideas/new'
       path: '/ideas/new'
@@ -246,12 +265,14 @@ interface AppAdminRouteRouteChildren {
   AppAdminCategoriesRoute: typeof AppAdminCategoriesRoute
   AppAdminCollaboratorsRoute: typeof AppAdminCollaboratorsRoute
   AppAdminCustomFieldsRoute: typeof AppAdminCustomFieldsRoute
+  AppAdminDashboardRoute: typeof AppAdminDashboardRoute
 }
 
 const AppAdminRouteRouteChildren: AppAdminRouteRouteChildren = {
   AppAdminCategoriesRoute: AppAdminCategoriesRoute,
   AppAdminCollaboratorsRoute: AppAdminCollaboratorsRoute,
   AppAdminCustomFieldsRoute: AppAdminCustomFieldsRoute,
+  AppAdminDashboardRoute: AppAdminDashboardRoute,
 }
 
 const AppAdminRouteRouteWithChildren = AppAdminRouteRoute._addFileChildren(

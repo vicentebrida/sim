@@ -16,6 +16,7 @@
   },
   "nav": {
     "ideas": "Ideas",
+    "dashboard": "Dashboard",
     "categories": "Categories",
     "fields": "Fields",
     "collaborators": "People",
@@ -143,6 +144,28 @@
   "stalled": {
     "badge": "Stalled",
     "help": "Past its deadline with no reviewer action. Only reviewers and administrators see this mark."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "How the company ideas are doing.",
+    "export": "Export CSV",
+    "byStatus": "Ideas by status",
+    "byCategory": "Ideas by category",
+    "category": "Category",
+    "total": "Total",
+    "undecided": "Undecided",
+    "firstDecision": "Time to first decision",
+    "noDecisions": "No decisions yet",
+    "days": "{{value}} days",
+    "hours": "{{value}} h",
+    "decided_one": "{{count}} decided idea (approved, in progress, done, declined or duplicate)",
+    "decided_other": "{{count}} decided ideas (approved, in progress, done, declined or duplicate)",
+    "stalled": "Stalled ideas",
+    "noStalled": "No stalled ideas.",
+    "stalledDays_one": "stalled for {{count}} day",
+    "stalledDays_other": "stalled for {{count}} days",
+    "mostLiked": "Most liked, still undecided",
+    "noneUndecided": "No ideas waiting for a decision."
   },
   "status": {
     "draft": "Draft",

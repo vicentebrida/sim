@@ -122,7 +122,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 - Quando o prazo estoura, os Avaliadores são notificados (Categoria sem Avaliador: os Administradores). Depois de `SIM_STALLED_ESCALATION_DAYS` (padrão 7) a Ideia escala para os Administradores. Cada aviso sai uma vez por período de Status; mudar o Status recomeça a contagem. O Autor nunca recebe o aviso da própria Ideia.
 - A verificação roda a cada hora no job em segundo plano (precisa de Redis); os avisos entram no sininho e, se configurado, por e-mail.
 - A marca de Ideia Parada aparece só para Avaliadores e Administradores.
-- **Painel:** Ideias por Status e Categoria, tempo médio até a primeira decisão, Ideias Paradas e Ideias mais curtidas ainda não decididas. Exportação em CSV.
+- **Painel:** Ideias por Status e Categoria, tempo médio até a primeira decisão, Ideias Paradas e Ideias mais curtidas ainda não decididas. Exportação em CSV (todas as Ideias publicadas, uma por linha, com BOM para o Excel e proteção contra fórmulas). Fica na tela **Painel**, só para Administradores; "decisão" é chegar a Aprovada, Em execução, Concluída, Recusada ou Duplicada, contado desde a publicação.
 
 ### 3.10 Autoria Oculta
 

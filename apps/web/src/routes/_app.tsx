@@ -53,6 +53,9 @@ function AppLayout() {
             </Link>
             {collaborator.administrator && (
               <>
+                <Link to="/admin/dashboard" className={NAV_LINK}>
+                  {t('nav.dashboard')}
+                </Link>
                 <Link to="/admin/categories" className={NAV_LINK}>
                   {t('nav.categories')}
                 </Link>

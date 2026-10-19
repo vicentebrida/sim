@@ -10,6 +10,7 @@ import { CommentsModule } from './comments/comments.module';
 import { DomainErrorFilter } from './common/domain-error.filter';
 import { ConfigModule } from './config/config.module';
 import { CustomFieldsModule } from './custom-fields/custom-fields.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
 import { IdeasModule } from './ideas/ideas.module';
@@ -36,6 +37,7 @@ function webModule(): DynamicModule[] {
     CommentsModule,
     NotificationsModule,
     JobsModule,
+    DashboardModule,
     ...webModule(),
   ],
   providers: [
