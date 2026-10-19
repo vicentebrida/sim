@@ -14,6 +14,7 @@ import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppAdminRouteRouteImport } from './routes/_app/admin/route'
+import { Route as AppAdminBrandingRouteImport } from './routes/_app/admin/branding'
 import { Route as AppAdminCategoriesRouteImport } from './routes/_app/admin/categories'
 import { Route as AppAdminCollaboratorsRouteImport } from './routes/_app/admin/collaborators'
 import { Route as AppAdminCustomFieldsRouteImport } from './routes/_app/admin/custom-fields'
@@ -45,6 +46,11 @@ const AppAdminRouteRoute = AppAdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => AppRoute,
+} as any)
+const AppAdminBrandingRoute = AppAdminBrandingRouteImport.update({
+  id: '/branding',
+  path: '/branding',
+  getParentRoute: () => AppAdminRouteRoute,
 } as any)
 const AppAdminCategoriesRoute = AppAdminCategoriesRouteImport.update({
   id: '/categories',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
   '/admin': typeof AppAdminRouteRouteWithChildren
+  '/admin/branding': typeof AppAdminBrandingRoute
   '/admin/categories': typeof AppAdminCategoriesRoute
   '/admin/collaborators': typeof AppAdminCollaboratorsRoute
   '/admin/custom-fields': typeof AppAdminCustomFieldsRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/admin': typeof AppAdminRouteRouteWithChildren
   '/': typeof AppIndexRoute
+  '/admin/branding': typeof AppAdminBrandingRoute
   '/admin/categories': typeof AppAdminCategoriesRoute
   '/admin/collaborators': typeof AppAdminCollaboratorsRoute
   '/admin/custom-fields': typeof AppAdminCustomFieldsRoute
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_app/admin': typeof AppAdminRouteRouteWithChildren
   '/_app/': typeof AppIndexRoute
+  '/_app/admin/branding': typeof AppAdminBrandingRoute
   '/_app/admin/categories': typeof AppAdminCategoriesRoute
   '/_app/admin/collaborators': typeof AppAdminCollaboratorsRoute
   '/_app/admin/custom-fields': typeof AppAdminCustomFieldsRoute
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
     | '/change-password'
     | '/login'
     | '/admin'
+    | '/admin/branding'
     | '/admin/categories'
     | '/admin/collaborators'
     | '/admin/custom-fields'
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/admin'
     | '/'
+    | '/admin/branding'
     | '/admin/categories'
     | '/admin/collaborators'
     | '/admin/custom-fields'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_app/admin'
     | '/_app/'
+    | '/_app/admin/branding'
     | '/_app/admin/categories'
     | '/_app/admin/collaborators'
     | '/_app/admin/custom-fields'
@@ -208,6 +220,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin'
       preLoaderRoute: typeof AppAdminRouteRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/_app/admin/branding': {
+      id: '/_app/admin/branding'
+      path: '/branding'
+      fullPath: '/admin/branding'
+      preLoaderRoute: typeof AppAdminBrandingRouteImport
+      parentRoute: typeof AppAdminRouteRoute
     }
     '/_app/admin/categories': {
       id: '/_app/admin/categories'
@@ -262,6 +281,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppAdminRouteRouteChildren {
+  AppAdminBrandingRoute: typeof AppAdminBrandingRoute
   AppAdminCategoriesRoute: typeof AppAdminCategoriesRoute
   AppAdminCollaboratorsRoute: typeof AppAdminCollaboratorsRoute
   AppAdminCustomFieldsRoute: typeof AppAdminCustomFieldsRoute
@@ -269,6 +289,7 @@ interface AppAdminRouteRouteChildren {
 }
 
 const AppAdminRouteRouteChildren: AppAdminRouteRouteChildren = {
+  AppAdminBrandingRoute: AppAdminBrandingRoute,
   AppAdminCategoriesRoute: AppAdminCategoriesRoute,
   AppAdminCollaboratorsRoute: AppAdminCollaboratorsRoute,
   AppAdminCustomFieldsRoute: AppAdminCustomFieldsRoute,

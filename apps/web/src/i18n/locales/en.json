@@ -16,6 +16,7 @@
   },
   "nav": {
     "ideas": "Ideas",
+    "branding": "Branding",
     "dashboard": "Dashboard",
     "categories": "Categories",
     "fields": "Fields",
@@ -81,6 +82,7 @@
       "ATTACHMENT_TYPE_NOT_ALLOWED": "This type of file is not accepted.",
       "ATTACHMENT_TOO_LARGE": "The file is larger than the allowed size.",
       "TOO_MANY_ATTACHMENTS": "The attachment limit was reached.",
+      "IMAGE_NOT_ALLOWED": "Send a PNG, JPG, GIF, WebP, SVG or ICO image.",
       "FORBIDDEN": "You don't have permission for this action.",
       "INVALID_TRANSITION": "This status change isn't allowed from the current status.",
       "EDIT_LOCKED": "The idea is under review; add information in the comments.",
@@ -181,6 +183,35 @@
     "notAllowed": "\"{{name}}\" is not an accepted file type.",
     "tooLarge": "\"{{name}}\" is larger than {{size}}.",
     "failed": "Saved, but some attachments were not sent. Try again by editing."
+  },
+  "branding": {
+    "title": "Visual identity",
+    "sub": "Your company's name, color and images in the SIM, on the login page and in e-mails.",
+    "texts": "Name, color and texts",
+    "name": "Installation name",
+    "color": "Primary color",
+    "preview": "This is the button",
+    "defaultColor": "Use the default color",
+    "loginTitle": "Login page title",
+    "loginText": "Login page text",
+    "save": "Save",
+    "saved": "Branding saved.",
+    "images": "Images",
+    "none": "None",
+    "upload": "Upload image",
+    "remove": "Remove",
+    "kinds": {
+      "logoLight": "Logo (light background)",
+      "logoDark": "Logo (dark background)",
+      "favicon": "Tab icon (favicon)",
+      "loginImage": "Login page image"
+    },
+    "kindHelp": {
+      "logoLight": "Shown at the top of the SIM. Without a logo, the name is shown.",
+      "logoDark": "Used in the dark theme. Without it, the light logo is used.",
+      "favicon": "Square PNG, SVG or ICO.",
+      "loginImage": "Shown above the login form."
+    }
   },
   "status": {
     "draft": "Draft",

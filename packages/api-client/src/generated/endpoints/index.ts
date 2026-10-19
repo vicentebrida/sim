@@ -1,5 +1,6 @@
 export * from './attachments/attachments.ts';
 export * from './auth/auth.ts';
+export * from './branding/branding.ts';
 export * from './categories/categories.ts';
 export * from './collaborators/collaborators.ts';
 export * from './comments/comments.ts';

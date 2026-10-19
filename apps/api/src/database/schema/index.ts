@@ -6,3 +6,4 @@ export * from './likes';
 export * from './comments';
 export * from './notifications';
 export * from './attachments';
+export * from './branding';
