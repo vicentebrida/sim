@@ -4,6 +4,7 @@ import {
   type CustomFieldDtoOutput,
   useCategoriesList,
   useCustomFieldsList,
+  useSettingsGet,
 } from '@sim/api-client';
 import { useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
@@ -27,6 +28,8 @@ export interface IdeaData {
   title: string;
   categoryId: string;
   values: Record<string, FieldValue>;
+  /** Show as anonymous (when the installation allows it). */
+  hiddenAuthorship?: boolean;
 }
 
 export interface FormAction {
@@ -72,6 +75,9 @@ export function IdeaForm({
   const { t } = useTranslation();
   const { data: categoriesResponse } = useCategoriesList();
   const { data: fieldsResponse } = useCustomFieldsList();
+  const { data: settings } = useSettingsGet();
+  // Offered when the installation allows it, or to let the Author undo it.
+  const canHide = settings?.data.hiddenAuthorshipEnabled || initial?.hiddenAuthorship;
   const categories = categoriesResponse?.data ?? [];
   const fields = fieldsResponse?.data ?? [];
   const [running, setRunning] = useState<string>();
@@ -80,7 +86,7 @@ export function IdeaForm({
   const filesProblem = useFilesProblem(files, existingAttachments.length);
 
   const form = useForm<IdeaData>({
-    defaultValues: initial ?? { title: '', categoryId: '', values: {} },
+    defaultValues: initial ?? { title: '', categoryId: '', values: {}, hiddenAuthorship: false },
   });
   const { errors } = form.formState;
   const categoryId = useWatch({ control: form.control, name: 'categoryId' });
@@ -179,6 +185,16 @@ export function IdeaForm({
           error={errors.values?.[field.id]?.message}
         />
       ))}
+
+      {canHide && (
+        <div className="grid gap-1">
+          <label className="flex items-center gap-2 text-sm font-medium">
+            <input type="checkbox" className="size-4" {...form.register('hiddenAuthorship')} />
+            {t('authorship.hide')}
+          </label>
+          <p className="text-sm text-muted-foreground">{t('authorship.hideHelp')}</p>
+        </div>
+      )}
 
       <div className="grid gap-2">
         <Label>{t('attachments.title')}</Label>

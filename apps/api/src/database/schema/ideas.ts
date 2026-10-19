@@ -50,6 +50,8 @@ export const ideas = pgTable(
     status: text().$type<Status>().notNull(),
     // Custom Field values, keyed by field id.
     values: jsonb().$type<FieldValues>().notNull().default({}),
+    // The Author asked to be shown as anonymous (needs the setting on when chosen).
+    hiddenAuthorship: boolean().notNull().default(false),
     originalIdeaId: uuid().references((): AnyPgColumn => ideas.id),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     publishedAt: timestamp({ withTimezone: true }),

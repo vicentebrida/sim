@@ -92,6 +92,13 @@
       "when": 1792448723621,
       "tag": "0012_audit_and_anonymization",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792449221967,
+      "tag": "0013_hidden_authorship",
+      "breakpoints": true
     }
   ]
 }

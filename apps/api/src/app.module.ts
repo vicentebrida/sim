@@ -7,6 +7,7 @@ import { AttachmentsModule, AttachmentStoreModule } from './attachments/attachme
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { BrandingModule } from './branding/branding.module';
+import { SettingsModule } from './settings/settings.module';
 import { StatusesModule } from './statuses/statuses.module';
 import { CategoriesModule } from './categories/categories.module';
 import { CollaboratorsModule } from './collaborators/collaborators.module';
@@ -47,6 +48,7 @@ function webModule(): DynamicModule[] {
     BrandingModule,
     StatusesModule,
     AuditModule,
+    SettingsModule,
     ...webModule(),
   ],
   providers: [

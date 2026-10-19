@@ -55,7 +55,12 @@ function EditIdeaPage() {
         </p>
       )}
       <IdeaForm
-        initial={{ title: idea.title, categoryId: idea.category.id, values: idea.values }}
+        initial={{
+          title: idea.title,
+          categoryId: idea.category.id,
+          values: idea.values,
+          hiddenAuthorship: idea.hiddenAuthorship,
+        }}
         ideaNumber={idea.number}
         existingAttachments={idea.attachments}
         onRemoveAttachment={(attachment) => remove.mutate({ id: attachment.id })}

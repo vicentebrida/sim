@@ -6,6 +6,7 @@ import type { Env } from '../../config/env';
 import { DB, type Database } from '../../database/database.module';
 import { collaborators, ideas, notifications } from '../../database/schema';
 import { renderEmail } from './email-templates';
+import { anonymousName, hidesAuthor } from '../../ideas/domain/authorship';
 import { BrandingService } from '../../branding/branding.service';
 import { StatusesService } from '../../statuses/statuses.service';
 import { Mailer } from './mailer';
@@ -60,6 +61,11 @@ export class EmailDispatcher {
           notification: notifications,
           recipient: collaborators,
           idea: { number: ideas.number, title: ideas.title },
+          authorship: {
+            id: ideas.id,
+            authorId: ideas.authorId,
+            hiddenAuthorship: ideas.hiddenAuthorship,
+          },
           actorName: actor.name,
         })
         .from(notifications)
@@ -89,7 +95,10 @@ export class EmailDispatcher {
           ),
           type: notification.type,
           recipientName: recipient.name,
-          actorName: row.actorName,
+          actorName:
+            notification.actorId && hidesAuthor(row.authorship, notification.actorId, recipient.id)
+              ? anonymousName(this.env.SIM_LOCALE)
+              : row.actorName,
           ideaNumber: row.idea.number,
           ideaTitle: row.idea.title,
           data: notification.data,

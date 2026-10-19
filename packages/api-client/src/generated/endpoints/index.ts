@@ -10,4 +10,5 @@ export * from './dashboard/dashboard.ts';
 export * from './health/health.ts';
 export * from './ideas/ideas.ts';
 export * from './notifications/notifications.ts';
+export * from './settings/settings.ts';
 export * from './statuses/statuses.ts';

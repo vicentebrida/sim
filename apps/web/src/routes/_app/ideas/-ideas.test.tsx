@@ -28,6 +28,7 @@ describe('new Idea', () => {
       title: 'Relatório mais rápido',
       categoryId: TI.id,
       values: { [FIELDS[0]!.id]: 'Leva 2 horas', [FIELDS[1]!.id]: true },
+      hiddenAuthorship: false,
       publish: true,
     });
   });

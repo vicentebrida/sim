@@ -13,6 +13,7 @@ import {
   notifications,
   reviewers,
 } from '../database/schema';
+import { presentPerson } from '../ideas/domain/authorship';
 import type { Status } from '../ideas/domain/idea';
 import { commentRecipients, type NotificationType, recipientsExcept } from './domain/recipients';
 
@@ -218,6 +219,11 @@ export class NotificationsService {
         .select({
           notification: notifications,
           idea: { number: ideas.number, title: ideas.title },
+          authorship: {
+            id: ideas.id,
+            authorId: ideas.authorId,
+            hiddenAuthorship: ideas.hiddenAuthorship,
+          },
           actor: { id: actor.id, name: actor.name },
         })
         .from(notifications)
@@ -231,11 +237,12 @@ export class NotificationsService {
       this.countUnread(collaborator),
     ]);
     return {
-      items: rows.map(({ notification, idea, actor: who }) => ({
+      items: rows.map(({ notification, idea, authorship, actor: who }) => ({
         id: notification.id,
         type: notification.type,
         idea,
-        actor: who,
+        // A hidden Author acting on their own Idea (publishing, commenting) stays hidden.
+        actor: who && presentPerson(authorship, who, collaborator.id, this.env.SIM_LOCALE),
         commentId: notification.commentId,
         data: notification.data,
         createdAt: notification.createdAt.toISOString(),

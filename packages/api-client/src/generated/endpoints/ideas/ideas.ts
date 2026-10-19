@@ -25,6 +25,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AuthorDtoOutput,
   FollowingDtoOutput,
   IdeaDtoOutput,
   IdeaPageDtoOutput,
@@ -659,6 +660,85 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getIdeasDeleteMutationOptions(options), queryClient);
+    }
+    export type ideasRevealAuthorResponse200 = {
+  data: AuthorDtoOutput
+  status: 200
+}
+
+export type ideasRevealAuthorResponseSuccess = (ideasRevealAuthorResponse200) & {
+  headers: Headers;
+};
+;
+
+export type ideasRevealAuthorResponse = (ideasRevealAuthorResponseSuccess)
+
+export const getIdeasRevealAuthorUrl = (number: number,) => {
+
+
+
+
+  return `/api/ideas/${number}/reveal-author`
+}
+
+export const ideasRevealAuthor = async (number: number, options?: Parameters<typeof simFetch>[1]): Promise<ideasRevealAuthorResponse> => {
+
+  return simFetch<ideasRevealAuthorResponse>(getIdeasRevealAuthorUrl(number),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getIdeasRevealAuthorMutationKey = () => ['ideasRevealAuthor'] as const;
+
+export const getIdeasRevealAuthorMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ideasRevealAuthor>>, TError,IdeasRevealAuthorMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof ideasRevealAuthor>>, TError,IdeasRevealAuthorMutationVariables, TContext> => {
+
+const mutationKey = getIdeasRevealAuthorMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof ideasRevealAuthor>>, IdeasRevealAuthorMutationVariables> = (props) => {
+          const {number} = props ?? {};
+
+          return  ideasRevealAuthor(number,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type IdeasRevealAuthorMutationResult = NonNullable<Awaited<ReturnType<typeof ideasRevealAuthor>>>
+
+    export type IdeasRevealAuthorMutationError = ErrorType<unknown>
+    export type IdeasRevealAuthorMutationVariables = {number: number}
+
+    export const useIdeasRevealAuthor = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ideasRevealAuthor>>, TError,IdeasRevealAuthorMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof ideasRevealAuthor>>,
+        TError,
+        IdeasRevealAuthorMutationVariables,
+        TContext
+      > => {
+      return useMutation(getIdeasRevealAuthorMutationOptions(options), queryClient);
     }
     export type ideasPublishResponse200 = {
   data: IdeaDtoOutput

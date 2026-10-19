@@ -18,6 +18,8 @@ export class NewIdeaDto extends createZodDto(
     values: ValuesSchema.default({}),
     // false saves a Draft; true publishes it (requires the required fields).
     publish: z.boolean().default(false),
+    // Needs the Hidden authorship setting.
+    hiddenAuthorship: z.boolean().optional(),
   }),
 ) {}
 
@@ -26,6 +28,7 @@ export class IdeaUpdateDto extends createZodDto(
     title: title.optional(),
     categoryId: z.uuid().optional(),
     values: ValuesSchema.optional(),
+    hiddenAuthorship: z.boolean().optional(),
   }),
 ) {}
 
@@ -104,7 +107,9 @@ const IdeaSummarySchema = z.object({
   title: z.string(),
   status: StatusSchema,
   category: Reference,
+  // For anyone but the Author, a stand-in when the Author chose to hide the name.
   author: Reference,
+  hiddenAuthorship: z.boolean(),
   likes: LikesSchema,
   // Past the deadline for its Status. Only Administrators and the Category Reviewers ever see true.
   stalled: z.boolean(),
@@ -160,3 +165,5 @@ export class IdeaDto extends createZodDto(
     }),
   }),
 ) {}
+
+export class AuthorDto extends createZodDto(Reference) {}
