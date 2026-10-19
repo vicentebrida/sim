@@ -7,15 +7,17 @@ Sistema open source e self-hosted onde os colaboradores de uma empresa propõem 
 
 Quando alguém começa a escrever uma Ideia que já existe, o SIM mostra as **Ideias Semelhantes** e direciona a pessoa para apoiar e complementar a original, em vez de abrir uma repetida.
 
-> 🚧 Em desenvolvimento: Marco 1 (núcleo utilizável). Veja o [PRD](./docs/PRD.md).
+> **Versão 0.1.0**: núcleo utilizável (Marco 1). Veja o [CHANGELOG](./CHANGELOG.md), o [PRD](./docs/PRD.md) e o que vem a seguir nos Marcos 2 e 3.
 
-## Principais recursos (planejados)
+## Principais recursos
 
 - Login local ou pelo **SSO da empresa** (OIDC ou OAuth2 genérico)
 - Ciclo de vida com Status (Aberta → Em análise → Aprovada → Em execução → Concluída), com Histórico e justificativas
-- **Detecção de Ideias Semelhantes**: busca textual sempre ligada, mais busca semântica opcional com IA (OpenAI-compatível ou Ollama local)
-- Categorias com Avaliadores, Campos Personalizados, Notificações e painel
-- Identidade visual da empresa, pt-BR e en
+- **Detecção de Ideias Semelhantes** enquanto se escreve (busca textual). A busca semântica opcional com IA chega no Marco 2
+- Curtidas, Comentários com Menções, Seguir e Notificações no sininho
+- Categorias com Avaliadores e Campos Personalizados configuráveis
+- Interface em pt-BR e en
+- Planejados: e-mail, Anexos, Ideias Paradas, painel e identidade visual da empresa
 
 ## Documentação
 
@@ -29,9 +31,11 @@ Quando alguém começa a escrever uma Ideia que já existe, o SIM mostra as **Id
 ## Instalação (Docker)
 
 ```bash
-cp .env.example .env        # ajuste POSTGRES_PASSWORD e SIM_ADMIN_EMAILS
+cp .env.example .env        # ajuste POSTGRES_PASSWORD e a conta de emergência (SIM_EMERGENCY_*)
 docker compose -f docker/compose.yml up -d --build
 ```
+
+A imagem pronta também é publicada a cada versão em `ghcr.io/vicentebrida/sim` (defina `SIM_IMAGE` no `.env` para usá-la em vez de construir).
 
 O SIM fica disponível em `http://localhost:3000`, e a documentação da API em `http://localhost:3000/api/docs`.
 
