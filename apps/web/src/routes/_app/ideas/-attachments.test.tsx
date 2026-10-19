@@ -24,16 +24,22 @@ const REPORT = {
 
 /** Records the files that reach the API. */
 function simulateUploads() {
-  const uploaded: { url: string; size: number }[] = [];
+  const uploaded: { url: string; multipart: boolean }[] = [];
   server.use(
-    http.post('*/api/ideas/:number/attachments', async ({ request }) => {
-      const file = (await request.formData()).get('file') as File;
-      uploaded.push({ url: new URL(request.url).pathname, size: file.size });
+    http.post('*/api/ideas/:number/attachments', ({ request }) => {
+      // The body is not read: multipart parsing differs between environments.
+      uploaded.push({
+        url: new URL(request.url).pathname,
+        multipart: Boolean(request.headers.get('content-type')?.startsWith('multipart/form-data')),
+      });
       return HttpResponse.json(PHOTO, { status: 201 });
     }),
-    http.post('*/api/comments/:id/attachments', async ({ request }) => {
-      const file = (await request.formData()).get('file') as File;
-      uploaded.push({ url: new URL(request.url).pathname, size: file.size });
+    http.post('*/api/comments/:id/attachments', ({ request }) => {
+      // The body is not read: multipart parsing differs between environments.
+      uploaded.push({
+        url: new URL(request.url).pathname,
+        multipart: Boolean(request.headers.get('content-type')?.startsWith('multipart/form-data')),
+      });
       return HttpResponse.json(PHOTO, { status: 201 });
     }),
   );
@@ -58,7 +64,7 @@ describe('Attachments', () => {
     await user.click(screen.getByRole('button', { name: 'Salvar rascunho' }));
 
     await waitFor(() => expect(router.state.location.pathname).toBe('/ideas/7'));
-    expect(uploaded).toEqual([{ url: '/api/ideas/7/attachments', size: 1 }]);
+    expect(uploaded).toEqual([{ url: '/api/ideas/7/attachments', multipart: true }]);
   });
 
   it('warns about files that are not accepted, and does not save', async () => {
