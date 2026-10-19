@@ -1,0 +1,15 @@
+# Dependências para desenvolvimento local: `docker compose -f docker/compose.dev.yml up -d`
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: sim
+      POSTGRES_PASSWORD: sim
+      POSTGRES_DB: sim
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-dev:/var/lib/postgresql/data
+
+volumes:
+  postgres-dev:
