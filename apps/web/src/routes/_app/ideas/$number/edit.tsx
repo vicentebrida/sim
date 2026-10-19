@@ -27,6 +27,7 @@ function EditIdeaPage() {
       <h1 className="text-2xl font-semibold">{t('ideas.edit')}</h1>
       <IdeaForm
         initial={{ title: idea.title, categoryId: idea.category.id, values: idea.values }}
+        ideaNumber={idea.number}
         actions={[
           {
             label: t('ideas.save'),

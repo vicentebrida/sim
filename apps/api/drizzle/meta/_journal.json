@@ -29,6 +29,20 @@
       "when": 1792418742972,
       "tag": "0003_followers_and_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792420161691,
+      "tag": "0004_immutable_unaccent",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792420173175,
+      "tag": "0005_similar_idea_search",
+      "breakpoints": true
     }
   ]
 }

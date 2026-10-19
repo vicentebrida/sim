@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import {
   type AnyPgColumn,
   boolean,
+  customType,
   check,
   index,
   integer,
@@ -15,6 +16,8 @@ import type { FieldType, FieldValues } from '../../ideas/domain/fields';
 import type { Status } from '../../ideas/domain/idea';
 import { categories } from './categories';
 import { collaborators } from './collaborators';
+
+const tsvector = customType<{ data: string }>({ dataType: () => 'tsvector' });
 
 export const customFields = pgTable('custom_fields', {
   id: uuid().primaryKey().defaultRandom(),
@@ -53,12 +56,24 @@ export const ideas = pgTable(
     // Last edit by the Author after publishing (the Idea shows as "edited").
     editedAt: timestamp({ withTimezone: true }),
     statusChangedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    // Values of the Custom Fields used for detection, kept up to date by IdeasService.
+    detectionText: text().notNull().default(''),
+    // Title weighs more than the other fields when ranking Similar Ideas.
+    searchVector: tsvector().generatedAlwaysAs(
+      (): ReturnType<typeof sql> =>
+        sql`setweight(to_tsvector('portuguese', immutable_unaccent(${ideas.title})), 'A') || setweight(to_tsvector('portuguese', immutable_unaccent(${ideas.detectionText})), 'B')`,
+    ),
   },
   (table) => [
     index().on(table.status),
     index().on(table.categoryId),
     index().on(table.authorId),
     index().on(table.publishedAt),
+    index('ideas_search_vector_index').using('gin', table.searchVector),
+    index('ideas_title_trigram_index').using(
+      'gin',
+      sql`immutable_unaccent(lower(${table.title})) gin_trgm_ops`,
+    ),
     check(
       'ideas_valid_status',
       sql`${table.status} in ('draft','open','under_review','approved','in_progress','done','declined','duplicate','archived')`,

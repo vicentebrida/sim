@@ -30,10 +30,12 @@ import type {
   IdeaPageDtoOutput,
   IdeaUpdateDto,
   IdeasListParams,
+  IdeasSimilarParams,
   LikeDtoOutput,
   LikesDtoOutput,
   NewIdeaDto,
   RecategorizationDto,
+  SimilarIdeaDtoOutput,
   StatusChangeDto
 } from '../../model';
 
@@ -266,7 +268,120 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getIdeasCreateMutationOptions(options), queryClient);
     }
-    export type ideasDetailResponse200 = {
+    export type ideasSimilarResponse200 = {
+  data: SimilarIdeaDtoOutput[]
+  status: 200
+}
+
+export type ideasSimilarResponseSuccess = (ideasSimilarResponse200) & {
+  headers: Headers;
+};
+;
+
+export type ideasSimilarResponse = (ideasSimilarResponseSuccess)
+
+export const getIdeasSimilarUrl = (params: IdeasSimilarParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/ideas/similar?${stringifiedParams}` : `/api/ideas/similar`
+}
+
+export const ideasSimilar = async (params: IdeasSimilarParams, options?: Parameters<typeof simFetch>[1]): Promise<ideasSimilarResponse> => {
+
+  return simFetch<ideasSimilarResponse>(getIdeasSimilarUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getIdeasSimilarQueryKey = (params?: IdeasSimilarParams,) => {
+    return [
+    `/api/ideas/similar`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getIdeasSimilarQueryOptions = <TData = Awaited<ReturnType<typeof ideasSimilar>>, TError = ErrorType<unknown>>(params: IdeasSimilarParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideasSimilar>>, TError, TData>>, request?: SecondParameter<typeof simFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIdeasSimilarQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof ideasSimilar>>> = ({ signal }) => ideasSimilar(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof ideasSimilar>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type IdeasSimilarQueryResult = NonNullable<Awaited<ReturnType<typeof ideasSimilar>>>
+export type IdeasSimilarQueryError = ErrorType<unknown>
+
+
+export function useIdeasSimilar<TData = Awaited<ReturnType<typeof ideasSimilar>>, TError = ErrorType<unknown>>(
+ params: IdeasSimilarParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideasSimilar>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof ideasSimilar>>,
+          TError,
+          Awaited<ReturnType<typeof ideasSimilar>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIdeasSimilar<TData = Awaited<ReturnType<typeof ideasSimilar>>, TError = ErrorType<unknown>>(
+ params: IdeasSimilarParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideasSimilar>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof ideasSimilar>>,
+          TError,
+          Awaited<ReturnType<typeof ideasSimilar>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIdeasSimilar<TData = Awaited<ReturnType<typeof ideasSimilar>>, TError = ErrorType<unknown>>(
+ params: IdeasSimilarParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideasSimilar>>, TError, TData>>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useIdeasSimilar<TData = Awaited<ReturnType<typeof ideasSimilar>>, TError = ErrorType<unknown>>(
+ params: IdeasSimilarParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideasSimilar>>, TError, TData>>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIdeasSimilarQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export type ideasDetailResponse200 = {
   data: IdeaDtoOutput
   status: 200
 }

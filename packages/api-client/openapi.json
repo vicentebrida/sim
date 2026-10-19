@@ -668,6 +668,61 @@
         ]
       }
     },
+    "/api/ideas/similar": {
+      "get": {
+        "operationId": "ideas_similar",
+        "parameters": [
+          {
+            "name": "title",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minLength": 3,
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "text",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 2000,
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "exclude",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SimilarIdeaDto_Output"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "ideas"
+        ]
+      }
+    },
     "/api/ideas/{number}": {
       "get": {
         "operationId": "ideas_detail",
@@ -2465,6 +2520,68 @@
           "originalIdea",
           "history",
           "permissions"
+        ],
+        "additionalProperties": false
+      },
+      "SimilarIdeaDto_Output": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "open",
+              "under_review",
+              "approved",
+              "in_progress",
+              "done",
+              "declined",
+              "duplicate",
+              "archived"
+            ]
+          },
+          "category": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "likes": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "score": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "number",
+          "title",
+          "status",
+          "category",
+          "likes",
+          "score"
         ],
         "additionalProperties": false
       },

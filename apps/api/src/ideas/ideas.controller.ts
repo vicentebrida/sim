@@ -25,6 +25,8 @@ import {
   ListIdeasQueryDto,
   NewIdeaDto,
   RecategorizationDto,
+  SimilarIdeaDto,
+  SimilarIdeasQueryDto,
   StatusChangeDto,
 } from './ideas.dto';
 import { IdeasService } from './ideas.service';
@@ -44,6 +46,13 @@ export class IdeasController {
   @ZodResponse({ status: 201, type: IdeaDto })
   create(@CurrentCollaborator() collaborator: Collaborator, @Body() data: NewIdeaDto) {
     return this.ideas.create(collaborator, data);
+  }
+
+  // Declared before ':number' so "similar" is not parsed as an Idea number.
+  @Get('similar')
+  @ZodResponse({ status: 200, type: [SimilarIdeaDto] })
+  similar(@Query() query: SimilarIdeasQueryDto) {
+    return this.ideas.similar(query);
   }
 
   @Get(':number')

@@ -3,6 +3,7 @@ import { asc, eq, max, sql } from 'drizzle-orm';
 import { DomainError } from '../common/domain-error';
 import { DB, type Database } from '../database/database.module';
 import { type CustomField, customFields, ideas } from '../database/schema';
+import { refreshDetectionText } from '../ideas/detection-text';
 import type { FieldType } from '../ideas/domain/fields';
 
 const TYPES_WITH_OPTIONS: FieldType[] = ['single_choice', 'multiple_choice'];
@@ -65,12 +66,19 @@ export class CustomFieldsService {
   ) {
     const current = await this.find(id);
     assertValidConfiguration({ ...current, ...data });
-    const [field] = await this.db
-      .update(customFields)
-      .set(data)
-      .where(eq(customFields.id, id))
-      .returning();
-    return field!;
+    const affectsDetection =
+      (data.useForDetection !== undefined && data.useForDetection !== current.useForDetection) ||
+      (data.active !== undefined && data.active !== current.active);
+    return this.db.transaction(async (tx) => {
+      const [field] = await tx
+        .update(customFields)
+        .set(data)
+        .where(eq(customFields.id, id))
+        .returning();
+      // Which fields feed Similar Idea detection changed: recompute it for every Idea.
+      if (affectsDetection) await refreshDetectionText(tx);
+      return field!;
+    });
   }
 
   /** Sets the display order; the list must contain every field, active and inactive. */

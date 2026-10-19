@@ -69,6 +69,28 @@ const LikesSchema = z.object({
 
 export class LikesDto extends createZodDto(LikesSchema) {}
 
+export class SimilarIdeasQueryDto extends createZodDto(
+  z.object({
+    title: z.string().trim().min(3).max(120),
+    // Text of the Custom Fields marked for detection, joined by the web app.
+    text: z.string().trim().max(2000).default(''),
+    // Number of the Idea being edited, so it does not show up as similar to itself.
+    exclude: z.coerce.number().int().positive().optional(),
+  }),
+) {}
+
+export class SimilarIdeaDto extends createZodDto(
+  z.object({
+    number: z.number().int(),
+    title: z.string(),
+    status: StatusSchema,
+    category: Reference,
+    likes: z.number().int(),
+    // Between 0 and 1; higher means more similar.
+    score: z.number(),
+  }),
+) {}
+
 export class FollowingDto extends createZodDto(z.object({ following: z.boolean() })) {}
 
 export class LikeDto extends createZodDto(
