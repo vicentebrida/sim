@@ -14,7 +14,7 @@ import { apiErrorMessage } from '@/lib/errors';
 
 const searchSchema = z.object({
   returnTo: z.string().optional().catch(undefined),
-  error: z.enum(['sso', 'inactive']).optional().catch(undefined),
+  error: z.enum(['sso', 'inactive', 'group']).optional().catch(undefined),
 });
 
 export const Route = createFileRoute('/login')({

@@ -1,5 +1,9 @@
 # Changelog
 
+## Não lançado (Marco 3)
+
+- **Restrição de acesso por grupo do SSO**: `SIM_ACCESS_GROUP` limita quem entra pelo SSO e `SIM_ADMIN_GROUP` define os Administradores (claim em `SIM_SSO_CLAIM_GROUPS`).
+
 ## 0.2.0
 
 Marco 2: o SIM passa a falar por e-mail, cobrar resposta dos Avaliadores e ganhar a cara da empresa. Fica de fora a busca semântica com IA.

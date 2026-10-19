@@ -42,6 +42,12 @@ const ssoSchema = z
     SIM_SSO_CLAIM_NAME: z.string().default('name'),
     SIM_SSO_CLAIM_DEPARTMENT: optionalString,
     SIM_SSO_CLAIM_PICTURE: z.string().default('picture'),
+    // Claim with the provider groups (a list, or a comma/space separated text).
+    SIM_SSO_CLAIM_GROUPS: z.string().default('groups'),
+    // When set, only members of this group can sign in with SSO.
+    SIM_ACCESS_GROUP: optionalString,
+    // When set, members of this group are Administrators (and non-members are not, at each login).
+    SIM_ADMIN_GROUP: optionalString,
     // Unset, the web app shows a translated "Sign in with SSO".
     SIM_SSO_BUTTON_LABEL: optionalString,
   })

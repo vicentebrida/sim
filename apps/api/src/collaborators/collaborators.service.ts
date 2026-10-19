@@ -13,6 +13,8 @@ export interface SsoProfile {
   name: string;
   department?: string;
   pictureUrl?: string;
+  /** Groups sent by the provider. */
+  groups: string[];
 }
 
 @Injectable()
@@ -102,9 +104,14 @@ export class CollaboratorsService {
       pictureUrl: profile.pictureUrl ?? null,
       lastLoginAt: new Date(),
     };
-    const promoteAdministrator = this.isAdministratorByConfiguration(email)
-      ? { administrator: true }
-      : {};
+    const byConfiguration = this.isAdministratorByConfiguration(email);
+    const adminGroup = this.env.SIM_ADMIN_GROUP;
+    // With an admin group, the provider decides at each login; without it, the e-mail list only promotes.
+    const administratorChange = adminGroup
+      ? { administrator: byConfiguration || profile.groups.includes(adminGroup) }
+      : byConfiguration
+        ? { administrator: true }
+        : {};
 
     return this.db.transaction(async (tx) => {
       const [bySubject] = await tx
@@ -119,7 +126,7 @@ export class CollaboratorsService {
       if (existing) {
         const [updated] = await tx
           .update(collaborators)
-          .set({ ...profileData, ...promoteAdministrator })
+          .set({ ...profileData, ...administratorChange })
           .where(eq(collaborators.id, existing.id))
           .returning();
         return updated!;
@@ -127,7 +134,7 @@ export class CollaboratorsService {
 
       const [created] = await tx
         .insert(collaborators)
-        .values({ ...profileData, ...promoteAdministrator })
+        .values({ ...profileData, ...administratorChange })
         .returning();
       return created!;
     });

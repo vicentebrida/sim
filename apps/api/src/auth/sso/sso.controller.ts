@@ -79,6 +79,7 @@ export class SsoController {
     try {
       const currentUrl = new URL(req.originalUrl, this.env.SIM_PUBLIC_URL);
       const profile = await this.sso.finish(currentUrl, transaction);
+      if (!this.sso.isAllowed(profile)) return res.redirect('/login?error=group');
       const collaborator = await this.collaborators.provisionFromSso(profile);
       if (!collaborator.active) return res.redirect('/login?error=inactive');
 
