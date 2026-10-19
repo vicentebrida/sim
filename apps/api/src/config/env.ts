@@ -82,6 +82,13 @@ const baseSchema = z
       .optional(),
     SIM_EMERGENCY_PASSWORD: z.string().min(MIN_PASSWORD_LENGTH).optional(),
     SIM_WEB_DIST: z.string().optional(),
+    // Language of e-mails (the web app follows each person's browser).
+    SIM_LOCALE: z.enum(['pt-BR', 'en']).default('pt-BR'),
+    // Background jobs (ADR-0006). Without Redis the SIM works, but sends no e-mail.
+    REDIS_URL: z.url().optional(),
+    // e.g. smtp://user:password@smtp.example.com:587 (smtps:// for implicit TLS).
+    SMTP_URL: z.url().optional(),
+    SIM_MAIL_FROM: z.string().default('SIM <sim@localhost>'),
     // Express `trust proxy` value: true, number of proxies or a list of IPs/subnets.
     SIM_TRUST_PROXY: z
       .string()
@@ -90,6 +97,10 @@ const baseSchema = z
         if (value === 'true' || value === 'false') return value === 'true';
         return /^\d+$/.test(value) ? Number(value) : value;
       }),
+  })
+  .refine((env) => !env.SMTP_URL || env.REDIS_URL, {
+    path: ['REDIS_URL'],
+    message: 'required when SMTP_URL is set (e-mails are sent by a background job)',
   })
   .refine((env) => Boolean(env.SIM_EMERGENCY_EMAIL) === Boolean(env.SIM_EMERGENCY_PASSWORD), {
     path: ['SIM_EMERGENCY_PASSWORD'],

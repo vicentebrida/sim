@@ -38,5 +38,13 @@ export class NotificationPreferencesDto extends createZodDto(
   z.object({
     // Notification of new Comments on followed Ideas.
     newComments: z.boolean(),
+    // Also receive Notifications by e-mail.
+    byEmail: z.boolean(),
+    // Whether this installation sends e-mail at all (SMTP configured).
+    emailAvailable: z.boolean(),
   }),
+) {}
+
+export class UpdateNotificationPreferencesDto extends createZodDto(
+  z.object({ newComments: z.boolean().optional(), byEmail: z.boolean().optional() }),
 ) {}

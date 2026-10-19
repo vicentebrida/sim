@@ -275,6 +275,7 @@
     "empty": "Nenhuma notificação por enquanto.",
     "unread": "Não lida",
     "newCommentsPreference": "Avisar sobre novos comentários nas ideias que sigo",
+    "emailPreference": "Receber também estas notificações por e-mail",
     "types": {
       "status": "{{actor}} mudou a ideia #{{number}} para {{to}}",
       "duplicate": "{{actor}} marcou a ideia #{{number}} como duplicada da #{{original}}",

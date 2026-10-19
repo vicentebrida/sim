@@ -1,6 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { and, count, desc, eq, isNull, sql } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
+import { ENV } from '../config/config.module';
+import type { Env } from '../config/env';
 import { DB, type Database, type Executor } from '../database/database.module';
 import {
   type Collaborator,
@@ -29,7 +31,10 @@ interface NewNotification {
  */
 @Injectable()
 export class NotificationsService {
-  constructor(@Inject(DB) private readonly db: Database) {}
+  constructor(
+    @Inject(DB) private readonly db: Database,
+    @Inject(ENV) private readonly env: Env,
+  ) {}
 
   // ---------- following ----------
 
@@ -233,15 +238,29 @@ export class NotificationsService {
   }
 
   preferences(collaborator: Collaborator) {
-    return { newComments: collaborator.notifyNewComments };
+    return {
+      newComments: collaborator.notifyNewComments,
+      byEmail: collaborator.notifyByEmail,
+      emailAvailable: Boolean(this.env.SMTP_URL),
+    };
   }
 
-  async setPreferences(collaborator: Collaborator, data: { newComments: boolean }) {
-    await this.db
+  async setPreferences(
+    collaborator: Collaborator,
+    data: { newComments?: boolean; byEmail?: boolean },
+  ) {
+    if (data.newComments === undefined && data.byEmail === undefined) {
+      return this.preferences(collaborator);
+    }
+    const [updated] = await this.db
       .update(collaborators)
-      .set({ notifyNewComments: data.newComments })
-      .where(eq(collaborators.id, collaborator.id));
-    return data;
+      .set({
+        ...(data.newComments !== undefined && { notifyNewComments: data.newComments }),
+        ...(data.byEmail !== undefined && { notifyByEmail: data.byEmail }),
+      })
+      .where(eq(collaborators.id, collaborator.id))
+      .returning();
+    return this.preferences(updated ?? collaborator);
   }
 
   // ---------- support ----------
@@ -257,6 +276,29 @@ export class NotificationsService {
 
   private async record(executor: Executor, created: NewNotification[]) {
     if (!created.length) return;
-    await executor.insert(notifications).values(created);
+    const inserted = await executor
+      .insert(notifications)
+      .values(created)
+      .returning({ id: notifications.id, recipientId: notifications.recipientId });
+    if (!this.env.SMTP_URL) return;
+    // E-mail copy for whoever wants it; the dispatcher job sends it (ADR-0006).
+    await executor
+      .update(notifications)
+      .set({ emailStatus: 'pending' })
+      .where(
+        and(
+          inArray(
+            notifications.id,
+            inserted.map(({ id }) => id),
+          ),
+          inArray(
+            notifications.recipientId,
+            executor
+              .select({ id: collaborators.id })
+              .from(collaborators)
+              .where(and(eq(collaborators.notifyByEmail, true), eq(collaborators.active, true))),
+          ),
+        ),
+      );
   }
 }

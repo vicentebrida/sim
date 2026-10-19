@@ -43,6 +43,13 @@
       "when": 1792420173175,
       "tag": "0005_similar_idea_search",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792437537415,
+      "tag": "0006_email_notifications",
+      "breakpoints": true
     }
   ]
 }

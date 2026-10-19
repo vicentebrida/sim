@@ -10,6 +10,7 @@ import { EmergencyAccountService } from '../../src/collaborators/emergency-accou
 import { configureApp } from '../../src/configure-app';
 import { PG_POOL } from '../../src/database/database.module';
 import { runMigrations } from '../../src/database/migrate';
+import { Mailer } from '../../src/notifications/email/mailer';
 
 export const EMERGENCY = { email: 'emergency@sim.test', password: 'emergency-password-123' };
 
@@ -36,7 +37,10 @@ async function createDatabase(): Promise<string> {
 }
 
 /** Starts the whole SIM against a fresh database, with the emergency account configured. */
-export async function createApp(env: Record<string, string> = {}): Promise<TestApp> {
+export async function createApp(
+  env: Record<string, string> = {},
+  overrides: { mailer?: Mailer } = {},
+): Promise<TestApp> {
   const originalEnv = { ...process.env };
   Object.assign(process.env, {
     DATABASE_URL: await createDatabase(),
@@ -47,7 +51,9 @@ export async function createApp(env: Record<string, string> = {}): Promise<TestA
   });
 
   try {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+    const builder = Test.createTestingModule({ imports: [AppModule] });
+    if (overrides.mailer) builder.overrideProvider(Mailer).useValue(overrides.mailer);
+    const moduleRef = await builder.compile();
     const app = moduleRef.createNestApplication({ logger: false });
     configureApp(app);
     const pool = app.get<Pool>(PG_POOL);
