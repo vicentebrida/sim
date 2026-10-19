@@ -1,7 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 import { TIPOS_DE_CAMPO } from './dominio/campos';
-import { STATUS } from './dominio/ideia';
+import { ORDENS, STATUS } from './dominio/ideia';
 
 const ValorSchema = z.union([z.string(), z.number(), z.boolean(), z.array(z.string()), z.null()]);
 const ValoresSchema = z.record(z.string(), ValorSchema);
@@ -52,9 +52,23 @@ export class ListarIdeiasQueryDto extends createZodDto(
     categoriaId: z.uuid().optional(),
     // "eu" lista as Ideias do Colaborador atual, incluindo os Rascunhos.
     autor: z.enum(['eu']).optional(),
+    // "em_alta" pondera Curtidas recentes; "mais_curtidas" conta todas; "mais_recentes" usa a publicação.
+    ordem: z.enum(ORDENS).default('em_alta'),
     pagina: z.coerce.number().int().min(1).default(1),
     porPagina: z.coerce.number().int().min(1).max(50).default(20),
   }),
+) {}
+
+const CurtidasSchema = z.object({
+  total: z.number().int(),
+  // O Colaborador atual curtiu esta Ideia.
+  curtiu: z.boolean(),
+});
+
+export class CurtidasDto extends createZodDto(CurtidasSchema) {}
+
+export class CurtidaDto extends createZodDto(
+  z.object({ colaborador: Referencia, em: z.iso.datetime() }),
 ) {}
 
 const IdeiaResumoSchema = z.object({
@@ -64,6 +78,7 @@ const IdeiaResumoSchema = z.object({
   status: StatusSchema,
   categoria: Referencia,
   autor: Referencia,
+  curtidas: CurtidasSchema,
   criadaEm: z.iso.datetime(),
   publicadaEm: z.iso.datetime().nullable(),
 });
@@ -106,6 +121,7 @@ export class IdeiaDto extends createZodDto(
       podeEditar: z.boolean(),
       podeExcluir: z.boolean(),
       podePublicar: z.boolean(),
+      podeCurtir: z.boolean(),
       podeAvaliar: z.boolean(),
       podeRecategorizar: z.boolean(),
       transicoes: z.array(StatusSchema),

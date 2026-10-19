@@ -34,6 +34,19 @@ const TRANSICOES: Record<Status, readonly Status[]> = {
 /** Status em que o Autor ainda pode editar o texto; a partir de Em análise, novidades vão em Comentários. */
 const EDITAVEIS: readonly Status[] = ['rascunho', 'aberta'];
 
+/** Status em que a Ideia recebe (e perde) Curtidas; nos demais elas ficam congeladas. */
+const CURTIVEIS: readonly Status[] = ['aberta', 'em_analise', 'aprovada', 'em_execucao'];
+
+/**
+ * "Em alta": cada acontecimento (a publicação e cada Curtida) vale 1 e perde metade do peso a cada
+ * meia-vida, para que o apoio recente pese mais que o antigo.
+ */
+export const MEIA_VIDA_EM_ALTA_DIAS = 7;
+
+/** Ordenações da listagem; "Em alta" é a padrão. */
+export const ORDENS = ['em_alta', 'mais_curtidas', 'mais_recentes'] as const;
+export type Ordem = (typeof ORDENS)[number];
+
 const RECATEGORIZAVEIS: readonly Status[] = [
   'aberta',
   'em_analise',
@@ -48,7 +61,8 @@ export type CodigoDeErro =
   | 'TRANSICAO_INVALIDA'
   | 'JUSTIFICATIVA_OBRIGATORIA'
   | 'IDEIA_ORIGINAL_INVALIDA'
-  | 'CAMPOS_INVALIDOS';
+  | 'CAMPOS_INVALIDOS'
+  | 'CURTIDA_INDISPONIVEL';
 
 export class ErroDeDominio extends Error {
   constructor(
@@ -168,6 +182,19 @@ export function validarExclusao(
   }
 }
 
+/** Vale para curtir e para desfazer a Curtida. */
+export function validarCurtida(ideia: IdeiaParaRegras, ator: Ator) {
+  if (ehAutor(ideia, ator)) {
+    throw new ErroDeDominio('SEM_PERMISSAO', 'O Autor não curte a própria Ideia');
+  }
+  if (!CURTIVEIS.includes(ideia.status)) {
+    throw new ErroDeDominio(
+      'CURTIDA_INDISPONIVEL',
+      'As Curtidas desta Ideia estão congeladas por causa do Status',
+    );
+  }
+}
+
 export function podeVer(ideia: IdeiaParaRegras, ator: Ator) {
   return ideia.status !== 'rascunho' || ehAutor(ideia, ator);
 }
@@ -194,6 +221,7 @@ export function permissoes(
     podeEditar: permite(() => validarEdicao(ideia, ator)),
     podeExcluir: permite(() => validarExclusao(ideia, ator, contexto)),
     podePublicar: permite(() => validarPublicacao(ideia, ator)),
+    podeCurtir: permite(() => validarCurtida(ideia, ator)),
     podeAvaliar: avalia,
     podeRecategorizar: avalia && RECATEGORIZAVEIS.includes(ideia.status),
     transicoes: avalia ? [...TRANSICOES[ideia.status]] : [],

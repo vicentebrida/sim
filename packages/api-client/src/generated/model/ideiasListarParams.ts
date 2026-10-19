@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.0.0
  */
 import type { IdeiasListarAutor } from './ideiasListarAutor.ts';
+import type { IdeiasListarOrdem } from './ideiasListarOrdem.ts';
 
 export type IdeiasListarParams = {
 status?: string;
@@ -14,6 +15,7 @@ status?: string;
  */
 categoriaId?: string;
 autor?: IdeiasListarAutor;
+ordem?: IdeiasListarOrdem;
 /**
  * @minimum 1
  * @maximum 9007199254740991
