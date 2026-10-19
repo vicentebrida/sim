@@ -1,0 +1,193 @@
+{
+  "app": {
+    "name": "SIM",
+    "fullName": "Sistema de Ideias e Melhorias"
+  },
+  "home": {
+    "title": "Ideias",
+    "subtitle": "Proponha, apoie e acompanhe melhorias para a empresa.",
+    "newIdea": "Nova ideia",
+    "empty": "Nenhuma ideia publicada ainda."
+  },
+  "apiStatus": {
+    "checking": "Verificando servidor…",
+    "ok": "Servidor no ar",
+    "degraded": "Servidor com problemas",
+    "offline": "Servidor indisponível"
+  },
+  "nav": {
+    "ideas": "Ideias",
+    "colaboradores": "Colaboradores",
+    "logout": "Sair",
+    "categorias": "Categorias",
+    "campos": "Campos"
+  },
+  "login": {
+    "title": "Entrar no SIM",
+    "email": "E-mail",
+    "senha": "Senha",
+    "submit": "Entrar",
+    "submitting": "Entrando…",
+    "or": "ou",
+    "invalid": "E-mail ou senha inválidos.",
+    "errors": {
+      "sso": "Não foi possível entrar pelo SSO. Tente novamente ou fale com o administrador.",
+      "inativo": "Seu acesso ao SIM está desativado. Fale com o administrador."
+    },
+    "muitasTentativas": "Muitas tentativas. Aguarde alguns minutos e tente novamente."
+  },
+  "trocarSenha": {
+    "title": "Defina sua senha",
+    "description": "Você entrou com uma senha temporária. Escolha uma senha nova para continuar.",
+    "senhaAtual": "Senha temporária",
+    "novaSenha": "Nova senha",
+    "confirmacao": "Confirme a nova senha",
+    "submit": "Salvar senha",
+    "minimo": "Use pelo menos {{min}} caracteres.",
+    "naoConfere": "As senhas não conferem."
+  },
+  "colaboradores": {
+    "title": "Colaboradores",
+    "subtitle": "Quem entra pelo SSO aparece aqui automaticamente. Contas locais são criadas abaixo.",
+    "novaConta": "Nova conta local",
+    "nome": "Nome",
+    "email": "E-mail",
+    "administrador": "Administrador",
+    "criar": "Criar conta",
+    "criada": "Conta criada para {{nome}}",
+    "senhaTemporaria": "Senha temporária (exibida só agora; a pessoa vai trocá-la no primeiro acesso):",
+    "copiar": "Copiar",
+    "copiado": "Copiado",
+    "colunas": {
+      "nome": "Nome",
+      "email": "E-mail",
+      "papel": "Papel",
+      "situacao": "Situação"
+    },
+    "papel": {
+      "administrador": "Administrador",
+      "colaborador": "Colaborador"
+    },
+    "situacao": {
+      "ativo": "Ativo",
+      "inativo": "Inativo"
+    }
+  },
+  "erros": {
+    "generico": "Algo deu errado. Tente novamente.",
+    "emailDuplicado": "Já existe um Colaborador com este e-mail.",
+    "obrigatorio": "Campo obrigatório.",
+    "emailInvalido": "E-mail inválido."
+  },
+  "categorias": {
+    "title": "Categorias",
+    "subtitle": "Cada Ideia pertence a uma Categoria, e os Avaliadores dela decidem o andamento. Categorias sem Avaliadores ficam com os Administradores.",
+    "nova": "Nova Categoria",
+    "nome": "Nome",
+    "descricao": "Descrição",
+    "descricaoAjuda": "Aparece no formulário da Ideia para ajudar a escolher a Categoria.",
+    "criar": "Criar Categoria",
+    "salvar": "Salvar",
+    "cancelar": "Cancelar",
+    "editar": "Editar",
+    "desativar": "Desativar",
+    "reativar": "Reativar",
+    "inativa": "Inativa",
+    "avaliadores": "Avaliadores",
+    "definirAvaliadores": "Avaliadores",
+    "semAvaliadores": "Sem Avaliadores: os Administradores avaliam as Ideias desta Categoria.",
+    "buscarColaborador": "Buscar Colaborador",
+    "nenhumaCategoria": "Nenhuma Categoria criada ainda.",
+    "nomeDuplicado": "Já existe uma Categoria com este nome."
+  },
+  "status": {
+    "rascunho": "Rascunho",
+    "aberta": "Aberta",
+    "em_analise": "Em análise",
+    "aprovada": "Aprovada",
+    "em_execucao": "Em execução",
+    "concluida": "Concluída",
+    "recusada": "Recusada",
+    "duplicada": "Duplicada",
+    "arquivada": "Arquivada"
+  },
+  "ideias": {
+    "filtros": {
+      "status": "Status",
+      "todos": "Todos (exceto arquivadas)",
+      "categoria": "Categoria",
+      "todas": "Todas",
+      "minhas": "Só as minhas (inclui rascunhos)"
+    },
+    "vazio": "Nenhuma ideia encontrada.",
+    "anterior": "Anterior",
+    "proxima": "Próxima",
+    "pagina": "Página {{pagina}} de {{total}}",
+    "por": "por {{nome}}",
+    "publicadaEm": "publicada em {{data}}",
+    "criadaEm": "criada em {{data}}",
+    "editada": "editada",
+    "nova": "Nova ideia",
+    "editar": "Editar ideia",
+    "titulo": "Título",
+    "tituloAjuda": "Resuma a ideia em uma frase.",
+    "categoria": "Categoria",
+    "escolhaCategoria": "Escolha uma Categoria",
+    "publicar": "Publicar",
+    "salvarRascunho": "Salvar rascunho",
+    "salvar": "Salvar alterações",
+    "cancelar": "Cancelar",
+    "sim": "Sim",
+    "nao": "Não",
+    "obrigatorio": "Campo obrigatório.",
+    "camposInvalidos": "Revise os campos destacados.",
+    "duplicadaDe": "Esta ideia repete a",
+    "verOriginal": "Ideia #{{numero}}: {{titulo}}",
+    "historico": "Histórico",
+    "publicou": "{{nome}} publicou a ideia",
+    "mudouStatus": "{{nome}} mudou de {{de}} para {{para}}",
+    "mudouCategoria": "{{nome}} mudou a Categoria de {{de}} para {{para}}",
+    "excluir": "Excluir",
+    "confirmarExclusao": "Confirmar exclusão",
+    "avaliacao": "Avaliação",
+    "novoStatus": "Novo status",
+    "escolhaStatus": "Escolha o novo status",
+    "justificativa": "Justificativa",
+    "justificativaAjuda": "Fica registrada no Histórico, visível para todos.",
+    "numeroOriginal": "Número da Ideia Original",
+    "aplicar": "Aplicar",
+    "recategorizar": "Mudar Categoria",
+    "novaCategoria": "Nova Categoria",
+    "naoEncontrada": "Ideia não encontrada."
+  },
+  "campos": {
+    "title": "Campos do formulário",
+    "subtitle": "Campos que o Colaborador preenche ao propor uma Ideia, além do título e da Categoria.",
+    "novo": "Novo campo",
+    "rotulo": "Rótulo",
+    "ajuda": "Texto de ajuda",
+    "tipo": "Tipo",
+    "obrigatorio": "Obrigatório",
+    "opcoes": "Opções (uma por linha)",
+    "usarNaDeteccao": "Usar na detecção de ideias semelhantes",
+    "criar": "Criar campo",
+    "salvar": "Salvar",
+    "cancelar": "Cancelar",
+    "editar": "Editar",
+    "desativar": "Desativar",
+    "reativar": "Reativar",
+    "excluir": "Excluir",
+    "subir": "Subir",
+    "descer": "Descer",
+    "inativo": "Inativo",
+    "emUso": "Este campo já foi preenchido em Ideias. Desative-o em vez de excluir.",
+    "tipos": {
+      "texto_curto": "Texto curto",
+      "texto_longo": "Texto longo",
+      "selecao_unica": "Seleção única",
+      "selecao_multipla": "Seleção múltipla",
+      "numero": "Número",
+      "sim_nao": "Sim ou não"
+    }
+  }
+}

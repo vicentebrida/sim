@@ -1,0 +1,193 @@
+{
+  "app": {
+    "name": "SIM",
+    "fullName": "Ideas and Improvements System"
+  },
+  "home": {
+    "title": "Ideas",
+    "subtitle": "Propose, support and follow improvements for the company.",
+    "newIdea": "New idea",
+    "empty": "No ideas published yet."
+  },
+  "apiStatus": {
+    "checking": "Checking server…",
+    "ok": "Server is up",
+    "degraded": "Server has issues",
+    "offline": "Server unavailable"
+  },
+  "nav": {
+    "ideas": "Ideas",
+    "colaboradores": "People",
+    "logout": "Sign out",
+    "categorias": "Categories",
+    "campos": "Fields"
+  },
+  "login": {
+    "title": "Sign in to SIM",
+    "email": "Email",
+    "senha": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in…",
+    "or": "or",
+    "invalid": "Invalid email or password.",
+    "errors": {
+      "sso": "Single sign-on failed. Try again or contact your administrator.",
+      "inativo": "Your access to SIM is disabled. Contact your administrator."
+    },
+    "muitasTentativas": "Too many attempts. Wait a few minutes and try again."
+  },
+  "trocarSenha": {
+    "title": "Set your password",
+    "description": "You signed in with a temporary password. Choose a new one to continue.",
+    "senhaAtual": "Temporary password",
+    "novaSenha": "New password",
+    "confirmacao": "Confirm new password",
+    "submit": "Save password",
+    "minimo": "Use at least {{min}} characters.",
+    "naoConfere": "Passwords do not match."
+  },
+  "colaboradores": {
+    "title": "People",
+    "subtitle": "People who sign in with SSO show up here automatically. Create local accounts below.",
+    "novaConta": "New local account",
+    "nome": "Name",
+    "email": "Email",
+    "administrador": "Administrator",
+    "criar": "Create account",
+    "criada": "Account created for {{nome}}",
+    "senhaTemporaria": "Temporary password (shown only now; they will change it on first sign-in):",
+    "copiar": "Copy",
+    "copiado": "Copied",
+    "colunas": {
+      "nome": "Name",
+      "email": "Email",
+      "papel": "Role",
+      "situacao": "Status"
+    },
+    "papel": {
+      "administrador": "Administrator",
+      "colaborador": "Member"
+    },
+    "situacao": {
+      "ativo": "Active",
+      "inativo": "Inactive"
+    }
+  },
+  "erros": {
+    "generico": "Something went wrong. Please try again.",
+    "emailDuplicado": "Someone with this email already exists.",
+    "obrigatorio": "Required.",
+    "emailInvalido": "Invalid email."
+  },
+  "categorias": {
+    "title": "Categories",
+    "subtitle": "Every idea belongs to a category, and its reviewers decide what happens next. Categories without reviewers are handled by administrators.",
+    "nova": "New category",
+    "nome": "Name",
+    "descricao": "Description",
+    "descricaoAjuda": "Shown on the idea form to help people pick a category.",
+    "criar": "Create category",
+    "salvar": "Save",
+    "cancelar": "Cancel",
+    "editar": "Edit",
+    "desativar": "Deactivate",
+    "reativar": "Reactivate",
+    "inativa": "Inactive",
+    "avaliadores": "Reviewers",
+    "definirAvaliadores": "Reviewers",
+    "semAvaliadores": "No reviewers: administrators review ideas in this category.",
+    "buscarColaborador": "Search people",
+    "nenhumaCategoria": "No categories yet.",
+    "nomeDuplicado": "A category with this name already exists."
+  },
+  "status": {
+    "rascunho": "Draft",
+    "aberta": "Open",
+    "em_analise": "Under review",
+    "aprovada": "Approved",
+    "em_execucao": "In progress",
+    "concluida": "Done",
+    "recusada": "Declined",
+    "duplicada": "Duplicate",
+    "arquivada": "Archived"
+  },
+  "ideias": {
+    "filtros": {
+      "status": "Status",
+      "todos": "All (except archived)",
+      "categoria": "Category",
+      "todas": "All",
+      "minhas": "Only mine (includes drafts)"
+    },
+    "vazio": "No ideas found.",
+    "anterior": "Previous",
+    "proxima": "Next",
+    "pagina": "Page {{pagina}} of {{total}}",
+    "por": "by {{nome}}",
+    "publicadaEm": "published {{data}}",
+    "criadaEm": "created {{data}}",
+    "editada": "edited",
+    "nova": "New idea",
+    "editar": "Edit idea",
+    "titulo": "Title",
+    "tituloAjuda": "Sum up the idea in one sentence.",
+    "categoria": "Category",
+    "escolhaCategoria": "Choose a category",
+    "publicar": "Publish",
+    "salvarRascunho": "Save draft",
+    "salvar": "Save changes",
+    "cancelar": "Cancel",
+    "sim": "Yes",
+    "nao": "No",
+    "obrigatorio": "Required.",
+    "camposInvalidos": "Please review the highlighted fields.",
+    "duplicadaDe": "This idea duplicates",
+    "verOriginal": "Idea #{{numero}}: {{titulo}}",
+    "historico": "History",
+    "publicou": "{{nome}} published the idea",
+    "mudouStatus": "{{nome}} changed it from {{de}} to {{para}}",
+    "mudouCategoria": "{{nome}} moved it from {{de}} to {{para}}",
+    "excluir": "Delete",
+    "confirmarExclusao": "Confirm deletion",
+    "avaliacao": "Review",
+    "novoStatus": "New status",
+    "escolhaStatus": "Choose the new status",
+    "justificativa": "Reason",
+    "justificativaAjuda": "Recorded in the history, visible to everyone.",
+    "numeroOriginal": "Original idea number",
+    "aplicar": "Apply",
+    "recategorizar": "Change category",
+    "novaCategoria": "New category",
+    "naoEncontrada": "Idea not found."
+  },
+  "campos": {
+    "title": "Form fields",
+    "subtitle": "Fields people fill in when proposing an idea, besides title and category.",
+    "novo": "New field",
+    "rotulo": "Label",
+    "ajuda": "Help text",
+    "tipo": "Type",
+    "obrigatorio": "Required",
+    "opcoes": "Options (one per line)",
+    "usarNaDeteccao": "Use for similar idea detection",
+    "criar": "Create field",
+    "salvar": "Save",
+    "cancelar": "Cancel",
+    "editar": "Edit",
+    "desativar": "Deactivate",
+    "reativar": "Reactivate",
+    "excluir": "Delete",
+    "subir": "Move up",
+    "descer": "Move down",
+    "inativo": "Inactive",
+    "emUso": "This field is already filled in on some ideas. Deactivate it instead.",
+    "tipos": {
+      "texto_curto": "Short text",
+      "texto_longo": "Long text",
+      "selecao_unica": "Single choice",
+      "selecao_multipla": "Multiple choice",
+      "numero": "Number",
+      "sim_nao": "Yes or no"
+    }
+  }
+}
