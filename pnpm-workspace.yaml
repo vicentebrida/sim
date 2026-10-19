@@ -5,6 +5,10 @@ packages:
 # typescript-eslint e @nestjs/swagger ainda não suportam TypeScript 7.
 overrides:
   typescript: ~6.0.3
+  # Correções de segurança em dependências transitivas (alertas do Dependabot).
+  js-yaml@>=5.0.0 <5.4.1: ^5.4.1
+  # drizzle-kit ainda arrasta o esbuild 0.18 pelo @esbuild-kit (só usado em desenvolvimento).
+  '@esbuild-kit/core-utils>esbuild': ^0.25.0
 # nestjs-zod repassa `type: ["string", "null"]` (campos anuláveis no Zod 4.6) ao Swagger, que o lê
 # como array; o patch reescreve como `anyOf`. Remover quando corrigido upstream.
 patchedDependencies:
