@@ -161,7 +161,12 @@ describe('local account authentication', () => {
 
   it('tells the web app which login methods are available', async () => {
     const response = await sim.http().get('/api/auth/configuration').expect(200);
-    expect(response.body).toEqual({ localLogin: true, sso: { enabled: false, label: null } });
+    expect(response.body).toMatchObject({
+      localLogin: true,
+      sso: { enabled: false, label: null },
+      attachments: { maxBytes: 10 * 1024 * 1024, maxCount: 5 },
+    });
+    expect(response.body.attachments.extensions).toContain('pdf');
   });
 
   it('locks repeated password guesses on one account, without affecting others', async () => {

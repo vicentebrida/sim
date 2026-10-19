@@ -20,6 +20,7 @@ import { Discussion } from '@/components/comments/discussion';
 import { FollowButton } from '@/components/follow-button';
 import { Likes } from '@/components/likes';
 import { NativeSelect } from '@/components/native-select';
+import { AttachmentList } from '@/components/attachments';
 import { StalledBadge, StatusBadge } from '@/components/status-badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -99,6 +100,14 @@ function IdeaPage() {
             <p className="whitespace-pre-wrap">{displayValue(answer.value, t)}</p>
           </section>
         ))}
+        {idea.attachments.length > 0 && (
+          <section className="space-y-2">
+            <h2 className="text-sm font-semibold text-muted-foreground">
+              {t('attachments.title')}
+            </h2>
+            <AttachmentList attachments={idea.attachments} />
+          </section>
+        )}
       </div>
 
       {idea.status !== 'draft' && <Likes idea={idea} />}
@@ -150,7 +159,11 @@ function AuthorActions({ idea }: { idea: IdeaDtoOutput }) {
         )}
         {canEdit && (
           <Button variant="outline" asChild>
-            <Link to="/ideas/$number/edit" params={{ number: String(idea.number) }}>
+            <Link
+              to="/ideas/$number/edit"
+              params={{ number: String(idea.number) }}
+              search={{ failed: undefined }}
+            >
               <Pencil />
               {t('ideas.edit')}
             </Link>

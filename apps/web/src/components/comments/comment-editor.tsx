@@ -1,4 +1,4 @@
-import { useMentionableSearch } from '@sim/api-client';
+import { type AttachmentDtoOutput, useMentionableSearch } from '@sim/api-client';
 import {
   type FormEvent,
   type KeyboardEvent,
@@ -9,8 +9,10 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AttachmentList, FilePicker } from '@/components/attachments';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { useFilesProblem } from '@/lib/attachments';
 import { type Mentioned, toEditable, toMarkup } from '@/lib/mentions';
 import { cn } from '@/lib/utils';
 
@@ -25,7 +27,10 @@ interface Props {
   sending: boolean;
   error?: string;
   /** Rejects on error, so the typed text is not lost. */
-  onSubmit: (text: string) => Promise<unknown>;
+  onSubmit: (text: string, files: File[]) => Promise<{ failed: number } | void>;
+  /** Files the Comment already has (editing). */
+  existingAttachments?: AttachmentDtoOutput[];
+  onRemoveAttachment?: (attachment: AttachmentDtoOutput) => void;
   onCancel?: () => void;
   autoFocus?: boolean;
 }
@@ -39,6 +44,8 @@ export function CommentEditor({
   onSubmit,
   onCancel,
   autoFocus,
+  existingAttachments = [],
+  onRemoveAttachment,
 }: Props) {
   const { t } = useTranslation();
   const id = useId();
@@ -49,6 +56,9 @@ export function CommentEditor({
   const [mentioned, setMentioned] = useState<Mentioned[]>(initialState.mentioned);
   const [query, setQuery] = useState<string | null>(null);
   const [highlighted, setHighlighted] = useState(0);
+  const [files, setFiles] = useState<File[]>([]);
+  const [notice, setNotice] = useState<string>();
+  const filesProblem = useFilesProblem(files, existingAttachments.length);
   const search = useDeferredValue(query);
 
   const { data } = useMentionableSearch(
@@ -98,11 +108,14 @@ export function CommentEditor({
 
   async function submit(event: FormEvent) {
     event.preventDefault();
-    if (!text.trim()) return;
+    if (!text.trim() || filesProblem) return;
+    setNotice(undefined);
     try {
-      await onSubmit(toMarkup(text.trim(), mentioned));
+      const result = await onSubmit(toMarkup(text.trim(), mentioned), files);
       setText('');
       setMentioned([]);
+      setFiles([]);
+      if (result?.failed) setNotice(t('attachments.failed'));
     } catch {
       // The error arrives through the `error` prop; the text stays for another try.
     }
@@ -163,6 +176,13 @@ export function CommentEditor({
         </ul>
       </div>
       <p className="text-xs text-muted-foreground">{t('comments.mentionHelp')}</p>
+      <AttachmentList attachments={existingAttachments} onRemove={onRemoveAttachment} />
+      <FilePicker files={files} onChange={setFiles} existing={existingAttachments.length} />
+      {notice && (
+        <p role="alert" className="text-sm text-destructive">
+          {notice}
+        </p>
+      )}
       {error && (
         <p role="alert" className="text-sm text-destructive">
           {error}

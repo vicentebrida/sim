@@ -2,6 +2,7 @@
 
 ## Não lançado
 
+- **Anexos** em Ideias e Comentários: imagens (miniatura) e documentos (PDF, Word, Excel, PowerPoint, texto), com limite de tamanho e quantidade, tipo conferido pelo conteúdo e download sempre autenticado. Guardados em disco (`SIM_DATA_DIR`; o `docker/compose.yml` já monta o volume `/data`).
 - **Painel** (Administradores): Ideias por Status e Categoria, tempo médio até a primeira decisão, Ideias Paradas, mais curtidas ainda sem decisão e exportação em CSV.
 - **Ideias Paradas**: Ideia Aberta (15 dias) ou Em análise (30 dias) sem ação de um Avaliador avisa os Avaliadores e, após 7 dias, escala para os Administradores. A marca "Parada" só aparece para Avaliadores e Administradores. Prazos padrão em `SIM_STALLED_*`, ajustáveis por Categoria.
 - **Notificações por e-mail**: cada Notificação também chega por e-mail (com o link da Ideia, sem o texto do Comentário), se a instalação configurar `SMTP_URL` e o Colaborador não desligar nas preferências do sininho. O envio roda em segundo plano com BullMQ + Redis; o `docker/compose.yml` agora inclui o Redis. Novas variáveis: `REDIS_URL`, `SMTP_URL`, `SIM_MAIL_FROM`, `SIM_LOCALE`.

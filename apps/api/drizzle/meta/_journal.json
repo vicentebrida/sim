@@ -57,6 +57,13 @@
       "when": 1792438185245,
       "tag": "0007_stalled_ideas",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792440131034,
+      "tag": "0008_attachments",
+      "breakpoints": true
     }
   ]
 }

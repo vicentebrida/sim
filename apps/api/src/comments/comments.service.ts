@@ -1,6 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { and, asc, eq, inArray } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
+import { AttachmentStore, type presentAttachment } from '../attachments/attachment-store';
 import { DB, type Database, type Transaction } from '../database/database.module';
 import {
   type Collaborator,
@@ -39,12 +40,14 @@ export class CommentsService {
     @Inject(DB) private readonly db: Database,
     private readonly ideas: IdeasService,
     private readonly notifications: NotificationsService,
+    private readonly attachmentStore: AttachmentStore,
   ) {}
 
   /** The Idea's Comments in chronological order, each with its Replies. */
   async list(collaborator: Collaborator, number: number) {
     const { idea, actor } = await this.ideas.access(collaborator, { number });
     const rows = await this.query().where(eq(comments.ideaId, idea.id));
+    const files = await this.attachmentStore.ofComments(rows.map(({ comment }) => comment.id));
 
     const replies = new Map<string, CommentWithNames[]>();
     for (const row of rows) {
@@ -54,9 +57,9 @@ export class CommentsService {
     return rows
       .filter((row) => !row.comment.replyToId)
       .map((row) => ({
-        ...this.present(row, idea, actor),
+        ...this.present(row, idea, actor, files),
         replies: (replies.get(row.comment.id) ?? []).map((reply) =>
-          this.present(reply, idea, actor),
+          this.present(reply, idea, actor, files),
         ),
       }));
   }
@@ -118,10 +121,12 @@ export class CommentsService {
     const { comment, actor } = await this.access(collaborator, id);
     assertCanRemoveComment(forRules(comment), actor);
 
-    await this.db.transaction(async (tx) => {
+    const keys = await this.db.transaction(async (tx) => {
       await tx.update(comments).set({ text: '', removedAt: new Date() }).where(eq(comments.id, id));
       await tx.delete(mentions).where(eq(mentions.commentId, id));
+      return this.attachmentStore.detachFromComment(id, tx);
     });
+    await this.attachmentStore.removeFiles(keys);
   }
 
   async hide(collaborator: Collaborator, id: string, data: { reason: string }) {
@@ -155,13 +160,15 @@ export class CommentsService {
 
   private async detail(id: string, idea: IdeaForRules, actor: Actor) {
     const [row] = await this.query().where(eq(comments.id, id));
-    return { ...this.present(row!, idea, actor), replies: [] };
+    const files = await this.attachmentStore.ofComments([id]);
+    return { ...this.present(row!, idea, actor, files), replies: [] };
   }
 
   private present(
     { comment, author, hiddenBy }: CommentWithNames,
     idea: IdeaForRules,
     actor: Actor,
+    files: Map<string, ReturnType<typeof presentAttachment>[]>,
   ) {
     const rules = forRules(comment);
     const state = rules.removed ? 'removed' : rules.hidden ? 'hidden' : 'published';
@@ -172,6 +179,8 @@ export class CommentsService {
       state,
       createdAt: comment.createdAt.toISOString(),
       editedAt: comment.editedAt?.toISOString() ?? null,
+      // Whoever cannot read the text does not get the files either.
+      attachments: canReadText(rules, idea, actor) ? (files.get(comment.id) ?? []) : [],
       hiding:
         state === 'hidden' && hiddenBy && comment.hiddenAt
           ? { reason: comment.hiddenReason ?? '', by: hiddenBy, at: comment.hiddenAt.toISOString() }

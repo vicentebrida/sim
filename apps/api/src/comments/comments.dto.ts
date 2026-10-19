@@ -1,5 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { AttachmentSchema } from '../attachments/attachments.dto';
 
 const Reference = z.object({ id: z.uuid(), name: z.string() });
 // Mentions go in the text as `@[Name](id)`.
@@ -27,6 +28,7 @@ const CommentBaseSchema = z.object({
   state: z.enum(['published', 'removed', 'hidden']),
   createdAt: z.iso.datetime(),
   editedAt: z.iso.datetime().nullable(),
+  attachments: z.array(AttachmentSchema),
   hiding: z.object({ reason: z.string(), by: Reference, at: z.iso.datetime() }).nullable(),
   permissions: z.object({
     canReply: z.boolean(),

@@ -15,13 +15,16 @@ RUN pnpm turbo run build --filter=@sim/api --filter=@sim/web
 RUN pnpm deploy --filter=@sim/api --prod --legacy /out
 
 FROM node:26-alpine AS runtime
-ENV NODE_ENV=production SIM_MODE=all PORT=3000 SIM_WEB_DIST=/app/web
+ENV NODE_ENV=production SIM_MODE=all PORT=3000 SIM_WEB_DIST=/app/web SIM_DATA_DIR=/data
 WORKDIR /app
 COPY --from=build /out/package.json ./package.json
 COPY --from=build /out/node_modules ./node_modules
 COPY --from=build /repo/apps/api/dist ./dist
 COPY --from=build /repo/apps/api/drizzle ./drizzle
 COPY --from=build /repo/apps/web/dist ./web
+# Anexos ficam em /data: monte um volume aqui.
+RUN mkdir /data && chown node:node /data
+VOLUME /data
 USER node
 EXPOSE 3000
 CMD ["node", "dist/main.js"]

@@ -4,6 +4,7 @@ import { alias } from 'drizzle-orm/pg-core';
 import { DomainError } from '../common/domain-error';
 import { CustomFieldsService } from '../custom-fields/custom-fields.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { AttachmentStore } from '../attachments/attachment-store';
 import { isStalledSql } from './domain/stalled';
 import { StalledIdeasService } from './stalled-ideas.service';
 import { DB, type Database, type Transaction } from '../database/database.module';
@@ -78,6 +79,7 @@ export class IdeasService {
     private readonly fields: CustomFieldsService,
     private readonly notifications: NotificationsService,
     private readonly stalledIdeas: StalledIdeasService,
+    private readonly attachmentStore: AttachmentStore,
   ) {}
 
   /** The Stalled mark is only for Administrators and the Reviewers of the Category (not the Author). */
@@ -154,6 +156,7 @@ export class IdeasService {
       interaction,
       following,
       [stalledRow],
+      ideaAttachments,
     ] = await Promise.all([
       this.db
         .select({ id: categories.id, name: categories.name })
@@ -187,6 +190,7 @@ export class IdeasService {
         .from(ideas)
         .innerJoin(categories, eq(ideas.categoryId, categories.id))
         .where(eq(ideas.id, idea.id)),
+      this.attachmentStore.ofIdea(idea.id),
     ]);
 
     // Category events store ids; show their names instead.
@@ -216,6 +220,7 @@ export class IdeasService {
       likes: likeState,
       following,
       stalled: stalledRow?.stalled ?? false,
+      attachments: ideaAttachments,
       values: idea.values,
       answers: fields
         .filter((field) => field.id in idea.values)
@@ -405,7 +410,9 @@ export class IdeasService {
   async delete(collaborator: Collaborator, number: number) {
     const { idea, actor } = await this.access(collaborator, { number });
     assertCanDelete(idea, actor, await this.interactionFromOthers(idea));
+    const keys = await this.attachmentStore.keysOfIdea(idea.id);
     await this.db.delete(ideas).where(eq(ideas.id, idea.id));
+    await this.attachmentStore.removeFiles(keys);
   }
 
   // ---------- Likes ----------

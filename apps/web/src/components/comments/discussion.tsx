@@ -1,10 +1,12 @@
 import {
+  attachmentsAddToComment,
   type CommentDtoOutput,
   type CommentDtoOutputRepliesItem,
   getCommentsListQueryKey,
   getIdeasDetailQueryKey,
   getIdeasListQueryKey,
   type IdeaDtoOutput,
+  useAttachmentsRemove,
   useCommentsCreate,
   useCommentsHide,
   useCommentsList,
@@ -21,6 +23,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { formatDateTime } from '@/lib/dates';
 import { apiErrorMessage } from '@/lib/errors';
 import { segment } from '@/lib/mentions';
+import { AttachmentList } from '@/components/attachments';
+import { uploadAll } from '@/lib/uploads';
 import { CommentEditor } from './comment-editor';
 
 type Comment = CommentDtoOutput | CommentDtoOutputRepliesItem;
@@ -84,7 +88,17 @@ export function Discussion({ idea }: { idea: IdeaDtoOutput }) {
           submitLabel={t('comments.comment')}
           sending={create.isPending}
           error={apiErrorMessage(create.error, t)}
-          onSubmit={(text) => create.mutateAsync({ number: idea.number, data: { text } })}
+          onSubmit={async (text, files) => {
+            const { data: created } = await create.mutateAsync({
+              number: idea.number,
+              data: { text },
+            });
+            const failed = await uploadAll(files, (file) =>
+              attachmentsAddToComment(created.id, { file }),
+            );
+            if (files.length) await refresh();
+            return { failed };
+          }}
         />
       )}
     </section>
@@ -144,12 +158,17 @@ function CommentWithReplies({ comment, idea }: { comment: CommentDtoOutput; idea
                 error={apiErrorMessage(reply.error, t)}
                 autoFocus
                 onCancel={() => setReplying(false)}
-                onSubmit={async (text) => {
-                  await reply.mutateAsync({
+                onSubmit={async (text, files) => {
+                  const { data: created } = await reply.mutateAsync({
                     number: idea.number,
                     data: { text, replyToId: comment.id },
                   });
+                  const failed = await uploadAll(files, (file) =>
+                    attachmentsAddToComment(created.id, { file }),
+                  );
+                  if (files.length) await refresh();
                   setReplying(false);
+                  return { failed };
                 }}
               />
             </li>
@@ -174,6 +193,7 @@ function CommentCard({
   const [mode, setMode] = useState<'read' | 'edit' | 'hide' | 'remove'>('read');
   const update = useCommentsUpdate({ mutation: { onSuccess: refresh } });
   const remove = useCommentsRemove({ mutation: { onSuccess: refresh } });
+  const removeFile = useAttachmentsRemove({ mutation: { onSuccess: refresh } });
   const { canReply, canEdit, canRemove, canHide } = comment.permissions;
 
   return (
@@ -204,9 +224,16 @@ function CommentCard({
           error={apiErrorMessage(update.error, t)}
           autoFocus
           onCancel={() => setMode('read')}
-          onSubmit={async (text) => {
+          existingAttachments={comment.attachments}
+          onRemoveAttachment={(attachment) => removeFile.mutate({ id: attachment.id })}
+          onSubmit={async (text, files) => {
             await update.mutateAsync({ id: comment.id, data: { text } });
-            setMode('read');
+            const failed = await uploadAll(files, (file) =>
+              attachmentsAddToComment(comment.id, { file }),
+            );
+            if (files.length) await refresh();
+            if (!failed) setMode('read');
+            return { failed };
           }}
         />
       ) : (
@@ -275,6 +302,7 @@ function CommentBody({ comment }: { comment: Comment }) {
           <TextWithMentions text={comment.text} />
         </p>
       )}
+      <AttachmentList attachments={comment.attachments} />
       {comment.state === 'hidden' && comment.text !== null && (
         <p className="text-xs text-muted-foreground">{t('comments.hiddenTextVisible')}</p>
       )}

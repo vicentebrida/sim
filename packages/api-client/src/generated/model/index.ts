@@ -7,18 +7,24 @@
  */
 
 export * from './accessConfigurationDtoOutput.ts';
+export * from './accessConfigurationDtoOutputAttachments.ts';
 export * from './accessConfigurationDtoOutputSso.ts';
+export * from './attachmentDtoOutput.ts';
+export * from './attachmentsAddToCommentBody.ts';
+export * from './attachmentsAddToIdeaBody.ts';
 export * from './categoriesListParams.ts';
 export * from './categoryDtoOutput.ts';
 export * from './categoryDtoOutputReviewersItem.ts';
 export * from './categoryUpdateDto.ts';
 export * from './collaboratorDtoOutput.ts';
 export * from './commentDtoOutput.ts';
+export * from './commentDtoOutputAttachmentsItem.ts';
 export * from './commentDtoOutputAuthor.ts';
 export * from './commentDtoOutputHiding.ts';
 export * from './commentDtoOutputHidingBy.ts';
 export * from './commentDtoOutputPermissions.ts';
 export * from './commentDtoOutputRepliesItem.ts';
+export * from './commentDtoOutputRepliesItemAttachmentsItem.ts';
 export * from './commentDtoOutputRepliesItemAuthor.ts';
 export * from './commentDtoOutputRepliesItemHiding.ts';
 export * from './commentDtoOutputRepliesItemHidingBy.ts';
@@ -50,6 +56,7 @@ export * from './healthDtoOutputStatus.ts';
 export * from './ideaDtoOutput.ts';
 export * from './ideaDtoOutputAnswersItem.ts';
 export * from './ideaDtoOutputAnswersItemType.ts';
+export * from './ideaDtoOutputAttachmentsItem.ts';
 export * from './ideaDtoOutputAuthor.ts';
 export * from './ideaDtoOutputCategory.ts';
 export * from './ideaDtoOutputHistoryItem.ts';

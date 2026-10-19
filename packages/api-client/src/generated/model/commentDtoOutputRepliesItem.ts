@@ -5,6 +5,7 @@
  * SIM REST API
  * OpenAPI spec version: 0.0.0
  */
+import type { CommentDtoOutputRepliesItemAttachmentsItem } from './commentDtoOutputRepliesItemAttachmentsItem.ts';
 import type { CommentDtoOutputRepliesItemAuthor } from './commentDtoOutputRepliesItemAuthor.ts';
 import type { CommentDtoOutputRepliesItemHiding } from './commentDtoOutputRepliesItemHiding.ts';
 import type { CommentDtoOutputRepliesItemPermissions } from './commentDtoOutputRepliesItemPermissions.ts';
@@ -20,6 +21,7 @@ export type CommentDtoOutputRepliesItem = {
   /** @pattern ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z))$ */
   createdAt: string;
   editedAt: string | null;
+  attachments: CommentDtoOutputRepliesItemAttachmentsItem[];
   hiding: CommentDtoOutputRepliesItemHiding;
   permissions: CommentDtoOutputRepliesItemPermissions;
 };

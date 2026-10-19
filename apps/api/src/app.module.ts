@@ -3,6 +3,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
+import { AttachmentsModule, AttachmentStoreModule } from './attachments/attachments.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
 import { CollaboratorsModule } from './collaborators/collaborators.module';
@@ -38,6 +39,8 @@ function webModule(): DynamicModule[] {
     NotificationsModule,
     JobsModule,
     DashboardModule,
+    AttachmentStoreModule,
+    AttachmentsModule,
     ...webModule(),
   ],
   providers: [

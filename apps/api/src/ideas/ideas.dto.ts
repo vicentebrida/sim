@@ -1,5 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { AttachmentSchema } from '../attachments/attachments.dto';
 import { FIELD_TYPES } from './domain/fields';
 import { SORT_ORDERS, STATUSES } from './domain/idea';
 
@@ -125,6 +126,7 @@ export class IdeaDto extends createZodDto(
     editedAt: z.iso.datetime().nullable(),
     // The current Collaborator follows this Idea.
     following: z.boolean(),
+    attachments: z.array(AttachmentSchema),
     values: ValuesSchema,
     // Values ready for display, in field order (includes deactivated fields).
     answers: z.array(
