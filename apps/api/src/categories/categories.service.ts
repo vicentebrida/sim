@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { and, asc, eq, inArray } from 'drizzle-orm';
+import { and, asc, eq, inArray, sql } from 'drizzle-orm';
 import { DomainError } from '../common/domain-error';
 import { DB, type Database } from '../database/database.module';
 import { isUniqueViolation } from '../database/errors';
@@ -131,6 +131,15 @@ export class CategoriesService {
         'This Category has Ideas; deactivate it instead of deleting',
       );
     }
-    await this.db.delete(categories).where(eq(categories.id, id));
+    await this.db.transaction(async (tx) => {
+      // A field that only applied to this Category has nowhere left to apply: switch it off
+      // rather than letting it silently apply to every Category.
+      await tx.execute(sql`
+        update custom_fields set
+          active = case when category_ids = ${JSON.stringify([id])}::jsonb then false else active end,
+          category_ids = category_ids - ${id}::text
+        where category_ids ? ${id}::text`);
+      await tx.delete(categories).where(eq(categories.id, id));
+    });
   }
 }

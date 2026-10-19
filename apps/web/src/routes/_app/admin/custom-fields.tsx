@@ -2,6 +2,7 @@ import {
   type CustomFieldDtoOutput,
   type CustomFieldDtoOutputType,
   getCustomFieldsListQueryKey,
+  useCategoriesList,
   useCustomFieldsCreate,
   useCustomFieldsDelete,
   useCustomFieldsList,
@@ -80,6 +81,8 @@ function CustomFieldsPage() {
 }
 
 interface Configuration {
+  /** Empty means all Categories. */
+  categoryIds: string[];
   label: string;
   help: string;
   required: boolean;
@@ -135,6 +138,11 @@ function ConfigurationFields({
           />
         </div>
       )}
+      <CategoryScope
+        prefix={prefix}
+        selected={value.categoryIds}
+        onChange={(categoryIds) => onChange({ categoryIds })}
+      />
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
@@ -160,6 +168,7 @@ function ConfigurationFields({
 }
 
 const EMPTY_CONFIGURATION: Configuration = {
+  categoryIds: [],
   label: '',
   help: '',
   required: false,
@@ -191,6 +200,7 @@ function NewField() {
         required: configuration.required,
         options: WITH_OPTIONS.includes(type) ? optionsFromText(configuration.optionsText) : [],
         useForDetection: TEXT_TYPES.includes(type) && configuration.useForDetection,
+        categoryIds: configuration.categoryIds,
       },
     });
   }
@@ -266,6 +276,7 @@ function FieldItem({
     required: field.required,
     optionsText: field.options.join('\n'),
     useForDetection: field.useForDetection,
+    categoryIds: field.categoryIds,
   }));
   const update = useCustomFieldsUpdate({
     mutation: {
@@ -287,6 +298,7 @@ function FieldItem({
         help: configuration.help,
         required: configuration.required,
         useForDetection: configuration.useForDetection,
+        categoryIds: configuration.categoryIds,
         ...(WITH_OPTIONS.includes(field.type)
           ? { options: optionsFromText(configuration.optionsText) }
           : {}),
@@ -306,6 +318,7 @@ function FieldItem({
               {!field.active && <Badge variant="outline">{t('fields.inactive')}</Badge>}
             </h2>
             {field.help && <p className="text-sm text-muted-foreground">{field.help}</p>}
+            <FieldScope field={field} />
             {field.options.length > 0 && (
               <p className="text-sm text-muted-foreground">{field.options.join(' · ')}</p>
             )}
@@ -380,5 +393,83 @@ function FieldItem({
         )}
       </CardContent>
     </Card>
+  );
+}
+
+/** Which Categories a field applies to: all of them, or the ones ticked. */
+function CategoryScope({
+  prefix,
+  selected,
+  onChange,
+}: {
+  prefix: string;
+  selected: string[];
+  onChange: (categoryIds: string[]) => void;
+}) {
+  const { t } = useTranslation();
+  const { data } = useCategoriesList();
+  const categories = data?.data ?? [];
+  const all = selected.length === 0;
+  return (
+    <fieldset className="grid gap-2">
+      <legend className="text-sm font-medium">{t('fields.scope')}</legend>
+      <label className="flex items-center gap-2 text-sm">
+        <input
+          type="radio"
+          name={`${prefix}-scope`}
+          className="size-4"
+          checked={all}
+          onChange={() => onChange([])}
+        />
+        {t('fields.scopeAll')}
+      </label>
+      <label className="flex items-center gap-2 text-sm">
+        <input
+          type="radio"
+          name={`${prefix}-scope`}
+          className="size-4"
+          checked={!all}
+          onChange={() => categories[0] && onChange([categories[0].id])}
+        />
+        {t('fields.scopeSome')}
+      </label>
+      {!all && (
+        <div className="ml-6 flex flex-wrap gap-x-4 gap-y-1">
+          {categories.map((category) => (
+            <label key={category.id} className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                className="size-4"
+                checked={selected.includes(category.id)}
+                // Unticking the last one would turn it back into "all"; the radio is for that.
+                disabled={selected.length === 1 && selected[0] === category.id}
+                onChange={(event) =>
+                  onChange(
+                    event.target.checked
+                      ? [...selected, category.id]
+                      : selected.filter((id) => id !== category.id),
+                  )
+                }
+              />
+              {category.name}
+            </label>
+          ))}
+        </div>
+      )}
+    </fieldset>
+  );
+}
+
+function FieldScope({ field }: { field: { categoryIds: string[] } }) {
+  const { t } = useTranslation();
+  const { data } = useCategoriesList({ includeInactive: 'true' });
+  if (field.categoryIds.length === 0) return null;
+  const names = (data?.data ?? [])
+    .filter((category) => field.categoryIds.includes(category.id))
+    .map((category) => category.name);
+  return (
+    <p className="text-sm text-muted-foreground">
+      {t('fields.onlyIn', { names: names.join(', ') })}
+    </p>
   );
 }

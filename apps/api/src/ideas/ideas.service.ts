@@ -42,7 +42,7 @@ import {
   reviewers,
 } from '../database/schema';
 import { refreshDetectionText } from './detection-text';
-import { type FieldValues, normalizeValues } from './domain/fields';
+import { type FieldValues, fieldsFor, normalizeValues } from './domain/fields';
 import {
   type Actor,
   assertCanChangeStatus,
@@ -325,7 +325,7 @@ export class IdeasService {
     await this.requireActiveCategory(data.categoryId);
     await this.assertCanHide(data.hiddenAuthorship);
     const values = normalizeValues(
-      await this.fieldDefinitions(),
+      await this.fieldDefinitions(data.categoryId),
       data.values,
       {},
       {
@@ -373,8 +373,21 @@ export class IdeasService {
       await this.requireActiveCategory(data.categoryId);
     }
     const published = idea.status !== 'draft';
-    const values = data.values
-      ? normalizeValues(await this.fieldDefinitions(), data.values, idea.values, {
+    const categoryId = data.categoryId ?? idea.categoryId;
+    const fields = await this.fieldDefinitions(categoryId);
+    // Changing the Category without sending texts checks what is there against the new Category.
+    const categoryChanged = categoryId !== idea.categoryId;
+    const sent =
+      data.values ??
+      (categoryChanged
+        ? Object.fromEntries(
+            Object.entries(idea.values).filter(([id]) =>
+              fields.some((f) => f.id === id && f.active),
+            ),
+          )
+        : undefined);
+    const values = sent
+      ? normalizeValues(fields, sent, idea.values, {
           // A published Idea still needs its required fields when edited.
           enforceRequired: published,
         })
@@ -440,7 +453,7 @@ export class IdeasService {
     const { idea, actor } = await this.access(collaborator, { number });
     assertCanPublish(idea, actor);
     await this.requireActiveCategory(idea.categoryId);
-    const fields = await this.fieldDefinitions();
+    const fields = await this.fieldDefinitions(idea.categoryId);
     const active = Object.fromEntries(
       Object.entries(idea.values).filter(([id]) => fields.some((f) => f.id === id && f.active)),
     );
@@ -740,8 +753,9 @@ export class IdeasService {
     await tx.delete(likes).where(eq(likes.ideaId, duplicate.id));
   }
 
-  private fieldDefinitions() {
-    return this.fields.list({ includeInactive: true });
+  /** The Custom Fields an Idea of this Category fills in. */
+  private async fieldDefinitions(categoryId: string) {
+    return fieldsFor(await this.fields.list({ includeInactive: true }), categoryId);
   }
 
   private async requireActiveCategory(categoryId: string) {

@@ -4,6 +4,10 @@ import { FIELD_TYPES } from '../ideas/domain/fields';
 
 const label = z.string().trim().min(1).max(80);
 const help = z.string().trim().max(280);
+const categoryIds = z
+  .array(z.uuid())
+  .max(200)
+  .refine((list) => new Set(list).size === list.length, 'Repeated Categories');
 const options = z
   .array(z.string().trim().min(1).max(80))
   .max(50)
@@ -17,6 +21,8 @@ export const CustomFieldSchema = z.object({
   required: z.boolean(),
   options: z.array(z.string()),
   useForDetection: z.boolean(),
+  // Categories the field applies to; empty means all of them.
+  categoryIds: z.array(z.uuid()),
   position: z.number().int(),
   active: z.boolean(),
 });
@@ -35,6 +41,7 @@ export class NewCustomFieldDto extends createZodDto(
     required: z.boolean().default(false),
     options: options.default([]),
     useForDetection: z.boolean().default(false),
+    categoryIds: categoryIds.default([]),
   }),
 ) {}
 
@@ -46,6 +53,7 @@ export class CustomFieldUpdateDto extends createZodDto(
     required: z.boolean().optional(),
     options: options.optional(),
     useForDetection: z.boolean().optional(),
+    categoryIds: categoryIds.optional(),
     active: z.boolean().optional(),
   }),
 ) {}

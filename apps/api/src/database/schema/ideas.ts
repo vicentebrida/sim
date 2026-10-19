@@ -29,6 +29,8 @@ export const customFields = pgTable('custom_fields', {
   options: jsonb().$type<string[]>().notNull().default([]),
   // Text fields only: their content feeds Similar Idea detection.
   useForDetection: boolean().notNull().default(false),
+  // Categories the field applies to; empty means all of them.
+  categoryIds: jsonb().$type<string[]>().notNull().default([]),
   position: integer().notNull().default(0),
   // A field already filled in on some Idea can only be deactivated, never deleted.
   active: boolean().notNull().default(true),

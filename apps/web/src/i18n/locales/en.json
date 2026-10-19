@@ -360,7 +360,11 @@
       "multiple_choice": "Multiple choice",
       "number": "Number",
       "yes_no": "Yes or no"
-    }
+    },
+    "scope": "Where it appears",
+    "scopeAll": "All categories",
+    "scopeSome": "Only some categories",
+    "onlyIn": "Only in: {{names}}"
   },
   "likes": {
     "total_one": "{{count}} like",
