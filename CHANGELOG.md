@@ -1,6 +1,10 @@
 # Changelog
 
-## Não lançado (Marco 3)
+## 0.3.0
+
+Marco 3: governança e refinamento. Fica de fora, por decisão, a busca semântica com IA do Marco 2.
+
+- **Para atualizar**: nenhuma configuração é obrigatória; as migrações rodam sozinhas e foram conferidas sobre um banco da 0.2.0 com dados. Novas variáveis opcionais: `SIM_ACCESS_GROUP`, `SIM_ADMIN_GROUP`, `SIM_SSO_CLAIM_GROUPS` e `SIM_INACTIVITY_DAYS`. A Autoria Oculta fica desligada até um Administrador ligar em Configurações.
 
 - **Campos Personalizados por Categoria**: cada campo vale para todas as Categorias ou só para algumas; o formulário mostra e exige só os da Categoria escolhida.
 - **Versões de edição**: o que a Ideia dizia antes de cada edição feita depois de publicada fica guardado, e quem vê a Ideia consulta as versões anteriores.
