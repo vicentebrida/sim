@@ -77,7 +77,7 @@ export const notifications = pgTable(
     ),
     check(
       'notifications_valid_type',
-      sql`${table.type} in ('status','duplicate','comment','reply','mention','new_idea')`,
+      sql`${table.type} in ('status','duplicate','comment','reply','mention','new_idea','stalled','stalled_escalated')`,
     ),
   ],
 );

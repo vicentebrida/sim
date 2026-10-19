@@ -133,7 +133,16 @@
     "reviewers": "Avaliadores",
     "noReviewers": "Sem Avaliadores: os Administradores avaliam as Ideias desta Categoria.",
     "searchCollaborator": "Buscar Colaborador",
+    "stalledDeadlines": "Prazos de ideia parada (dias)",
+    "stalledDeadlinesHelp": "Dias sem ação de um avaliador até a ideia ficar parada. Vazio usa o padrão da instalação.",
+    "stalledOpen": "Aberta",
+    "stalledReview": "Em análise",
+    "stalledDefault": "Padrão da instalação",
     "none": "Nenhuma Categoria criada ainda."
+  },
+  "stalled": {
+    "badge": "Parada",
+    "help": "Passou do prazo sem ação de um Avaliador. Só Avaliadores e Administradores veem esta marca."
   },
   "status": {
     "draft": "Rascunho",
@@ -282,6 +291,8 @@
       "comment": "{{actor}} comentou na ideia #{{number}}",
       "reply": "{{actor}} respondeu seu comentário na ideia #{{number}}",
       "mention": "{{actor}} mencionou você na ideia #{{number}}",
+      "stalled": "A ideia #{{number}} está parada ({{status}}) e aguarda avaliação",
+      "stalled_escalated": "A ideia #{{number}} continua parada ({{status}}) e precisa de um administrador",
       "new_idea": "Nova ideia para avaliar: #{{number}}"
     }
   },

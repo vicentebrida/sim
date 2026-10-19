@@ -13,6 +13,7 @@ import { CustomFieldsModule } from './custom-fields/custom-fields.module';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
 import { IdeasModule } from './ideas/ideas.module';
+import { JobsModule } from './jobs/jobs.module';
 import { NotificationsModule } from './notifications/notifications.module';
 
 // In production the same image serves the SPA; non-API routes fall back to index.html.
@@ -34,6 +35,7 @@ function webModule(): DynamicModule[] {
     IdeasModule,
     CommentsModule,
     NotificationsModule,
+    JobsModule,
     ...webModule(),
   ],
   providers: [

@@ -17,7 +17,8 @@ Quando alguém começa a escrever uma Ideia que já existe, o SIM mostra as **Id
 - Curtidas, Comentários com Menções, Seguir e Notificações no sininho e por e-mail (opcional, via SMTP)
 - Categorias com Avaliadores e Campos Personalizados configuráveis
 - Interface em pt-BR e en
-- Planejados: Anexos, Ideias Paradas, painel e identidade visual da empresa
+- Ideias Paradas com aviso aos Avaliadores e escalonamento aos Administradores
+- Planejados: Anexos, painel e identidade visual da empresa
 
 ## Documentação
 

@@ -105,6 +105,8 @@ const IdeaSummarySchema = z.object({
   category: Reference,
   author: Reference,
   likes: LikesSchema,
+  // Past the deadline for its Status. Only Administrators and the Category Reviewers ever see true.
+  stalled: z.boolean(),
   createdAt: z.iso.datetime(),
   publishedAt: z.iso.datetime().nullable(),
 });

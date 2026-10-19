@@ -1,7 +1,9 @@
 import { sql } from 'drizzle-orm';
 import {
   boolean,
+  check,
   index,
+  integer,
   pgTable,
   primaryKey,
   text,
@@ -20,9 +22,18 @@ export const categories = pgTable(
     description: text().notNull().default(''),
     // Categories with Ideas are deactivated, never deleted.
     active: boolean().notNull().default(true),
+    // Stalled Idea deadlines in days; null follows the installation default (SIM_STALLED_*).
+    stalledOpenDays: integer(),
+    stalledReviewDays: integer(),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [uniqueIndex('categories_name_unique').on(sql`lower(${table.name})`)],
+  (table) => [
+    uniqueIndex('categories_name_unique').on(sql`lower(${table.name})`),
+    check(
+      'categories_valid_stalled_days',
+      sql`(${table.stalledOpenDays} is null or ${table.stalledOpenDays} > 0) and (${table.stalledReviewDays} is null or ${table.stalledReviewDays} > 0)`,
+    ),
+  ],
 );
 
 /** Reviewers assigned to each Category. */

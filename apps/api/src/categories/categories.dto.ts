@@ -2,6 +2,7 @@ import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
 const name = z.string().trim().min(1).max(60);
+const days = z.number().int().min(1).max(365);
 const description = z.string().trim().max(280);
 
 export class CategoryDto extends createZodDto(
@@ -10,6 +11,9 @@ export class CategoryDto extends createZodDto(
     name: z.string(),
     description: z.string(),
     active: z.boolean(),
+    // Stalled Idea deadlines in days; null follows the installation default.
+    stalledOpenDays: z.number().int().nullable(),
+    stalledReviewDays: z.number().int().nullable(),
     reviewers: z.array(z.object({ id: z.uuid(), name: z.string() })),
   }),
 ) {}
@@ -30,6 +34,8 @@ export class CategoryUpdateDto extends createZodDto(
     name: name.optional(),
     description: description.optional(),
     active: z.boolean().optional(),
+    stalledOpenDays: days.nullable().optional(),
+    stalledReviewDays: days.nullable().optional(),
   }),
 ) {}
 

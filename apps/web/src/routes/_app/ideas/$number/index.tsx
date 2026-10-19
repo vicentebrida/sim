@@ -20,7 +20,7 @@ import { Discussion } from '@/components/comments/discussion';
 import { FollowButton } from '@/components/follow-button';
 import { Likes } from '@/components/likes';
 import { NativeSelect } from '@/components/native-select';
-import { StatusBadge } from '@/components/status-badge';
+import { StalledBadge, StatusBadge } from '@/components/status-badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -58,6 +58,7 @@ function IdeaPage() {
       <header className="space-y-2">
         <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <StatusBadge status={idea.status} />
+          {idea.stalled && <StalledBadge />}
           <span>#{idea.number}</span>
           <span>· {idea.category.name}</span>
         </div>

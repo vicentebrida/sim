@@ -38,12 +38,14 @@ function useRefreshNotifications() {
 function describeNotification(notification: Notification, t: TFunction) {
   const data = notification.data as {
     to?: string;
+    status?: string;
     original?: { number: number; title: string };
   };
   return t(`notifications.types.${notification.type}`, {
     actor: notification.actor?.name ?? 'SIM',
     number: notification.idea.number,
     to: data.to ? t(`status.${data.to}`) : '',
+    status: data.status ? t(`status.${data.status}`) : '',
     original: data.original?.number,
   });
 }

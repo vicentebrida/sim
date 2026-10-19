@@ -82,6 +82,11 @@ const baseSchema = z
       .optional(),
     SIM_EMERGENCY_PASSWORD: z.string().min(MIN_PASSWORD_LENGTH).optional(),
     SIM_WEB_DIST: z.string().optional(),
+    // Stalled Ideas: days without Reviewer action (a Category can override the first two).
+    SIM_STALLED_OPEN_DAYS: z.coerce.number().int().positive().default(15),
+    SIM_STALLED_REVIEW_DAYS: z.coerce.number().int().positive().default(30),
+    // Days after the Reviewers were told before the Administrators are.
+    SIM_STALLED_ESCALATION_DAYS: z.coerce.number().int().positive().default(7),
     // Language of e-mails (the web app follows each person's browser).
     SIM_LOCALE: z.enum(['pt-BR', 'en']).default('pt-BR'),
     // Background jobs (ADR-0006). Without Redis the SIM works, but sends no e-mail.

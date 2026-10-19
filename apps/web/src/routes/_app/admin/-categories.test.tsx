@@ -37,7 +37,14 @@ function simulateCategories() {
       if (categories.some((c) => c.name.toLowerCase() === data.name.toLowerCase())) {
         return HttpResponse.json({ code: 'CATEGORY_NAME_TAKEN' }, { status: 409 });
       }
-      const category = { id: id(), ...data, active: true, reviewers: [] };
+      const category = {
+        id: id(),
+        ...data,
+        active: true,
+        stalledOpenDays: null,
+        stalledReviewDays: null,
+        reviewers: [],
+      };
       categories.push(category);
       return HttpResponse.json(category, { status: 201 });
     }),
@@ -81,6 +88,29 @@ describe('Categories management', () => {
     await user.click(within(item).getByRole('button', { name: 'Desativar' }));
     expect(await within(item).findByText('Inativa')).toBeInTheDocument();
     expect(within(item).getByRole('button', { name: 'Reativar' })).toBeInTheDocument();
+  });
+
+  it('sets the Stalled Idea deadlines of a Category, and clears them', async () => {
+    simulateAuth({ session: admin });
+    simulateCategories();
+    renderApp('/admin/categories');
+    const user = userEvent.setup();
+
+    await user.type(await screen.findByLabelText('Nome'), 'TI');
+    await user.click(screen.getByRole('button', { name: 'Criar Categoria' }));
+    const item = (await screen.findByRole('heading', { name: 'TI' })).closest('li')!;
+
+    await user.click(within(item).getByRole('button', { name: 'Editar' }));
+    await user.type(within(item).getByLabelText('Aberta'), '5');
+    await user.click(within(item).getByRole('button', { name: 'Salvar' }));
+    await user.click(await within(item).findByRole('button', { name: 'Editar' }));
+    expect(within(item).getByLabelText('Aberta')).toHaveValue('5');
+    expect(within(item).getByLabelText('Em análise')).toHaveValue('');
+
+    await user.clear(within(item).getByLabelText('Aberta'));
+    await user.click(within(item).getByRole('button', { name: 'Salvar' }));
+    await user.click(await within(item).findByRole('button', { name: 'Editar' }));
+    expect(within(item).getByLabelText('Aberta')).toHaveValue('');
   });
 
   it('warns when the Category name already exists', async () => {

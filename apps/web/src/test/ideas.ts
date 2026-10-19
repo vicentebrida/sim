@@ -16,6 +16,8 @@ export const TI: CategoryDtoOutput = {
   name: 'TI',
   description: 'Sistemas, equipamentos e acessos',
   active: true,
+  stalledOpenDays: null,
+  stalledReviewDays: null,
   reviewers: [],
 };
 
@@ -56,6 +58,7 @@ export function sampleIdea(partial: Partial<IdeaDtoOutput> = {}): IdeaDtoOutput 
     author: { id: ana.id, name: ana.name },
     likes: { total: 0, liked: false },
     following: false,
+    stalled: false,
     createdAt: '2026-10-01T12:00:00.000Z',
     publishedAt: '2026-10-01T12:00:00.000Z',
     editedAt: null,

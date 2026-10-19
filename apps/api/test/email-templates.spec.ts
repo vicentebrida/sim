@@ -33,6 +33,8 @@ describe('renderEmail', () => {
     ['reply', 'respondeu'],
     ['mention', 'mencionou'],
     ['new_idea', 'para sua avaliação'],
+    ['stalled', 'aguarda um Avaliador'],
+    ['stalled_escalated', 'precisa de um Administrador'],
   ] as const)('covers %s', (type, expected) => {
     expect(renderEmail({ ...base, type, data: {} }).subject).toContain(expected);
   });

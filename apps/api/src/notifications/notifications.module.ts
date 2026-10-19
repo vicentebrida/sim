@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ENV } from '../config/config.module';
 import type { Env } from '../config/env';
 import { EmailDispatcher } from './email/email-dispatcher.service';
-import { EmailWorker } from './email/email.worker';
 import { Mailer, SmtpMailer } from './email/mailer';
 import { NotificationsController } from './notifications.controller';
 import { NotificationsService } from './notifications.service';
@@ -12,7 +11,6 @@ import { NotificationsService } from './notifications.service';
   providers: [
     NotificationsService,
     EmailDispatcher,
-    EmailWorker,
     {
       provide: Mailer,
       inject: [ENV],
@@ -23,6 +21,6 @@ import { NotificationsService } from './notifications.service';
           : { send: () => Promise.reject(new Error('SMTP_URL is not configured')) },
     },
   ],
-  exports: [NotificationsService],
+  exports: [NotificationsService, EmailDispatcher],
 })
 export class NotificationsModule {}

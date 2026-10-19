@@ -15,4 +15,6 @@ export interface CategoryUpdateDto {
   /** @maxLength 280 */
   description?: string;
   active?: boolean;
+  stalledOpenDays?: number | null;
+  stalledReviewDays?: number | null;
 }

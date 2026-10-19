@@ -14,6 +14,19 @@ const COLORS: Record<IdeaDtoOutputStatus, string> = {
   archived: 'bg-muted text-muted-foreground',
 };
 
+/** Only Administrators and Category Reviewers receive `stalled` as true. */
+export function StalledBadge() {
+  const { t } = useTranslation();
+  return (
+    <span
+      className="inline-flex rounded-full border border-amber-500 px-2.5 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-300"
+      title={t('stalled.help')}
+    >
+      {t('stalled.badge')}
+    </span>
+  );
+}
+
 export function StatusBadge({ status }: { status: IdeaDtoOutputStatus }) {
   const { t } = useTranslation();
   return (

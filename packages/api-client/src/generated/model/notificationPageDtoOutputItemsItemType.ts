@@ -16,4 +16,6 @@ export const NotificationPageDtoOutputItemsItemType = {
   reply: 'reply',
   mention: 'mention',
   new_idea: 'new_idea',
+  stalled: 'stalled',
+  stalled_escalated: 'stalled_escalated',
 } as const;

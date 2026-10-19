@@ -1723,6 +1723,30 @@
           "active": {
             "type": "boolean"
           },
+          "stalledOpenDays": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "stalledReviewDays": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "reviewers": {
             "type": "array",
             "items": {
@@ -1750,6 +1774,8 @@
           "name",
           "description",
           "active",
+          "stalledOpenDays",
+          "stalledReviewDays",
           "reviewers"
         ],
         "additionalProperties": false
@@ -1786,6 +1812,30 @@
           },
           "active": {
             "type": "boolean"
+          },
+          "stalledOpenDays": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 365
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "stalledReviewDays": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 365
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },
@@ -2051,6 +2101,9 @@
                   ],
                   "additionalProperties": false
                 },
+                "stalled": {
+                  "type": "boolean"
+                },
                 "createdAt": {
                   "type": "string",
                   "format": "date-time",
@@ -2077,6 +2130,7 @@
                 "category",
                 "author",
                 "likes",
+                "stalled",
                 "createdAt",
                 "publishedAt"
               ],
@@ -2242,6 +2296,9 @@
               "liked"
             ],
             "additionalProperties": false
+          },
+          "stalled": {
+            "type": "boolean"
           },
           "createdAt": {
             "type": "string",
@@ -2511,6 +2568,7 @@
           "category",
           "author",
           "likes",
+          "stalled",
           "createdAt",
           "publishedAt",
           "editedAt",
@@ -2763,7 +2821,9 @@
                     "comment",
                     "reply",
                     "mention",
-                    "new_idea"
+                    "new_idea",
+                    "stalled",
+                    "stalled_escalated"
                   ]
                 },
                 "idea": {
