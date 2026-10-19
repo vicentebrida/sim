@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { and, asc, eq, sql } from 'drizzle-orm';
+import { and, asc, eq, isNull, lte, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { ENV } from '../../config/config.module';
 import type { Env } from '../../config/env';
@@ -11,6 +11,8 @@ import { StatusesService } from '../../statuses/statuses.service';
 import { Mailer } from './mailer';
 
 export const MAX_EMAIL_ATTEMPTS = 5;
+/** Wait before attempt 2, 3, 4 and 5: an SMTP outage of over an hour is survived. */
+export const RETRY_DELAYS_MINUTES = [1, 5, 15, 60];
 const BATCH_SIZE = 50;
 
 /**
@@ -35,7 +37,12 @@ export class EmailDispatcher {
     const pending = await this.db
       .select({ id: notifications.id })
       .from(notifications)
-      .where(eq(notifications.emailStatus, 'pending'))
+      .where(
+        and(
+          eq(notifications.emailStatus, 'pending'),
+          or(isNull(notifications.emailRetryAt), lte(notifications.emailRetryAt, sql`now()`)),
+        ),
+      )
       .orderBy(asc(notifications.createdAt))
       .limit(BATCH_SIZE);
     let sent = 0;
@@ -97,7 +104,13 @@ export class EmailDispatcher {
         );
         await tx
           .update(notifications)
-          .set({ emailAttempts: attempts, emailStatus: giveUp ? 'failed' : 'pending' })
+          .set({
+            emailAttempts: attempts,
+            emailStatus: giveUp ? 'failed' : 'pending',
+            emailRetryAt: new Date(
+              Date.now() + (RETRY_DELAYS_MINUTES[attempts - 1] ?? 60) * 60_000,
+            ),
+          })
           .where(eq(notifications.id, id));
         return false;
       }

@@ -62,6 +62,8 @@ export const notifications = pgTable(
     emailStatus: text().$type<EmailStatus>().notNull().default('none'),
     emailAttempts: integer().notNull().default(0),
     emailSentAt: timestamp({ withTimezone: true }),
+    // After a failed attempt, the dispatcher waits until this moment to try again.
+    emailRetryAt: timestamp({ withTimezone: true }),
   },
   (table) => [
     index().on(table.recipientId, table.createdAt),

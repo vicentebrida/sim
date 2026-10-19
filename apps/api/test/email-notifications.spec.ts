@@ -123,18 +123,43 @@ describe('E-mail Notifications', () => {
     await bruno.put('/api/notifications/preferences').send({ byEmail: true }).expect(200);
   });
 
-  it('retries failures and gives up after the maximum number of attempts', async () => {
+  // Pretends the waiting time passed.
+  const retryNow = () => sim.pool.query('update notifications set email_retry_at = now()');
+
+  it('waits before retrying, then gives up after the maximum number of attempts', async () => {
     await newIdea();
     mailer.failing = true;
-    for (let attempt = 1; attempt < MAX_EMAIL_ATTEMPTS; attempt += 1) {
+    await dispatch();
+    expect((await emailStatuses()).at(-1)).toBe('pending');
+
+    // Still waiting: even with the SMTP back, nothing is sent yet.
+    mailer.failing = false;
+    expect(await dispatch()).toBe(0);
+    expect(mailer.sent).toEqual([]);
+
+    mailer.failing = true;
+    for (let attempt = 2; attempt < MAX_EMAIL_ATTEMPTS; attempt += 1) {
+      await retryNow();
       await dispatch();
       expect((await emailStatuses()).at(-1)).toBe('pending');
     }
+    await retryNow();
     await dispatch();
     expect((await emailStatuses()).at(-1)).toBe('failed');
 
     mailer.failing = false;
+    await retryNow();
     expect(await dispatch()).toBe(0);
+  });
+
+  it('sends after the waiting time when the SMTP is back', async () => {
+    await newIdea();
+    mailer.failing = true;
+    await dispatch();
+    mailer.failing = false;
+    await retryNow();
+    expect(await dispatch()).toBe(1);
+    expect((await emailStatuses()).at(-1)).toBe('sent');
   });
 
   it('delivers through the BullMQ job in worker mode', async () => {
