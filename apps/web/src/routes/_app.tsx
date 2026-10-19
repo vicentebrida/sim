@@ -60,6 +60,9 @@ function AppLayout() {
                 <Link to="/admin/custom-fields" className={NAV_LINK}>
                   {t('nav.fields')}
                 </Link>
+                <Link to="/admin/statuses" className={NAV_LINK}>
+                  {t('nav.statuses')}
+                </Link>
                 <Link to="/admin/branding" className={NAV_LINK}>
                   {t('nav.branding')}
                 </Link>

@@ -7,6 +7,8 @@ export interface EmailContext {
   locale: Locale;
   /** Installation name and primary color (visual identity). */
   brand?: { name: string; color: string | null };
+  /** Names the Administrator gave to Statuses, replacing the defaults. */
+  statusLabels?: Partial<Record<Status, string>>;
   type: NotificationType;
   recipientName: string;
   actorName: string | null;
@@ -41,8 +43,8 @@ const STATUS_NAMES: Record<Locale, Record<Status, string>> = {
   },
 };
 
-const statusName = (locale: Locale, status: unknown) =>
-  STATUS_NAMES[locale][status as Status] ?? String(status);
+const statusName = (locale: Locale, status: unknown, labels: EmailContext['statusLabels'] = {}) =>
+  labels[status as Status] ?? STATUS_NAMES[locale][status as Status] ?? String(status);
 
 const who = (context: EmailContext) =>
   context.actorName ?? (context.locale === 'en' ? 'Someone' : 'Alguém');
@@ -57,7 +59,7 @@ function sentence(context: EmailContext): string {
       case 'new_idea':
         return `${actor} sent Idea ${idea} for your review.`;
       case 'status':
-        return `Idea ${idea} moved from ${statusName(locale, data.from)} to ${statusName(locale, data.to)}.`;
+        return `Idea ${idea} moved from ${statusName(locale, data.from, context.statusLabels)} to ${statusName(locale, data.to, context.statusLabels)}.`;
       case 'duplicate': {
         const original = data.original as { number: number; title: string };
         return `Idea ${idea} was marked as a Duplicate of #${original.number} "${original.title}". You now follow the original.`;
@@ -69,16 +71,16 @@ function sentence(context: EmailContext): string {
       case 'mention':
         return `${actor} mentioned you in Idea ${idea}.`;
       case 'stalled':
-        return `Idea ${idea} has been ${statusName(locale, data.status)} for too long and is waiting for a Reviewer.`;
+        return `Idea ${idea} has been ${statusName(locale, data.status, context.statusLabels)} for too long and is waiting for a Reviewer.`;
       case 'stalled_escalated':
-        return `Idea ${idea} is still ${statusName(locale, data.status)} after its Reviewers were told. It needs an Administrator.`;
+        return `Idea ${idea} is still ${statusName(locale, data.status, context.statusLabels)} after its Reviewers were told. It needs an Administrator.`;
     }
   }
   switch (type) {
     case 'new_idea':
       return `${actor} enviou a Ideia ${idea} para sua avaliação.`;
     case 'status':
-      return `A Ideia ${idea} passou de ${statusName(locale, data.from)} para ${statusName(locale, data.to)}.`;
+      return `A Ideia ${idea} passou de ${statusName(locale, data.from, context.statusLabels)} para ${statusName(locale, data.to, context.statusLabels)}.`;
     case 'duplicate': {
       const original = data.original as { number: number; title: string };
       return `A Ideia ${idea} foi marcada como Duplicada de #${original.number} "${original.title}". Você passou a seguir a original.`;
@@ -90,9 +92,9 @@ function sentence(context: EmailContext): string {
     case 'mention':
       return `${actor} mencionou você na Ideia ${idea}.`;
     case 'stalled':
-      return `A Ideia ${idea} está há tempo demais como ${statusName(locale, data.status)} e aguarda um Avaliador.`;
+      return `A Ideia ${idea} está há tempo demais como ${statusName(locale, data.status, context.statusLabels)} e aguarda um Avaliador.`;
     case 'stalled_escalated':
-      return `A Ideia ${idea} continua como ${statusName(locale, data.status)} mesmo após o aviso aos Avaliadores. Ela precisa de um Administrador.`;
+      return `A Ideia ${idea} continua como ${statusName(locale, data.status, context.statusLabels)} mesmo após o aviso aos Avaliadores. Ela precisa de um Administrador.`;
   }
 }
 

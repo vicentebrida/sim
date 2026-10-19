@@ -7,3 +7,4 @@ export * from './comments';
 export * from './notifications';
 export * from './attachments';
 export * from './branding';
+export * from './status-settings';

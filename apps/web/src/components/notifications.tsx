@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { formatDateTime } from '@/lib/dates';
 import { cn } from '@/lib/utils';
+import { useStatusInfo } from '@/lib/use-statuses';
 
 // The bell polls the unread count (ADR-0006); real-time push may come later.
 const POLL_INTERVAL_MS = 30_000;
@@ -35,7 +36,11 @@ function useRefreshNotifications() {
     ]);
 }
 
-function describeNotification(notification: Notification, t: TFunction) {
+function describeNotification(
+  notification: Notification,
+  t: TFunction,
+  statusLabel: (status: string) => string,
+) {
   const data = notification.data as {
     to?: string;
     status?: string;
@@ -44,8 +49,8 @@ function describeNotification(notification: Notification, t: TFunction) {
   return t(`notifications.types.${notification.type}`, {
     actor: notification.actor?.name ?? 'SIM',
     number: notification.idea.number,
-    to: data.to ? t(`status.${data.to}`) : '',
-    status: data.status ? t(`status.${data.status}`) : '',
+    to: data.to ? statusLabel(data.to) : '',
+    status: data.status ? statusLabel(data.status) : '',
     original: data.original?.number,
   });
 }
@@ -85,6 +90,7 @@ export function NotificationBell() {
 
 function NotificationPanel({ onNavigate }: { onNavigate: () => void }) {
   const { t } = useTranslation();
+  const statusInfo = useStatusInfo();
   const refresh = useRefreshNotifications();
   const { data } = useNotificationsList({ pageSize: 20 });
   const markRead = useNotificationsMarkRead({ mutation: { onSuccess: refresh } });
@@ -134,7 +140,7 @@ function NotificationPanel({ onNavigate }: { onNavigate: () => void }) {
                 {!notification.read && (
                   <span className="sr-only">{t('notifications.unread')}: </span>
                 )}
-                {describeNotification(notification, t)}
+                {describeNotification(notification, t, statusInfo.label)}
               </p>
               <p className="truncate text-muted-foreground">{notification.idea.title}</p>
               <time className="text-xs text-muted-foreground" dateTime={notification.createdAt}>

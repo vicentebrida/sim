@@ -16,6 +16,7 @@
   },
   "nav": {
     "ideas": "Ideias",
+    "statuses": "Status",
     "branding": "Identidade",
     "dashboard": "Painel",
     "categories": "Categorias",
@@ -83,6 +84,7 @@
       "ATTACHMENT_TOO_LARGE": "O arquivo é maior que o limite permitido.",
       "TOO_MANY_ATTACHMENTS": "O limite de anexos foi atingido.",
       "IMAGE_NOT_ALLOWED": "Envie uma imagem PNG, JPG, GIF, WebP, SVG ou ICO.",
+      "STATUS_NOT_OPTIONAL": "Este Status não pode ser desligado.",
       "FORBIDDEN": "Você não tem permissão para esta ação.",
       "INVALID_TRANSITION": "Esta mudança de status não é permitida a partir do status atual.",
       "EDIT_LOCKED": "A ideia já está em avaliação; acrescente informações nos comentários.",
@@ -212,6 +214,21 @@
       "favicon": "PNG, SVG ou ICO quadrado.",
       "loginImage": "Aparece acima do formulário de login."
     }
+  },
+  "statuses": {
+    "title": "Aparência dos Status",
+    "sub": "Renomeie, recolora e descreva os Status. As regras de cada um não mudam; Aprovada e Em execução podem ser desligadas, e as ideias passam direto para o próximo.",
+    "off": "desligado",
+    "edit": "Editar",
+    "turnOff": "Desligar",
+    "turnOn": "Ligar",
+    "label": "Nome",
+    "color": "Cor",
+    "defaultColor": "Usar a cor padrão",
+    "description": "Descrição",
+    "descriptionHelp": "Aparece como dica ao passar o mouse sobre o Status.",
+    "save": "Salvar",
+    "cancel": "Cancelar"
   },
   "status": {
     "draft": "Rascunho",

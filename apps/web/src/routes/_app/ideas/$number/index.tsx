@@ -30,6 +30,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { formatDate } from '@/lib/dates';
 import { apiErrorMessage } from '@/lib/errors';
+import { useStatusInfo } from '@/lib/use-statuses';
 
 export const Route = createFileRoute('/_app/ideas/$number/')({ component: IdeaPage });
 
@@ -210,6 +211,7 @@ function ReviewPanel({ idea }: { idea: IdeaDtoOutput }) {
 
 function ChangeStatus({ idea }: { idea: IdeaDtoOutput }) {
   const { t } = useTranslation();
+  const statusInfo = useStatusInfo();
   const refresh = useRefreshIdea(idea.number);
   const [to, setTo] = useState<IdeaDtoOutputPermissionsTransitionsItem | ''>('');
   const [justification, setJustification] = useState('');
@@ -251,7 +253,7 @@ function ChangeStatus({ idea }: { idea: IdeaDtoOutput }) {
           <option value="">{t('ideas.chooseStatus')}</option>
           {idea.permissions.transitions.map((status) => (
             <option key={status} value={status}>
-              {t(`status.${status}`)}
+              {statusInfo.label(status)}
             </option>
           ))}
         </NativeSelect>

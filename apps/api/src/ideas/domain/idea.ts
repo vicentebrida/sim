@@ -32,6 +32,19 @@ const TRANSITIONS: Record<Status, readonly Status[]> = {
   archived: ['open'],
 };
 
+/** Statuses the Administrator can turn off; Ideas skip them (ADR-0004). */
+export const OPTIONAL_STATUSES = ['approved', 'in_progress'] as const satisfies readonly Status[];
+
+/**
+ * Where a Reviewer can take an Idea from `status`. A turned-off Status is replaced by where it
+ * would lead (Under review → Approved becomes Under review → In progress, or Done).
+ */
+export function transitionsFrom(status: Status, disabled: readonly Status[] = []): Status[] {
+  const expand = (target: Status): Status[] =>
+    disabled.includes(target) ? TRANSITIONS[target].flatMap(expand) : [target];
+  return [...new Set(TRANSITIONS[status].flatMap(expand))];
+}
+
 /** Statuses in which the Author can still edit the text; from Under review on, news go in Comments. */
 const EDITABLE: readonly Status[] = ['draft', 'open'];
 
@@ -89,6 +102,7 @@ export function assertCanChangeStatus(
   to: Status,
   actor: Actor,
   data: { justification?: string; originalIdea?: { id: string; status: Status } },
+  disabled: readonly Status[] = [],
 ) {
   if (!canReview(idea, actor)) {
     throw new DomainError(
@@ -96,7 +110,7 @@ export function assertCanChangeStatus(
       'Only Category Reviewers or Administrators change the Status',
     );
   }
-  if (!TRANSITIONS[idea.status].includes(to)) {
+  if (!transitionsFrom(idea.status, disabled).includes(to)) {
     throw new DomainError('INVALID_TRANSITION', `Cannot go from ${idea.status} to ${to}`);
   }
   requireJustification(data.justification);
@@ -189,7 +203,7 @@ export function allows(check: () => void) {
 export function permissions(
   idea: IdeaForRules,
   actor: Actor,
-  context: { hasInteractionFromOthers: boolean },
+  context: { hasInteractionFromOthers: boolean; disabledStatuses?: readonly Status[] },
 ) {
   const reviews = idea.status !== 'draft' && canReview(idea, actor);
   return {
@@ -200,6 +214,6 @@ export function permissions(
     canLike: allows(() => assertCanLike(idea, actor)),
     canReview: reviews,
     canRecategorize: reviews && RECATEGORIZABLE.includes(idea.status),
-    transitions: reviews ? [...TRANSITIONS[idea.status]] : [],
+    transitions: reviews ? transitionsFrom(idea.status, context.disabledStatuses) : [],
   };
 }

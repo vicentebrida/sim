@@ -4,6 +4,7 @@ import { alias } from 'drizzle-orm/pg-core';
 import { DomainError } from '../common/domain-error';
 import { CustomFieldsService } from '../custom-fields/custom-fields.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { StatusesService } from '../statuses/statuses.service';
 import { AttachmentStore } from '../attachments/attachment-store';
 import { isStalledSql } from './domain/stalled';
 import { StalledIdeasService } from './stalled-ideas.service';
@@ -80,6 +81,7 @@ export class IdeasService {
     private readonly notifications: NotificationsService,
     private readonly stalledIdeas: StalledIdeasService,
     private readonly attachmentStore: AttachmentStore,
+    private readonly statuses: StatusesService,
   ) {}
 
   /** The Stalled mark is only for Administrators and the Reviewers of the Category (not the Author). */
@@ -211,7 +213,10 @@ export class IdeasService {
     const display = (type: string, value: string | null) =>
       type === 'category' && value ? (categoryNames.get(value) ?? value) : value;
 
-    const { canView: _, ...actions } = permissions(idea, actor, interaction);
+    const { canView: _, ...actions } = permissions(idea, actor, {
+      ...interaction,
+      disabledStatuses: await this.statuses.disabled(),
+    });
     return {
       ...this.summary(idea),
       editedAt: iso(idea.editedAt),
@@ -347,10 +352,16 @@ export class IdeasService {
       data.to === 'duplicate' && data.originalIdeaNumber
         ? await this.find(data.originalIdeaNumber).catch(() => undefined)
         : undefined;
-    assertCanChangeStatus(idea, data.to, actor, {
-      justification: data.justification,
-      originalIdea,
-    });
+    assertCanChangeStatus(
+      idea,
+      data.to,
+      actor,
+      {
+        justification: data.justification,
+        originalIdea,
+      },
+      await this.statuses.disabled(),
+    );
 
     await this.db.transaction(async (tx) => {
       await tx

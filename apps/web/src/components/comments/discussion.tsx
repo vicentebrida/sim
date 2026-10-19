@@ -24,6 +24,7 @@ import { formatDateTime } from '@/lib/dates';
 import { apiErrorMessage } from '@/lib/errors';
 import { segment } from '@/lib/mentions';
 import { AttachmentList } from '@/components/attachments';
+import { useStatusInfo } from '@/lib/use-statuses';
 import { uploadAll } from '@/lib/uploads';
 import { CommentEditor } from './comment-editor';
 
@@ -107,6 +108,7 @@ export function Discussion({ idea }: { idea: IdeaDtoOutput }) {
 
 function HistoryEntry({ event }: { event: HistoryEvent }) {
   const { t } = useTranslation();
+  const statusInfo = useStatusInfo();
   const name = event.collaborator.name;
   const description =
     event.type === 'category'
@@ -114,8 +116,8 @@ function HistoryEntry({ event }: { event: HistoryEvent }) {
       : event.from
         ? t('ideas.changedStatus', {
             name,
-            from: t(`status.${event.from}`),
-            to: t(`status.${event.to}`),
+            from: statusInfo.label(event.from),
+            to: statusInfo.label(event.to),
           })
         : t('ideas.published', { name });
   return (
