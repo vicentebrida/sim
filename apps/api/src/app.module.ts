@@ -10,6 +10,7 @@ import { ColaboradoresModule } from './colaboradores/colaboradores.module';
 import { ConfigModule } from './config/config.module';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
+import { ComentariosModule } from './comentarios/comentarios.module';
 import { IdeiasModule } from './ideias/ideias.module';
 
 // Em produção a mesma imagem serve a SPA; rotas que não são da API caem no index.html.
@@ -29,6 +30,7 @@ function webModule(): DynamicModule[] {
     CategoriasModule,
     CamposPersonalizadosModule,
     IdeiasModule,
+    ComentariosModule,
     ...webModule(),
   ],
   providers: [

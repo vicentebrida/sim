@@ -9,5 +9,6 @@ import { IdeiasService } from './ideias.service';
   imports: [CamposPersonalizadosModule],
   controllers: [IdeiasController],
   providers: [IdeiasService, { provide: APP_FILTER, useClass: ErroDeDominioFilter }],
+  exports: [IdeiasService],
 })
 export class IdeiasModule {}

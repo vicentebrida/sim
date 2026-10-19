@@ -81,9 +81,9 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 ### 3.6 Comentários
 
 - Comentários com um nível de Resposta.
-- Menções `@nome` notificam a pessoa mencionada.
-- O autor do comentário pode editar (aparece a marca "editado", sem guardar versões) e pode remover (fica "comentário removido").
-- Avaliador da Categoria ou Administrador pode **ocultar** um Comentário, com motivo.
+- Menções `@nome` notificam a pessoa mencionada. O editor sugere Colaboradores ativos enquanto se digita depois do `@`; Menção a quem está inativo vira texto simples.
+- O autor do comentário pode editar (aparece a marca "editado", sem guardar versões) e pode remover (fica "comentário removido", e as Respostas continuam).
+- Avaliador da Categoria ou Administrador pode **ocultar** um Comentário, com motivo (o Avaliador não modera as próprias Ideias). Todos veem quem ocultou e por quê; o texto fica visível só para quem escreveu e para quem modera. Comentário oculto não recebe Respostas nem pode ser editado.
 - A linha do tempo da Ideia mistura Comentários e eventos do Histórico em ordem cronológica.
 - Dá pra comentar em qualquer Status publicado, inclusive _Recusada_ e _Arquivada_.
 

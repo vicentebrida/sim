@@ -1,5 +1,5 @@
 import { ConflictException, Inject, Injectable } from '@nestjs/common';
-import { asc, eq } from 'drizzle-orm';
+import { and, asc, eq, sql } from 'drizzle-orm';
 import { gerarSenhaTemporaria, hashSenha } from '../auth/senha';
 import { ENV } from '../config/config.module';
 import type { Env } from '../config/env';
@@ -31,6 +31,22 @@ export class ColaboradoresService {
       .from(colaboradores)
       .where(eq(colaboradores.email, email.toLowerCase()));
     return colaborador;
+  }
+
+  /** Colaboradores ativos cujo nome contém a busca (sem diferenciar acentos), para Menções. */
+  mencionaveis(busca: string) {
+    const padrao = `%${busca.replace(/[\\%_]/g, (caractere) => `\\${caractere}`)}%`;
+    return this.db
+      .select({ id: colaboradores.id, nome: colaboradores.nome })
+      .from(colaboradores)
+      .where(
+        and(
+          eq(colaboradores.ativo, true),
+          sql`unaccent(${colaboradores.nome}) ilike unaccent(${padrao})`,
+        ),
+      )
+      .orderBy(asc(colaboradores.nome))
+      .limit(8);
   }
 
   listar(): Promise<Colaborador[]> {

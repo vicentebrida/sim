@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { and, asc, count, desc, eq, inArray, ne, or, type SQL, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, isNull, ne, or, type SQL, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { CamposPersonalizadosService } from '../campos-personalizados/campos-personalizados.service';
 import { DB, type Database } from '../database/database.module';
@@ -8,6 +8,7 @@ import {
   type Colaborador,
   categorias,
   colaboradores,
+  comentarios,
   curtidas,
   historicoDeIdeias,
   type Ideia,
@@ -49,8 +50,10 @@ const curtiu = (colaborador: Colaborador) =>
 const peso = (momento: SQL) =>
   sql`exp(-ln(2) * least(extract(epoch from (now() - ${momento})) / ${MEIA_VIDA_EM_ALTA_DIAS * 86_400}, 1000))`;
 
-// Comentários recentes também vão entrar nesta soma quando existirem (PRD §3.5).
-const pontuacaoEmAlta = sql`(${peso(sql`coalesce(${ideias.publicadaEm}, ${ideias.criadaEm})`)} + coalesce((select sum(${peso(sql`${curtidas.em}`)}) from ${curtidas} where ${curtidas.ideiaId} = ${ideias.id}), 0))`;
+// Comentários removidos ou ocultos não contam.
+const pontuacaoEmAlta = sql`(${peso(sql`coalesce(${ideias.publicadaEm}, ${ideias.criadaEm})`)}
+  + coalesce((select sum(${peso(sql`${curtidas.em}`)}) from ${curtidas} where ${curtidas.ideiaId} = ${ideias.id}), 0)
+  + coalesce((select sum(${peso(sql`${comentarios.criadoEm}`)}) from ${comentarios} where ${comentarios.ideiaId} = ${ideias.id} and ${comentarios.removidoEm} is null and ${comentarios.ocultadoEm} is null), 0))`;
 
 const maisRecentes = [
   desc(sql`coalesce(${ideias.publicadaEm}, ${ideias.criadaEm})`),
@@ -422,11 +425,20 @@ export class IdeiasService {
   }
 
   private async buscarVisivel(colaborador: Colaborador, numero: number) {
-    const ideia = await this.buscar(numero);
-    if (!podeVer(ideia, await this.ator(colaborador, ideia.categoriaId))) {
+    return (await this.acessar(colaborador, { numero })).ideia;
+  }
+
+  /** A Ideia, se visível ao Colaborador, e o papel dele nela; usado também pelos Comentários. */
+  async acessar(colaborador: Colaborador, criterio: { numero: number } | { id: string }) {
+    const [ideia] = await this.db
+      .select()
+      .from(ideias)
+      .where('id' in criterio ? eq(ideias.id, criterio.id) : eq(ideias.numero, criterio.numero));
+    const ator = ideia && (await this.ator(colaborador, ideia.categoriaId));
+    if (!ideia || !ator || !podeVer(ideia, ator)) {
       throw new NotFoundException('Ideia não encontrada');
     }
-    return ideia;
+    return { ideia, ator };
   }
 
   private async estadoDasCurtidas(ideia: Ideia, colaborador: Colaborador) {
@@ -437,14 +449,30 @@ export class IdeiasService {
     return estado ?? { total: 0, curtiu: false };
   }
 
-  /** Curtidas de outras pessoas impedem o Autor de excluir a Ideia (o Autor não curte a própria). */
+  /**
+   * Curtidas ou Comentários (não removidos) de outras pessoas impedem o Autor de excluir a Ideia.
+   * O Autor não curte a própria Ideia, então qualquer Curtida é de outra pessoa.
+   */
   private async interacaoDeOutros(ideia: Ideia) {
-    const [curtida] = await this.db
-      .select({ ideiaId: curtidas.ideiaId })
-      .from(curtidas)
-      .where(eq(curtidas.ideiaId, ideia.id))
-      .limit(1);
-    return { temInteracaoDeOutros: Boolean(curtida) };
+    const [curtida, comentario] = await Promise.all([
+      this.db
+        .select({ ideiaId: curtidas.ideiaId })
+        .from(curtidas)
+        .where(eq(curtidas.ideiaId, ideia.id))
+        .limit(1),
+      this.db
+        .select({ id: comentarios.id })
+        .from(comentarios)
+        .where(
+          and(
+            eq(comentarios.ideiaId, ideia.id),
+            ne(comentarios.autorId, ideia.autorId),
+            isNull(comentarios.removidoEm),
+          ),
+        )
+        .limit(1),
+    ]);
+    return { temInteracaoDeOutros: Boolean(curtida.length || comentario.length) };
   }
 
   /**

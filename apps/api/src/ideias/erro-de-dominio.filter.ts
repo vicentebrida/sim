@@ -9,6 +9,7 @@ const STATUS_HTTP: Record<CodigoDeErro, HttpStatus> = {
   IDEIA_ORIGINAL_INVALIDA: HttpStatus.BAD_REQUEST,
   CAMPOS_INVALIDOS: HttpStatus.BAD_REQUEST,
   CURTIDA_INDISPONIVEL: HttpStatus.CONFLICT,
+  COMENTARIO_INDISPONIVEL: HttpStatus.CONFLICT,
 };
 
 /** Traduz violações de regras de domínio para respostas HTTP com código estável para o frontend. */

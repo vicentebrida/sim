@@ -27,6 +27,8 @@ import type {
 import type {
   ColaboradorDtoOutput,
   ContaLocalCriadaDtoOutput,
+  MencionaveisBuscarParams,
+  MencionavelDtoOutput,
   NovaContaLocalDto
 } from '../../model';
 
@@ -52,6 +54,119 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export type mencionaveisBuscarResponse200 = {
+  data: MencionavelDtoOutput[]
+  status: 200
+}
+
+export type mencionaveisBuscarResponseSuccess = (mencionaveisBuscarResponse200) & {
+  headers: Headers;
+};
+;
+
+export type mencionaveisBuscarResponse = (mencionaveisBuscarResponseSuccess)
+
+export const getMencionaveisBuscarUrl = (params?: MencionaveisBuscarParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/colaboradores/mencionaveis?${stringifiedParams}` : `/api/colaboradores/mencionaveis`
+}
+
+export const mencionaveisBuscar = async (params?: MencionaveisBuscarParams, options?: Parameters<typeof simFetch>[1]): Promise<mencionaveisBuscarResponse> => {
+
+  return simFetch<mencionaveisBuscarResponse>(getMencionaveisBuscarUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getMencionaveisBuscarQueryKey = (params?: MencionaveisBuscarParams,) => {
+    return [
+    `/api/colaboradores/mencionaveis`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getMencionaveisBuscarQueryOptions = <TData = Awaited<ReturnType<typeof mencionaveisBuscar>>, TError = ErrorType<unknown>>(params?: MencionaveisBuscarParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof mencionaveisBuscar>>, TError, TData>>, request?: SecondParameter<typeof simFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getMencionaveisBuscarQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof mencionaveisBuscar>>> = ({ signal }) => mencionaveisBuscar(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof mencionaveisBuscar>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type MencionaveisBuscarQueryResult = NonNullable<Awaited<ReturnType<typeof mencionaveisBuscar>>>
+export type MencionaveisBuscarQueryError = ErrorType<unknown>
+
+
+export function useMencionaveisBuscar<TData = Awaited<ReturnType<typeof mencionaveisBuscar>>, TError = ErrorType<unknown>>(
+ params: undefined |  MencionaveisBuscarParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof mencionaveisBuscar>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof mencionaveisBuscar>>,
+          TError,
+          Awaited<ReturnType<typeof mencionaveisBuscar>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMencionaveisBuscar<TData = Awaited<ReturnType<typeof mencionaveisBuscar>>, TError = ErrorType<unknown>>(
+ params?: MencionaveisBuscarParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof mencionaveisBuscar>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof mencionaveisBuscar>>,
+          TError,
+          Awaited<ReturnType<typeof mencionaveisBuscar>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMencionaveisBuscar<TData = Awaited<ReturnType<typeof mencionaveisBuscar>>, TError = ErrorType<unknown>>(
+ params?: MencionaveisBuscarParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof mencionaveisBuscar>>, TError, TData>>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useMencionaveisBuscar<TData = Awaited<ReturnType<typeof mencionaveisBuscar>>, TError = ErrorType<unknown>>(
+ params?: MencionaveisBuscarParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof mencionaveisBuscar>>, TError, TData>>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getMencionaveisBuscarQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
 
 export type colaboradoresListarResponse200 = {
   data: ColaboradorDtoOutput[]
