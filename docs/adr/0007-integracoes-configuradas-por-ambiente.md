@@ -1,0 +1,3 @@
+# Integrações (SSO, SMTP, IA, armazenamento) configuradas por variáveis de ambiente, não pela tela
+
+Configurações de infraestrutura e segredos — banco, Redis, armazenamento, SSO, SMTP, provedor de IA, administradores iniciais e conta de emergência — vêm de variáveis de ambiente; configurações de produto (Categorias, Avaliadores, Campos Personalizados, Status, identidade visual, prazos, Autoria Oculta, login local) ficam na tela do Administrador. Escolhemos isso para que segredos venham de cofres (Vault, Kubernetes Secrets) em vez do banco e para evitar o cenário "configurei o SSO errado pela tela e ninguém mais consegue entrar". A tela mostra o estado dessas integrações em modo leitura, com ações de "testar conexão".
