@@ -1,5 +1,6 @@
 import { OAuth2Server } from 'oauth2-mock-server';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { readGroups } from '../src/auth/sso/sso.service';
 import { type Browser, createApp, EMERGENCY, type TestApp } from './support/app';
 
 type Claims = Record<string, unknown>;
@@ -201,5 +202,68 @@ describe('SSO in generic OAuth2 mode', () => {
   it('fails gracefully when the provider does not send the e-mail', async () => {
     idp.identity({ userinfo: { id: 1, displayName: 'No E-mail' } });
     expect(await signInWithSso(sim.browser())).toBe('/login?error=sso');
+  });
+});
+
+describe('readGroups', () => {
+  it('accepts a list, a text separated by commas or spaces, and nested claims', () => {
+    expect(readGroups({ groups: ['a', 'b'] }, 'groups')).toEqual(['a', 'b']);
+    expect(readGroups({ groups: 'a, b  c' }, 'groups')).toEqual(['a', 'b', 'c']);
+    expect(readGroups({ realm: { roles: ['x'] } }, 'realm.roles')).toEqual(['x']);
+    expect(readGroups({}, 'groups')).toEqual([]);
+    expect(readGroups({ groups: 7 }, 'groups')).toEqual([]);
+  });
+});
+
+describe('SSO groups', () => {
+  let sim: TestApp;
+  let idp: Awaited<ReturnType<typeof startProvider>>;
+
+  const login = (sub: string, groups?: unknown) => {
+    const claims = { sub, email: `${sub}@acme.test`, name: sub, groups };
+    idp.identity({ idToken: claims, userinfo: claims });
+    const browser = sim.browser();
+    return signInWithSso(browser).then((destination) => ({ browser, destination }));
+  };
+
+  beforeAll(async () => {
+    idp = await startProvider();
+    sim = await createApp({
+      SIM_SSO_MODE: 'oidc',
+      SIM_SSO_ISSUER: idp.url,
+      SIM_SSO_CLIENT_ID: 'sim',
+      SIM_SSO_CLIENT_SECRET: 'secret',
+      SIM_ACCESS_GROUP: 'sim-users',
+      SIM_ADMIN_GROUP: 'sim-admins',
+      SIM_ADMIN_EMAILS: 'boss@acme.test',
+    });
+  });
+
+  afterAll(async () => {
+    await sim.close();
+    await idp.provider.stop();
+  });
+
+  it('lets in only members of the access group', async () => {
+    expect((await login('ana', ['sim-users'])).destination).toBe('/');
+    expect((await login('bruno', ['other'])).destination).toBe('/login?error=group');
+    expect((await login('carla')).destination).toBe('/login?error=group');
+    const { rows } = await sim.pool.query(
+      `select 1 from collaborators where sso_subject = 'bruno'`,
+    );
+    expect(rows).toHaveLength(0); // no account is created for who is kept out
+  });
+
+  it('makes members of the admin group Administrators, and follows the provider afterwards', async () => {
+    const first = await login('davi', ['sim-users', 'sim-admins']);
+    expect((await first.browser.get('/api/auth/me')).body.administrator).toBe(true);
+
+    const later = await login('davi', ['sim-users']);
+    expect((await later.browser.get('/api/auth/me')).body.administrator).toBe(false);
+  });
+
+  it('keeps the SIM_ADMIN_EMAILS list working next to the admin group', async () => {
+    const { browser } = await login('boss', ['sim-users']);
+    expect((await browser.get('/api/auth/me')).body.administrator).toBe(true);
   });
 });

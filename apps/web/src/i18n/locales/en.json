@@ -34,7 +34,8 @@
     "ssoDefault": "Sign in with SSO",
     "errors": {
       "sso": "Single sign-on failed. Try again or contact your administrator.",
-      "inactive": "Your access to SIM is disabled. Contact your administrator."
+      "inactive": "Your access to SIM is disabled. Contact your administrator.",
+      "group": "Your account is not in the group allowed to use SIM. Contact your administrator."
     }
   },
   "changePassword": {

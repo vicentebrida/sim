@@ -34,7 +34,8 @@
     "ssoDefault": "Entrar com SSO",
     "errors": {
       "sso": "Não foi possível entrar pelo SSO. Tente novamente ou fale com o administrador.",
-      "inactive": "Seu acesso ao SIM está desativado. Fale com o administrador."
+      "inactive": "Seu acesso ao SIM está desativado. Fale com o administrador.",
+      "group": "Sua conta não está no grupo autorizado a usar o SIM. Fale com o administrador."
     }
   },
   "changePassword": {

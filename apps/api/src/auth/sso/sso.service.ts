@@ -29,6 +29,22 @@ function readClaim(claims: Record<string, unknown>, path: string | undefined): s
   return undefined;
 }
 
+/** Groups from a claim sent as a list or as text separated by commas or spaces. */
+export function readGroups(claims: Record<string, unknown>, path: string | undefined): string[] {
+  if (!path) return [];
+  let value: unknown = claims;
+  for (const part of path.split('.')) {
+    if (typeof value !== 'object' || value === null) return [];
+    value = (value as Record<string, unknown>)[part];
+  }
+  const items = Array.isArray(value)
+    ? value
+    : typeof value === 'string'
+      ? value.split(/[,\s]+/)
+      : [];
+  return items.filter((item): item is string => typeof item === 'string' && item.trim() !== '');
+}
+
 /**
  * A single OAuth2/OIDC provider (ADR-0003). In `oidc` mode the endpoints come from discovery; in
  * `oauth2` mode they are set manually and the identity comes only from the userinfo endpoint.
@@ -46,6 +62,12 @@ export class SsoService {
 
   get label() {
     return this.env.SIM_SSO_BUTTON_LABEL;
+  }
+
+  /** Whether this person may sign in: without SIM_ACCESS_GROUP, everyone the provider accepts. */
+  isAllowed(profile: Pick<SsoProfile, 'groups'>) {
+    const required = this.env.SIM_ACCESS_GROUP;
+    return !required || profile.groups.includes(required);
   }
 
   get callbackUrl() {
@@ -147,6 +169,7 @@ export class SsoService {
       name: readClaim(claims, this.env.SIM_SSO_CLAIM_NAME) ?? email,
       department: readClaim(claims, this.env.SIM_SSO_CLAIM_DEPARTMENT),
       pictureUrl: readClaim(claims, this.env.SIM_SSO_CLAIM_PICTURE),
+      groups: readGroups(claims, this.env.SIM_SSO_CLAIM_GROUPS),
     };
   }
 

@@ -90,6 +90,12 @@ describe('access to SIM', () => {
     expect(await screen.findByText(/Seu acesso ao SIM está desativado/)).toBeInTheDocument();
   });
 
+  it('explains that the account is not in the allowed group', async () => {
+    simulateAuth({});
+    renderApp('/login?error=group');
+    expect(await screen.findByText(/não está no grupo autorizado/)).toBeInTheDocument();
+  });
+
   it('a regular Collaborator neither sees nor reaches the Collaborators management', async () => {
     simulateAuth({ session: ana });
     const { router } = renderApp('/admin/collaborators');
