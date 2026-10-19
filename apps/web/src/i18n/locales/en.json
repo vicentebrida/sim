@@ -288,5 +288,11 @@
     "follow": "Follow",
     "following": "Following",
     "help": "Followers get notified about status changes and new comments."
+  },
+  "similar": {
+    "title": "Similar ideas already exist",
+    "help": "How about supporting one of them with a like or adding to it with a comment? If yours is different, you can still publish it.",
+    "archivedHint": "This idea was archived. Comment on it to ask for it to be reopened.",
+    "newTab": "opens in a new tab"
   }
 }

@@ -66,7 +66,9 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 ### 3.4 Ideias Semelhantes ([ADR-0002](./adr/0002-deteccao-de-semelhantes-textual-mais-semantica-opcional.md))
 
 - Enquanto o Colaborador digita o título e os campos marcados para detecção, o SIM lista as Ideias Semelhantes com link. O sistema **avisa, mas não bloqueia**: o Colaborador pode seguir para a Ideia existente ou publicar mesmo assim.
-- A busca inclui todos os Status publicados, **inclusive Arquivadas** (nesse caso o SIM oferece pedir a reativação).
+- A busca inclui todos os Status publicados, **inclusive Arquivadas** (nesse caso o SIM oferece pedir a reativação). Duplicadas ficam de fora: a Ideia Original aparece no lugar delas.
+- Os links das Ideias Semelhantes abrem em nova aba, para não perder o texto que está sendo escrito.
+- A busca textual pontua cada Ideia por três sinais: quanto do título digitado aparece nela (o principal, que evita sugestões por uma única palavra genérica como "melhorar"), a relevância do texto completo e a semelhança entre os títulos (pega erros de digitação). Ignora acentos e variações das palavras ("relatórios" encontra "relatório").
 - **Busca textual** (Postgres full-text em português + pg_trgm): sempre ativa.
 - **Busca semântica** (embeddings + pgvector): ativa quando há provedor configurado, seja API compatível com OpenAI ou Ollama. Quando as duas estão ativas, os resultados são combinados.
 

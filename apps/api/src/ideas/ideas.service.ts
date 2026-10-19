@@ -17,6 +17,7 @@ import {
   likes,
   reviewers,
 } from '../database/schema';
+import { refreshDetectionText } from './detection-text';
 import { type FieldValues, normalizeValues } from './domain/fields';
 import {
   type Actor,
@@ -32,6 +33,7 @@ import {
   type Status,
   TRENDING_HALF_LIFE_DAYS,
 } from './domain/idea';
+import { isSimilar, MAX_SIMILAR_IDEAS, similarityScore } from './domain/similarity';
 
 export interface IdeaFilter {
   status?: Status[];
@@ -238,6 +240,7 @@ export class IdeasService {
           publishedAt: data.publish ? now : null,
         })
         .returning();
+      await refreshDetectionText(tx, eq(ideas.id, idea!.id));
       // The Author follows their own Idea from the start, Drafts included.
       await this.notifications.follow(tx, idea!.id, collaborator.id);
       if (data.publish) await this.recordPublication(tx, idea!, collaborator);
@@ -264,15 +267,18 @@ export class IdeasService {
         })
       : undefined;
 
-    await this.db
-      .update(ideas)
-      .set({
-        title: data.title,
-        categoryId: data.categoryId,
-        values,
-        editedAt: published ? new Date() : undefined,
-      })
-      .where(eq(ideas.id, idea.id));
+    await this.db.transaction(async (tx) => {
+      await tx
+        .update(ideas)
+        .set({
+          title: data.title,
+          categoryId: data.categoryId,
+          values,
+          editedAt: published ? new Date() : undefined,
+        })
+        .where(eq(ideas.id, idea.id));
+      if (values) await refreshDetectionText(tx, eq(ideas.id, idea.id));
+    });
     return this.detail(collaborator, number);
   }
 
@@ -292,6 +298,7 @@ export class IdeasService {
         .update(ideas)
         .set({ status: 'open', values, publishedAt: now, statusChangedAt: now })
         .where(eq(ideas.id, idea.id));
+      await refreshDetectionText(tx, eq(ideas.id, idea.id));
       await this.recordPublication(tx, idea, collaborator);
     });
     return this.detail(collaborator, number);
@@ -413,6 +420,57 @@ export class IdeasService {
       collaborator: row.collaborator,
       createdAt: row.createdAt.toISOString(),
     }));
+  }
+
+  // ---------- Similar Ideas ----------
+
+  /**
+   * Published Ideas that look like the one being written (ADR-0002, text search). Duplicates are
+   * left out: their original Idea shows up instead. Archived ones count, so they can be revived.
+   * Every published Idea is visible to every Collaborator, so the result does not depend on who asks.
+   */
+  async similar(query: { title: string; text: string; exclude?: number }) {
+    const fullQuery = sql`replace(plainto_tsquery('portuguese', immutable_unaccent(${`${query.title} ${query.text}`}))::text, '&', '|')::tsquery`;
+    const titleLexemes = sql`tsvector_to_array(to_tsvector('portuguese', immutable_unaccent(${query.title})))`;
+    const titleSimilarity = sql<number>`similarity(immutable_unaccent(lower(${ideas.title})), immutable_unaccent(lower(${query.title})))`;
+
+    const candidates = await this.db
+      .select({
+        number: ideas.number,
+        title: ideas.title,
+        status: ideas.status,
+        category: { id: categories.id, name: categories.name },
+        likes: likeCount,
+        coverage: sql<number>`(select count(*) filter (where ${ideas.searchVector} @@ quote_literal(lexeme)::tsquery)::float / greatest(count(*), 1) from unnest(${titleLexemes}) lexeme)`,
+        textRank: sql<number>`ts_rank_cd(${ideas.searchVector}, ${fullQuery}, 32)`,
+        titleSimilarity,
+      })
+      .from(ideas)
+      .innerJoin(categories, eq(ideas.categoryId, categories.id))
+      .where(
+        and(
+          ne(ideas.status, 'draft'),
+          ne(ideas.status, 'duplicate'),
+          query.exclude ? ne(ideas.number, query.exclude) : undefined,
+          // Uses the full-text and trigram indexes to narrow the candidates.
+          or(
+            sql`${ideas.searchVector} @@ ${fullQuery}`,
+            sql`immutable_unaccent(lower(${ideas.title})) % immutable_unaccent(lower(${query.title}))`,
+          ),
+        ),
+      )
+      .orderBy(desc(sql`ts_rank_cd(${ideas.searchVector}, ${fullQuery}, 32)`))
+      .limit(50);
+
+    return candidates
+      .map(({ coverage, textRank, titleSimilarity: similarity, ...idea }) => {
+        const signals = { coverage, textRank, titleSimilarity: similarity };
+        return { ...idea, similar: isSimilar(signals), score: similarityScore(signals) };
+      })
+      .filter((idea) => idea.similar)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, MAX_SIMILAR_IDEAS)
+      .map(({ similar: _, score, ...idea }) => ({ ...idea, score: Math.round(score * 100) / 100 }));
   }
 
   // ---------- following ----------

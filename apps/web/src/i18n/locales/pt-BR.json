@@ -288,5 +288,11 @@
     "follow": "Seguir",
     "following": "Seguindo",
     "help": "Quem segue recebe notificações sobre mudanças de status e novos comentários."
+  },
+  "similar": {
+    "title": "Ideias parecidas já existem",
+    "help": "Que tal apoiar uma delas com uma curtida ou complementar com um comentário? Se a sua for diferente, pode publicar mesmo assim.",
+    "archivedHint": "Esta ideia foi arquivada. Comente nela para pedir que seja reaberta.",
+    "newTab": "abre em nova aba"
   }
 }

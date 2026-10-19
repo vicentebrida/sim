@@ -9,10 +9,12 @@ import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { FormField } from '@/components/form-field';
 import { NativeSelect } from '@/components/native-select';
+import { SimilarIdeas } from '@/components/similar-ideas';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { detectionText } from '@/lib/detection-text';
 import { apiErrorMessage } from '@/lib/errors';
 
 export type FieldValue = string | number | boolean | string[] | null;
@@ -50,10 +52,13 @@ export function IdeaForm({
   initial,
   actions,
   onCancel,
+  ideaNumber,
 }: {
   initial?: IdeaData;
   actions: FormAction[];
   onCancel?: () => void;
+  /** Number of the Idea being edited, left out of the Similar Ideas. */
+  ideaNumber?: number;
 }) {
   const { t } = useTranslation();
   const { data: categoriesResponse } = useCategoriesList();
@@ -68,6 +73,8 @@ export function IdeaForm({
   });
   const { errors } = form.formState;
   const categoryId = useWatch({ control: form.control, name: 'categoryId' });
+  const title = useWatch({ control: form.control, name: 'title' });
+  const values = useWatch({ control: form.control, name: 'values' });
   const chosenCategory = categories.find((c) => c.id === categoryId);
 
   function validate(data: IdeaData, enforceRequired: boolean) {
@@ -119,6 +126,11 @@ export function IdeaForm({
         placeholder={t('ideas.titleHelp')}
         error={errors.title?.message}
         {...form.register('title')}
+      />
+      <SimilarIdeas
+        title={title ?? ''}
+        text={detectionText(fields, values ?? {})}
+        exclude={ideaNumber}
       />
 
       <div className="grid gap-2">

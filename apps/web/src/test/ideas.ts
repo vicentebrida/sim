@@ -5,6 +5,7 @@ import type {
   CustomFieldDtoOutput,
   IdeaDtoOutput,
   LikeDtoOutput,
+  SimilarIdeaDtoOutput,
 } from '@sim/api-client';
 import { http, HttpResponse } from 'msw';
 import { ana } from './api';
@@ -112,6 +113,8 @@ export function simulateIdeas(
     /** Who comments in this simulation (the session Collaborator). */
     me?: { id: string; name: string };
     mentionable?: { id: string; name: string }[];
+    /** Ideas returned as similar to any title being written. */
+    similar?: SimilarIdeaDtoOutput[];
   } = {},
 ) {
   let idea = options.idea ?? sampleIdea();
@@ -171,6 +174,11 @@ export function simulateIdeas(
       const body = (await request.json()) as { title: string; publish: boolean };
       idea = { ...idea, title: body.title, status: body.publish ? 'open' : 'draft' };
       return HttpResponse.json(idea, { status: 201 });
+    }),
+    // Before ':number', which would also match "similar".
+    http.get('*/api/ideas/similar', async ({ request }) => {
+      await record(request);
+      return HttpResponse.json(options.similar ?? []);
     }),
     http.get('*/api/ideas/:number', () => HttpResponse.json(idea)),
     http.post('*/api/ideas/:number/status', async ({ request }) => {
