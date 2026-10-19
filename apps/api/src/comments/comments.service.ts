@@ -11,6 +11,7 @@ import {
 } from '../database/schema';
 import type { Actor, IdeaForRules } from '../ideas/domain/idea';
 import { IdeasService } from '../ideas/ideas.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import {
   assertCanComment,
   assertCanEditComment,
@@ -37,6 +38,7 @@ export class CommentsService {
   constructor(
     @Inject(DB) private readonly db: Database,
     private readonly ideas: IdeasService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   /** The Idea's Comments in chronological order, each with its Replies. */
@@ -75,6 +77,15 @@ export class CommentsService {
         .values({ ideaId: idea.id, authorId: collaborator.id, replyToId: repliedTo?.id, text })
         .returning({ id: comments.id });
       await this.recordMentions(tx, comment!.id, mentioned);
+      // Commenting follows the Idea.
+      await this.notifications.follow(tx, idea.id, collaborator.id);
+      await this.notifications.onCommented(tx, {
+        idea,
+        commentId: comment!.id,
+        actorId: collaborator.id,
+        repliedToAuthorId: repliedTo?.authorId,
+        mentioned,
+      });
       return comment!.id;
     });
     return this.detail(id, idea, actor);
@@ -87,8 +98,17 @@ export class CommentsService {
     await this.db.transaction(async (tx) => {
       const { text, mentioned } = await this.prepareText(tx, data.text);
       await tx.update(comments).set({ text, editedAt: new Date() }).where(eq(comments.id, id));
-      await tx.delete(mentions).where(eq(mentions.commentId, id));
+      const previous = await tx
+        .delete(mentions)
+        .where(eq(mentions.commentId, id))
+        .returning({ id: mentions.collaboratorId });
       await this.recordMentions(tx, id, mentioned);
+      await this.notifications.onMentionedInEdit(tx, {
+        idea,
+        commentId: id,
+        actorId: collaborator.id,
+        added: mentioned.filter((person) => !previous.some((p) => p.id === person)),
+      });
     });
     return this.detail(id, idea, actor);
   }

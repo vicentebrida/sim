@@ -22,6 +22,8 @@ export function simulateAuth(options: {
   let session = options.session;
   server.use(
     http.get('*/api/health', () => HttpResponse.json({ status: 'ok', database: 'up' })),
+    // The bell polls this on every page; tests about Notifications override it.
+    http.get('*/api/notifications/unread-count', () => HttpResponse.json({ unread: 0 })),
     http.get('*/api/auth/configuration', () =>
       HttpResponse.json({
         localLogin: true,

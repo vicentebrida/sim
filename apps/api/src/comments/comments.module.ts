@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { IdeasModule } from '../ideas/ideas.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { CommentsController } from './comments.controller';
 import { CommentsService } from './comments.service';
 
 @Module({
-  imports: [IdeasModule],
+  imports: [IdeasModule, NotificationsModule],
   controllers: [CommentsController],
   providers: [CommentsService],
 })

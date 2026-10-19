@@ -152,7 +152,8 @@
       "all": "All (except archived)",
       "category": "Category",
       "allCategories": "All",
-      "mine": "Only mine (includes drafts)"
+      "mine": "Only mine (includes drafts)",
+      "following": "Following"
     },
     "sort": {
       "label": "Sort by",
@@ -264,5 +265,28 @@
     "by": "Comment by {{name}}",
     "mentionHelp": "Use @ to mention someone; they will be notified.",
     "suggestions": "People to mention"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "bell_zero": "Notifications",
+    "bell_one": "Notifications ({{count}} unread)",
+    "bell_other": "Notifications ({{count}} unread)",
+    "markAllRead": "Mark all as read",
+    "empty": "No notifications yet.",
+    "unread": "Unread",
+    "newCommentsPreference": "Tell me about new comments on ideas I follow",
+    "types": {
+      "status": "{{actor}} moved idea #{{number}} to {{to}}",
+      "duplicate": "{{actor}} marked idea #{{number}} as a duplicate of #{{original}}",
+      "comment": "{{actor}} commented on idea #{{number}}",
+      "reply": "{{actor}} replied to your comment on idea #{{number}}",
+      "mention": "{{actor}} mentioned you on idea #{{number}}",
+      "new_idea": "New idea to review: #{{number}}"
+    }
+  },
+  "follow": {
+    "follow": "Follow",
+    "following": "Following",
+    "help": "Followers get notified about status changes and new comments."
   }
 }

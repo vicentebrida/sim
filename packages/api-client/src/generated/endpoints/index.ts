@@ -5,3 +5,4 @@ export * from './comments/comments.ts';
 export * from './custom-fields/custom-fields.ts';
 export * from './health/health.ts';
 export * from './ideas/ideas.ts';
+export * from './notifications/notifications.ts';

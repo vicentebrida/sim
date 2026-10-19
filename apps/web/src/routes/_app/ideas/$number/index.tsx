@@ -17,6 +17,7 @@ import { Pencil, Send, Trash2 } from 'lucide-react';
 import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Discussion } from '@/components/comments/discussion';
+import { FollowButton } from '@/components/follow-button';
 import { Likes } from '@/components/likes';
 import { NativeSelect } from '@/components/native-select';
 import { StatusBadge } from '@/components/status-badge';
@@ -60,7 +61,10 @@ function IdeaPage() {
           <span>#{idea.number}</span>
           <span>· {idea.category.name}</span>
         </div>
-        <h1 className="text-2xl font-semibold">{idea.title}</h1>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <h1 className="text-2xl font-semibold">{idea.title}</h1>
+          <FollowButton idea={idea} />
+        </div>
         <p className="text-sm text-muted-foreground">
           {t('ideas.by', { name: idea.author.name })} ·{' '}
           {idea.publishedAt

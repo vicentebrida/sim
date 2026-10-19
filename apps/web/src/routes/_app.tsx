@@ -4,6 +4,7 @@ import { createFileRoute, Link, Outlet, redirect, useNavigate } from '@tanstack/
 import { LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ApiStatus } from '@/components/api-status';
+import { NotificationBell } from '@/components/notifications';
 import { Button } from '@/components/ui/button';
 import { getCurrentCollaborator } from '@/lib/auth';
 
@@ -66,6 +67,7 @@ function AppLayout() {
           </nav>
           <div className="ml-auto flex items-center gap-3">
             <ApiStatus />
+            <NotificationBell />
             <span className="hidden text-sm sm:inline">{collaborator.name}</span>
             <Button
               variant="ghost"

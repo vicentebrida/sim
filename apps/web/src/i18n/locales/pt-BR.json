@@ -152,7 +152,8 @@
       "all": "Todos (exceto arquivadas)",
       "category": "Categoria",
       "allCategories": "Todas",
-      "mine": "Só as minhas (inclui rascunhos)"
+      "mine": "Só as minhas (inclui rascunhos)",
+      "following": "Que sigo"
     },
     "sort": {
       "label": "Ordenar por",
@@ -264,5 +265,28 @@
     "by": "Comentário de {{name}}",
     "mentionHelp": "Use @ para mencionar alguém; a pessoa será notificada.",
     "suggestions": "Pessoas para mencionar"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "bell_zero": "Notificações",
+    "bell_one": "Notificações ({{count}} não lida)",
+    "bell_other": "Notificações ({{count}} não lidas)",
+    "markAllRead": "Marcar todas como lidas",
+    "empty": "Nenhuma notificação por enquanto.",
+    "unread": "Não lida",
+    "newCommentsPreference": "Avisar sobre novos comentários nas ideias que sigo",
+    "types": {
+      "status": "{{actor}} mudou a ideia #{{number}} para {{to}}",
+      "duplicate": "{{actor}} marcou a ideia #{{number}} como duplicada da #{{original}}",
+      "comment": "{{actor}} comentou na ideia #{{number}}",
+      "reply": "{{actor}} respondeu seu comentário na ideia #{{number}}",
+      "mention": "{{actor}} mencionou você na ideia #{{number}}",
+      "new_idea": "Nova ideia para avaliar: #{{number}}"
+    }
+  },
+  "follow": {
+    "follow": "Seguir",
+    "following": "Seguindo",
+    "help": "Quem segue recebe notificações sobre mudanças de status e novos comentários."
   }
 }

@@ -16,6 +16,7 @@ import { ZodResponse } from 'nestjs-zod';
 import { CurrentCollaborator } from '../auth/decorators';
 import type { Collaborator } from '../database/schema';
 import {
+  FollowingDto,
   IdeaDto,
   IdeaPageDto,
   IdeaUpdateDto,
@@ -128,5 +129,23 @@ export class IdeasController {
     @Param('number', ParseIntPipe) number: number,
   ) {
     return this.ideas.unlike(collaborator, number);
+  }
+
+  @Put(':number/follow')
+  @ZodResponse({ status: 200, type: FollowingDto })
+  follow(
+    @CurrentCollaborator() collaborator: Collaborator,
+    @Param('number', ParseIntPipe) number: number,
+  ) {
+    return this.ideas.follow(collaborator, number);
+  }
+
+  @Delete(':number/follow')
+  @ZodResponse({ status: 200, type: FollowingDto })
+  unfollow(
+    @CurrentCollaborator() collaborator: Collaborator,
+    @Param('number', ParseIntPipe) number: number,
+  ) {
+    return this.ideas.unfollow(collaborator, number);
   }
 }

@@ -12,7 +12,8 @@ import {
   useCommentsUpdate,
 } from '@sim/api-client';
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useLocation } from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -44,7 +45,13 @@ function useRefreshDiscussion(number: number) {
 export function Discussion({ idea }: { idea: IdeaDtoOutput }) {
   const { t } = useTranslation();
   const { data } = useCommentsList(idea.number);
+  const { hash } = useLocation();
   const refresh = useRefreshDiscussion(idea.number);
+
+  // Notifications link to `#comment-<id>`; Comments load after the page, so scroll once they arrive.
+  useEffect(() => {
+    if (hash && data) document.getElementById(hash)?.scrollIntoView?.({ block: 'center' });
+  }, [hash, data]);
   const create = useCommentsCreate({ mutation: { onSuccess: refresh } });
   const comments = data?.data ?? [];
 
@@ -170,7 +177,11 @@ function CommentCard({
   const { canReply, canEdit, canRemove, canHide } = comment.permissions;
 
   return (
-    <article className="space-y-1" aria-label={t('comments.by', { name: comment.author.name })}>
+    <article
+      id={`comment-${comment.id}`}
+      className="scroll-mt-20 space-y-1"
+      aria-label={t('comments.by', { name: comment.author.name })}
+    >
       <p className="flex flex-wrap items-center gap-2 text-sm">
         <span className="font-medium">{comment.author.name}</span>
         {comment.author.id === idea.author.id && (
