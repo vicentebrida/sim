@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.0.0
  */
 import type { IdeaDtoOutputAnswersItem } from './ideaDtoOutputAnswersItem.ts';
+import type { IdeaDtoOutputAttachmentsItem } from './ideaDtoOutputAttachmentsItem.ts';
 import type { IdeaDtoOutputAuthor } from './ideaDtoOutputAuthor.ts';
 import type { IdeaDtoOutputCategory } from './ideaDtoOutputCategory.ts';
 import type { IdeaDtoOutputHistoryItem } from './ideaDtoOutputHistoryItem.ts';
@@ -34,6 +35,7 @@ export interface IdeaDtoOutput {
   publishedAt: string | null;
   editedAt: string | null;
   following: boolean;
+  attachments: IdeaDtoOutputAttachmentsItem[];
   values: IdeaDtoOutputValues;
   answers: IdeaDtoOutputAnswersItem[];
   originalIdea: IdeaDtoOutputOriginalIdea;

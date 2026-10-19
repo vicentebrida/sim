@@ -7,6 +7,12 @@ export class AccessConfigurationDto extends createZodDto(
     localLogin: z.boolean(),
     // `label` is null when SIM_SSO_BUTTON_LABEL is unset; the web app shows a translated default.
     sso: z.object({ enabled: z.boolean(), label: z.string().nullable() }),
+    // Limits for Attachments, so the web app can check files before sending.
+    attachments: z.object({
+      maxBytes: z.number().int(),
+      maxCount: z.number().int(),
+      extensions: z.array(z.string()),
+    }),
   }),
 ) {}
 

@@ -17,6 +17,7 @@ import {
 import { cookieOptions, SESSION_COOKIE } from './cookies';
 import { AllowsTemporaryPassword, CurrentCollaborator, Public } from './decorators';
 import { LoginAttemptsService, TooManyAttemptsException } from './login-attempts';
+import { ALLOWED_EXTENSIONS } from '../attachments/domain/file-type';
 import { verifyPassword } from './password';
 import { SESSION_DURATION_MS, SessionsService } from './sessions.service';
 import { SsoService } from './sso/sso.service';
@@ -40,6 +41,11 @@ export class AuthController {
     return {
       localLogin: true,
       sso: { enabled: this.sso.enabled, label: this.sso.label ?? null },
+      attachments: {
+        maxBytes: Math.floor(this.env.SIM_ATTACHMENT_MAX_MB * 1024 * 1024),
+        maxCount: this.env.SIM_ATTACHMENT_MAX_COUNT,
+        extensions: ALLOWED_EXTENSIONS,
+      },
     };
   }
 

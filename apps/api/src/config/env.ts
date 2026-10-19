@@ -82,6 +82,10 @@ const baseSchema = z
       .optional(),
     SIM_EMERGENCY_PASSWORD: z.string().min(MIN_PASSWORD_LENGTH).optional(),
     SIM_WEB_DIST: z.string().optional(),
+    // Attachments are stored on disk (mount a volume here).
+    SIM_DATA_DIR: z.string().default('./data'),
+    SIM_ATTACHMENT_MAX_MB: z.coerce.number().positive().default(10),
+    SIM_ATTACHMENT_MAX_COUNT: z.coerce.number().int().positive().default(5),
     // Stalled Ideas: days without Reviewer action (a Category can override the first two).
     SIM_STALLED_OPEN_DAYS: z.coerce.number().int().positive().default(15),
     SIM_STALLED_REVIEW_DAYS: z.coerce.number().int().positive().default(30),

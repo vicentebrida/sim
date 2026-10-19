@@ -77,6 +77,10 @@
     "required": "Campo obrigatório.",
     "invalidEmail": "E-mail inválido.",
     "codes": {
+      "FILE_REQUIRED": "Escolha um arquivo.",
+      "ATTACHMENT_TYPE_NOT_ALLOWED": "Este tipo de arquivo não é aceito.",
+      "ATTACHMENT_TOO_LARGE": "O arquivo é maior que o limite permitido.",
+      "TOO_MANY_ATTACHMENTS": "O limite de anexos foi atingido.",
       "FORBIDDEN": "Você não tem permissão para esta ação.",
       "INVALID_TRANSITION": "Esta mudança de status não é permitida a partir do status atual.",
       "EDIT_LOCKED": "A ideia já está em avaliação; acrescente informações nos comentários.",
@@ -166,6 +170,17 @@
     "stalledDays_other": "{{count}} dias parada",
     "mostLiked": "Mais curtidas ainda sem decisão",
     "noneUndecided": "Nenhuma ideia aguardando decisão."
+  },
+  "attachments": {
+    "title": "Anexos",
+    "add": "Anexar arquivos",
+    "choose": "Escolher arquivos",
+    "help": "Até {{count}} por vez, {{size}} cada. Imagens, PDF, Word, Excel, PowerPoint e texto.",
+    "remove": "Remover {{name}}",
+    "tooMany": "No máximo {{count}} anexos.",
+    "notAllowed": "O arquivo \"{{name}}\" não é de um tipo aceito.",
+    "tooLarge": "O arquivo \"{{name}}\" passa de {{size}}.",
+    "failed": "Salvo, mas alguns anexos não foram enviados. Tente de novo ao editar."
   },
   "status": {
     "draft": "Rascunho",

@@ -5,9 +5,11 @@
  * SIM REST API
  * OpenAPI spec version: 0.0.0
  */
+import type { AccessConfigurationDtoOutputAttachments } from './accessConfigurationDtoOutputAttachments.ts';
 import type { AccessConfigurationDtoOutputSso } from './accessConfigurationDtoOutputSso.ts';
 
 export interface AccessConfigurationDtoOutput {
   localLogin: boolean;
   sso: AccessConfigurationDtoOutputSso;
+  attachments: AccessConfigurationDtoOutputAttachments;
 }

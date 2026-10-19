@@ -1436,6 +1436,156 @@
           "dashboard"
         ]
       }
+    },
+    "/api/ideas/{number}/attachments": {
+      "post": {
+        "operationId": "attachments_addToIdea",
+        "parameters": [
+          {
+            "name": "number",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttachmentDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "attachments"
+        ]
+      }
+    },
+    "/api/comments/{id}/attachments": {
+      "post": {
+        "operationId": "attachments_addToComment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttachmentDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "attachments"
+        ]
+      }
+    },
+    "/api/attachments/{id}": {
+      "get": {
+        "operationId": "attachments_download",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The file",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "attachments"
+        ]
+      },
+      "delete": {
+        "operationId": "attachments_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "attachments"
+        ]
+      }
     }
   },
   "info": {
@@ -1650,11 +1800,39 @@
               "label"
             ],
             "additionalProperties": false
+          },
+          "attachments": {
+            "type": "object",
+            "properties": {
+              "maxBytes": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "maxCount": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "extensions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "maxBytes",
+              "maxCount",
+              "extensions"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
           "localLogin",
-          "sso"
+          "sso",
+          "attachments"
         ],
         "additionalProperties": false
       },
@@ -2374,6 +2552,41 @@
           "following": {
             "type": "boolean"
           },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "filename": {
+                  "type": "string"
+                },
+                "contentType": {
+                  "type": "string"
+                },
+                "size": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "image": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "filename",
+                "contentType",
+                "size",
+                "image"
+              ],
+              "additionalProperties": false
+            }
+          },
           "values": {
             "type": "object",
             "propertyNames": {
@@ -2615,6 +2828,7 @@
           "publishedAt",
           "editedAt",
           "following",
+          "attachments",
           "values",
           "answers",
           "originalIdea",
@@ -3088,6 +3302,41 @@
               }
             ]
           },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "filename": {
+                  "type": "string"
+                },
+                "contentType": {
+                  "type": "string"
+                },
+                "size": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "image": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "filename",
+                "contentType",
+                "size",
+                "image"
+              ],
+              "additionalProperties": false
+            }
+          },
           "hiding": {
             "anyOf": [
               {
@@ -3215,6 +3464,41 @@
                     }
                   ]
                 },
+                "attachments": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "filename": {
+                        "type": "string"
+                      },
+                      "contentType": {
+                        "type": "string"
+                      },
+                      "size": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      "image": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "filename",
+                      "contentType",
+                      "size",
+                      "image"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
                 "hiding": {
                   "anyOf": [
                     {
@@ -3291,6 +3575,7 @@
                 "state",
                 "createdAt",
                 "editedAt",
+                "attachments",
                 "hiding",
                 "permissions"
               ],
@@ -3305,6 +3590,7 @@
           "state",
           "createdAt",
           "editedAt",
+          "attachments",
           "hiding",
           "permissions",
           "replies"
@@ -3543,6 +3829,38 @@
           "firstDecision",
           "stalled",
           "mostLikedUndecided"
+        ],
+        "additionalProperties": false
+      },
+      "AttachmentDto_Output": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "filename": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "image": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "filename",
+          "contentType",
+          "size",
+          "image"
         ],
         "additionalProperties": false
       }

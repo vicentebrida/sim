@@ -11,3 +11,6 @@ coverage/
 storage/
 playwright-report/
 test-results/
+
+# Anexos locais
+/apps/api/data/

@@ -10,6 +10,8 @@ services:
     environment:
       DATABASE_URL: postgres://sim:${POSTGRES_PASSWORD:-sim}@postgres:5432/sim
       REDIS_URL: redis://redis:6379
+    volumes:
+      - sim-data:/data
     ports:
       - '3000:3000'
     depends_on:
@@ -40,5 +42,6 @@ services:
     restart: unless-stopped
 
 volumes:
+  sim-data:
   postgres:
   redis:

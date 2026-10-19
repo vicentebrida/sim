@@ -28,6 +28,11 @@ export function simulateAuth(options: {
       HttpResponse.json({
         localLogin: true,
         sso: options.sso ?? { enabled: false, label: null },
+        attachments: {
+          maxBytes: 10 * 1024 * 1024,
+          maxCount: 5,
+          extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'pdf', 'docx', 'xlsx', 'pptx', 'txt'],
+        },
       }),
     ),
     http.get('*/api/auth/me', () =>

@@ -77,6 +77,10 @@
     "required": "Required.",
     "invalidEmail": "Invalid email.",
     "codes": {
+      "FILE_REQUIRED": "Choose a file.",
+      "ATTACHMENT_TYPE_NOT_ALLOWED": "This type of file is not accepted.",
+      "ATTACHMENT_TOO_LARGE": "The file is larger than the allowed size.",
+      "TOO_MANY_ATTACHMENTS": "The attachment limit was reached.",
       "FORBIDDEN": "You don't have permission for this action.",
       "INVALID_TRANSITION": "This status change isn't allowed from the current status.",
       "EDIT_LOCKED": "The idea is under review; add information in the comments.",
@@ -166,6 +170,17 @@
     "stalledDays_other": "stalled for {{count}} days",
     "mostLiked": "Most liked, still undecided",
     "noneUndecided": "No ideas waiting for a decision."
+  },
+  "attachments": {
+    "title": "Attachments",
+    "add": "Attach files",
+    "choose": "Choose files",
+    "help": "Up to {{count}}, {{size}} each. Images, PDF, Word, Excel, PowerPoint and text.",
+    "remove": "Remove {{name}}",
+    "tooMany": "At most {{count}} attachments.",
+    "notAllowed": "\"{{name}}\" is not an accepted file type.",
+    "tooLarge": "\"{{name}}\" is larger than {{size}}.",
+    "failed": "Saved, but some attachments were not sent. Try again by editing."
   },
   "status": {
     "draft": "Draft",

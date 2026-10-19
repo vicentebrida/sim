@@ -1,5 +1,8 @@
 import 'reflect-metadata';
 import { randomUUID } from 'node:crypto';
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Client, type Pool } from 'pg';
@@ -45,6 +48,7 @@ export async function createApp(
   Object.assign(process.env, {
     DATABASE_URL: await createDatabase(),
     SIM_PUBLIC_URL: 'http://localhost:3000',
+    SIM_DATA_DIR: mkdtempSync(join(tmpdir(), 'sim-test-')),
     SIM_EMERGENCY_EMAIL: EMERGENCY.email,
     SIM_EMERGENCY_PASSWORD: EMERGENCY.password,
     ...env,

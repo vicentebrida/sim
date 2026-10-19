@@ -33,6 +33,10 @@ export const ERROR_STATUS = {
   NO_LOCAL_PASSWORD: HttpStatus.BAD_REQUEST,
   WRONG_CURRENT_PASSWORD: HttpStatus.BAD_REQUEST,
   SAME_PASSWORD: HttpStatus.BAD_REQUEST,
+  FILE_REQUIRED: HttpStatus.BAD_REQUEST,
+  ATTACHMENT_TYPE_NOT_ALLOWED: HttpStatus.BAD_REQUEST,
+  ATTACHMENT_TOO_LARGE: HttpStatus.PAYLOAD_TOO_LARGE,
+  TOO_MANY_ATTACHMENTS: HttpStatus.CONFLICT,
 } as const satisfies Record<string, HttpStatus>;
 
 export type ErrorCode = keyof typeof ERROR_STATUS;

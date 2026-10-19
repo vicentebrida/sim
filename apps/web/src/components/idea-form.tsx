@@ -1,5 +1,6 @@
 import {
   ApiError,
+  type AttachmentDtoOutput,
   type CustomFieldDtoOutput,
   useCategoriesList,
   useCustomFieldsList,
@@ -7,6 +8,7 @@ import {
 import { useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { AttachmentList, FilePicker } from '@/components/attachments';
 import { FormField } from '@/components/form-field';
 import { NativeSelect } from '@/components/native-select';
 import { SimilarIdeas } from '@/components/similar-ideas';
@@ -14,7 +16,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { AttachmentsNotSent } from '@/lib/uploads';
 import { detectionText } from '@/lib/detection-text';
+import { useFilesProblem } from '@/lib/attachments';
 import { apiErrorMessage } from '@/lib/errors';
 
 export type FieldValue = string | number | boolean | string[] | null;
@@ -30,7 +34,7 @@ export interface FormAction {
   variant?: 'default' | 'outline';
   /** Publishing enforces the required fields; saving a Draft does not. */
   enforceRequired: boolean;
-  run: (data: IdeaData) => Promise<unknown>;
+  run: (data: IdeaData, files: File[]) => Promise<unknown>;
 }
 
 function isEmpty(value: FieldValue | undefined) {
@@ -53,12 +57,17 @@ export function IdeaForm({
   actions,
   onCancel,
   ideaNumber,
+  existingAttachments = [],
+  onRemoveAttachment,
 }: {
   initial?: IdeaData;
   actions: FormAction[];
   onCancel?: () => void;
   /** Number of the Idea being edited, left out of the Similar Ideas. */
   ideaNumber?: number;
+  /** Files the Idea already has (editing). */
+  existingAttachments?: AttachmentDtoOutput[];
+  onRemoveAttachment?: (attachment: AttachmentDtoOutput) => void;
 }) {
   const { t } = useTranslation();
   const { data: categoriesResponse } = useCategoriesList();
@@ -67,6 +76,8 @@ export function IdeaForm({
   const fields = fieldsResponse?.data ?? [];
   const [running, setRunning] = useState<string>();
   const [generalError, setGeneralError] = useState<string>();
+  const [files, setFiles] = useState<File[]>([]);
+  const filesProblem = useFilesProblem(files, existingAttachments.length);
 
   const form = useForm<IdeaData>({
     defaultValues: initial ?? { title: '', categoryId: '', values: {} },
@@ -97,10 +108,13 @@ export function IdeaForm({
     form.clearErrors();
     setGeneralError(undefined);
     const data = form.getValues();
-    if (!validate(data, action.enforceRequired)) return;
+    if (!validate(data, action.enforceRequired) || filesProblem) return;
     setRunning(action.label);
     try {
-      await action.run({ ...data, title: data.title.trim(), values: clean(data.values ?? {}) });
+      await action.run(
+        { ...data, title: data.title.trim(), values: clean(data.values ?? {}) },
+        files,
+      );
     } catch (error) {
       const body =
         error instanceof ApiError
@@ -111,7 +125,9 @@ export function IdeaForm({
           form.setError(`values.${fieldId}`, { message: t(`errors.fields.${problem}`) });
         }
       }
-      setGeneralError(apiErrorMessage(error, t));
+      setGeneralError(
+        error instanceof AttachmentsNotSent ? t('attachments.failed') : apiErrorMessage(error, t),
+      );
     } finally {
       setRunning(undefined);
     }
@@ -163,6 +179,12 @@ export function IdeaForm({
           error={errors.values?.[field.id]?.message}
         />
       ))}
+
+      <div className="grid gap-2">
+        <Label>{t('attachments.title')}</Label>
+        <AttachmentList attachments={existingAttachments} onRemove={onRemoveAttachment} />
+        <FilePicker files={files} onChange={setFiles} existing={existingAttachments.length} />
+      </div>
 
       {generalError && (
         <p role="alert" className="text-sm text-destructive">
