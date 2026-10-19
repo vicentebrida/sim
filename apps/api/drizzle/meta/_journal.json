@@ -78,6 +78,13 @@
       "when": 1792443392173,
       "tag": "0010_status_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792446675869,
+      "tag": "0011_email_retry",
+      "breakpoints": true
     }
   ]
 }
