@@ -22,12 +22,12 @@
         ]
       }
     },
-    "/api/colaboradores/mencionaveis": {
+    "/api/collaborators/mentionable": {
       "get": {
-        "operationId": "mencionaveis_buscar",
+        "operationId": "mentionable_search",
         "parameters": [
           {
-            "name": "busca",
+            "name": "search",
             "required": false,
             "in": "query",
             "schema": {
@@ -45,7 +45,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/MencionavelDto_Output"
+                    "$ref": "#/components/schemas/MentionableDto_Output"
                   }
                 }
               }
@@ -53,13 +53,13 @@
           }
         },
         "tags": [
-          "colaboradores"
+          "collaborators"
         ]
       }
     },
-    "/api/colaboradores": {
+    "/api/collaborators": {
       "get": {
-        "operationId": "colaboradores_listar",
+        "operationId": "collaborators_list",
         "parameters": [],
         "responses": {
           "200": {
@@ -69,7 +69,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ColaboradorDto_Output"
+                    "$ref": "#/components/schemas/CollaboratorDto_Output"
                   }
                 }
               }
@@ -77,18 +77,18 @@
           }
         },
         "tags": [
-          "colaboradores"
+          "collaborators"
         ]
       },
       "post": {
-        "operationId": "colaboradores_criarContaLocal",
+        "operationId": "collaborators_createLocalAccount",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NovaContaLocalDto"
+                "$ref": "#/components/schemas/NewLocalAccountDto"
               }
             }
           }
@@ -99,20 +99,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContaLocalCriadaDto_Output"
+                  "$ref": "#/components/schemas/LocalAccountCreatedDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "colaboradores"
+          "collaborators"
         ]
       }
     },
-    "/api/auth/configuracao": {
+    "/api/auth/configuration": {
       "get": {
-        "operationId": "auth_configuracao",
+        "operationId": "auth_configuration",
         "parameters": [],
         "responses": {
           "200": {
@@ -120,7 +120,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ConfiguracaoDeAcessoDto_Output"
+                  "$ref": "#/components/schemas/AccessConfigurationDto_Output"
                 }
               }
             }
@@ -140,7 +140,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CredenciaisDto"
+                "$ref": "#/components/schemas/CredentialsDto"
               }
             }
           }
@@ -151,13 +151,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ColaboradorAtualDto_Output"
+                  "$ref": "#/components/schemas/CurrentCollaboratorDto_Output"
                 }
               }
             }
           },
           "429": {
-            "description": "Muitas tentativas; aguarde e tente novamente"
+            "description": "Too many attempts; wait and try again"
           }
         },
         "tags": [
@@ -189,7 +189,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ColaboradorAtualDto_Output"
+                  "$ref": "#/components/schemas/CurrentCollaboratorDto_Output"
                 }
               }
             }
@@ -200,16 +200,16 @@
         ]
       }
     },
-    "/api/auth/trocar-senha": {
+    "/api/auth/change-password": {
       "post": {
-        "operationId": "auth_trocarSenha",
+        "operationId": "auth_changePassword",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TrocaDeSenhaDto"
+                "$ref": "#/components/schemas/PasswordChangeDto"
               }
             }
           }
@@ -224,12 +224,12 @@
         ]
       }
     },
-    "/api/categorias": {
+    "/api/categories": {
       "get": {
-        "operationId": "categorias_listar",
+        "operationId": "categories_list",
         "parameters": [
           {
-            "name": "incluirInativas",
+            "name": "includeInactive",
             "required": false,
             "in": "query",
             "schema": {
@@ -245,7 +245,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CategoriaDto_Output"
+                    "$ref": "#/components/schemas/CategoryDto_Output"
                   }
                 }
               }
@@ -253,18 +253,18 @@
           }
         },
         "tags": [
-          "categorias"
+          "categories"
         ]
       },
       "post": {
-        "operationId": "categorias_criar",
+        "operationId": "categories_create",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NovaCategoriaDto"
+                "$ref": "#/components/schemas/NewCategoryDto"
               }
             }
           }
@@ -275,20 +275,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CategoriaDto_Output"
+                  "$ref": "#/components/schemas/CategoryDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "categorias"
+          "categories"
         ]
       }
     },
-    "/api/categorias/{id}": {
+    "/api/categories/{id}": {
       "patch": {
-        "operationId": "categorias_atualizar",
+        "operationId": "categories_update",
         "parameters": [
           {
             "name": "id",
@@ -304,7 +304,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AtualizacaoDeCategoriaDto"
+                "$ref": "#/components/schemas/CategoryUpdateDto"
               }
             }
           }
@@ -315,18 +315,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CategoriaDto_Output"
+                  "$ref": "#/components/schemas/CategoryDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "categorias"
+          "categories"
         ]
       },
       "delete": {
-        "operationId": "categorias_excluir",
+        "operationId": "categories_delete",
         "parameters": [
           {
             "name": "id",
@@ -343,13 +343,13 @@
           }
         },
         "tags": [
-          "categorias"
+          "categories"
         ]
       }
     },
-    "/api/categorias/{id}/avaliadores": {
+    "/api/categories/{id}/reviewers": {
       "put": {
-        "operationId": "categorias_definirAvaliadores",
+        "operationId": "categories_setReviewers",
         "parameters": [
           {
             "name": "id",
@@ -365,7 +365,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AvaliadoresDto"
+                "$ref": "#/components/schemas/ReviewersDto"
               }
             }
           }
@@ -376,23 +376,23 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CategoriaDto_Output"
+                  "$ref": "#/components/schemas/CategoryDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "categorias"
+          "categories"
         ]
       }
     },
-    "/api/campos-personalizados": {
+    "/api/custom-fields": {
       "get": {
-        "operationId": "camposPersonalizados_listar",
+        "operationId": "customFields_list",
         "parameters": [
           {
-            "name": "incluirInativos",
+            "name": "includeInactive",
             "required": false,
             "in": "query",
             "schema": {
@@ -408,7 +408,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CampoPersonalizadoDto_Output"
+                    "$ref": "#/components/schemas/CustomFieldDto_Output"
                   }
                 }
               }
@@ -416,18 +416,18 @@
           }
         },
         "tags": [
-          "campos-personalizados"
+          "custom-fields"
         ]
       },
       "post": {
-        "operationId": "camposPersonalizados_criar",
+        "operationId": "customFields_create",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NovoCampoDto"
+                "$ref": "#/components/schemas/NewCustomFieldDto"
               }
             }
           }
@@ -438,27 +438,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CampoPersonalizadoDto_Output"
+                  "$ref": "#/components/schemas/CustomFieldDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "campos-personalizados"
+          "custom-fields"
         ]
       }
     },
-    "/api/campos-personalizados/ordem": {
+    "/api/custom-fields/order": {
       "put": {
-        "operationId": "camposPersonalizados_reordenar",
+        "operationId": "customFields_reorder",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/OrdemDosCamposDto"
+                "$ref": "#/components/schemas/CustomFieldOrderDto"
               }
             }
           }
@@ -471,7 +471,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CampoPersonalizadoDto_Output"
+                    "$ref": "#/components/schemas/CustomFieldDto_Output"
                   }
                 }
               }
@@ -479,13 +479,13 @@
           }
         },
         "tags": [
-          "campos-personalizados"
+          "custom-fields"
         ]
       }
     },
-    "/api/campos-personalizados/{id}": {
+    "/api/custom-fields/{id}": {
       "patch": {
-        "operationId": "camposPersonalizados_atualizar",
+        "operationId": "customFields_update",
         "parameters": [
           {
             "name": "id",
@@ -501,7 +501,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AtualizacaoDeCampoDto"
+                "$ref": "#/components/schemas/CustomFieldUpdateDto"
               }
             }
           }
@@ -512,18 +512,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CampoPersonalizadoDto_Output"
+                  "$ref": "#/components/schemas/CustomFieldDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "campos-personalizados"
+          "custom-fields"
         ]
       },
       "delete": {
-        "operationId": "camposPersonalizados_excluir",
+        "operationId": "customFields_delete",
         "parameters": [
           {
             "name": "id",
@@ -540,13 +540,13 @@
           }
         },
         "tags": [
-          "campos-personalizados"
+          "custom-fields"
         ]
       }
     },
-    "/api/ideias": {
+    "/api/ideas": {
       "get": {
-        "operationId": "ideias_listar",
+        "operationId": "ideas_list",
         "parameters": [
           {
             "name": "status",
@@ -557,7 +557,7 @@
             }
           },
           {
-            "name": "categoriaId",
+            "name": "categoryId",
             "required": false,
             "in": "query",
             "schema": {
@@ -567,32 +567,32 @@
             }
           },
           {
-            "name": "autor",
+            "name": "author",
             "required": false,
             "in": "query",
             "schema": {
               "type": "string",
               "enum": [
-                "eu"
+                "me"
               ]
             }
           },
           {
-            "name": "ordem",
+            "name": "sort",
             "required": false,
             "in": "query",
             "schema": {
-              "default": "em_alta",
+              "default": "trending",
               "type": "string",
               "enum": [
-                "em_alta",
-                "mais_curtidas",
-                "mais_recentes"
+                "trending",
+                "most_liked",
+                "newest"
               ]
             }
           },
           {
-            "name": "pagina",
+            "name": "page",
             "required": false,
             "in": "query",
             "schema": {
@@ -603,7 +603,7 @@
             }
           },
           {
-            "name": "porPagina",
+            "name": "pageSize",
             "required": false,
             "in": "query",
             "schema": {
@@ -620,25 +620,25 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaginaDeIdeiasDto_Output"
+                  "$ref": "#/components/schemas/IdeaPageDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "ideias"
+          "ideas"
         ]
       },
       "post": {
-        "operationId": "ideias_criar",
+        "operationId": "ideas_create",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NovaIdeiaDto"
+                "$ref": "#/components/schemas/NewIdeaDto"
               }
             }
           }
@@ -649,23 +649,23 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IdeiaDto_Output"
+                  "$ref": "#/components/schemas/IdeaDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "ideias"
+          "ideas"
         ]
       }
     },
-    "/api/ideias/{numero}": {
+    "/api/ideas/{number}": {
       "get": {
-        "operationId": "ideias_detalhar",
+        "operationId": "ideas_detail",
         "parameters": [
           {
-            "name": "numero",
+            "name": "number",
             "required": true,
             "in": "path",
             "schema": {
@@ -679,21 +679,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IdeiaDto_Output"
+                  "$ref": "#/components/schemas/IdeaDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "ideias"
+          "ideas"
         ]
       },
       "patch": {
-        "operationId": "ideias_editar",
+        "operationId": "ideas_update",
         "parameters": [
           {
-            "name": "numero",
+            "name": "number",
             "required": true,
             "in": "path",
             "schema": {
@@ -706,7 +706,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EdicaoDeIdeiaDto"
+                "$ref": "#/components/schemas/IdeaUpdateDto"
               }
             }
           }
@@ -717,21 +717,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IdeiaDto_Output"
+                  "$ref": "#/components/schemas/IdeaDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "ideias"
+          "ideas"
         ]
       },
       "delete": {
-        "operationId": "ideias_excluir",
+        "operationId": "ideas_delete",
         "parameters": [
           {
-            "name": "numero",
+            "name": "number",
             "required": true,
             "in": "path",
             "schema": {
@@ -745,16 +745,16 @@
           }
         },
         "tags": [
-          "ideias"
+          "ideas"
         ]
       }
     },
-    "/api/ideias/{numero}/publicar": {
+    "/api/ideas/{number}/publish": {
       "post": {
-        "operationId": "ideias_publicar",
+        "operationId": "ideas_publish",
         "parameters": [
           {
-            "name": "numero",
+            "name": "number",
             "required": true,
             "in": "path",
             "schema": {
@@ -768,63 +768,23 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IdeiaDto_Output"
+                  "$ref": "#/components/schemas/IdeaDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "ideias"
+          "ideas"
         ]
       }
     },
-    "/api/ideias/{numero}/status": {
+    "/api/ideas/{number}/status": {
       "post": {
-        "operationId": "ideias_mudarStatus",
+        "operationId": "ideas_changeStatus",
         "parameters": [
           {
-            "name": "numero",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MudancaDeStatusDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IdeiaDto_Output"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "ideias"
-        ]
-      }
-    },
-    "/api/ideias/{numero}/categoria": {
-      "post": {
-        "operationId": "ideias_recategorizar",
-        "parameters": [
-          {
-            "name": "numero",
+            "name": "number",
             "required": true,
             "in": "path",
             "schema": {
@@ -837,7 +797,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RecategorizacaoDto"
+                "$ref": "#/components/schemas/StatusChangeDto"
               }
             }
           }
@@ -848,23 +808,63 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IdeiaDto_Output"
+                  "$ref": "#/components/schemas/IdeaDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "ideias"
+          "ideas"
         ]
       }
     },
-    "/api/ideias/{numero}/curtidas": {
+    "/api/ideas/{number}/category": {
+      "post": {
+        "operationId": "ideas_recategorize",
+        "parameters": [
+          {
+            "name": "number",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecategorizationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdeaDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "ideas"
+        ]
+      }
+    },
+    "/api/ideas/{number}/likes": {
       "get": {
-        "operationId": "ideias_listarCurtidas",
+        "operationId": "ideas_listLikes",
         "parameters": [
           {
-            "name": "numero",
+            "name": "number",
             "required": true,
             "in": "path",
             "schema": {
@@ -880,7 +880,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CurtidaDto_Output"
+                    "$ref": "#/components/schemas/LikeDto_Output"
                   }
                 }
               }
@@ -888,16 +888,16 @@
           }
         },
         "tags": [
-          "ideias"
+          "ideas"
         ]
       }
     },
-    "/api/ideias/{numero}/curtida": {
+    "/api/ideas/{number}/like": {
       "put": {
-        "operationId": "ideias_curtir",
+        "operationId": "ideas_like",
         "parameters": [
           {
-            "name": "numero",
+            "name": "number",
             "required": true,
             "in": "path",
             "schema": {
@@ -911,21 +911,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CurtidasDto_Output"
+                  "$ref": "#/components/schemas/LikesDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "ideias"
+          "ideas"
         ]
       },
       "delete": {
-        "operationId": "ideias_descurtir",
+        "operationId": "ideas_unlike",
         "parameters": [
           {
-            "name": "numero",
+            "name": "number",
             "required": true,
             "in": "path",
             "schema": {
@@ -939,23 +939,23 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CurtidasDto_Output"
+                  "$ref": "#/components/schemas/LikesDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "ideias"
+          "ideas"
         ]
       }
     },
-    "/api/ideias/{numero}/comentarios": {
+    "/api/ideas/{number}/comments": {
       "get": {
-        "operationId": "comentarios_listar",
+        "operationId": "comments_list",
         "parameters": [
           {
-            "name": "numero",
+            "name": "number",
             "required": true,
             "in": "path",
             "schema": {
@@ -971,7 +971,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ComentarioDto_Output"
+                    "$ref": "#/components/schemas/CommentDto_Output"
                   }
                 }
               }
@@ -979,14 +979,14 @@
           }
         },
         "tags": [
-          "comentarios"
+          "comments"
         ]
       },
       "post": {
-        "operationId": "comentarios_criar",
+        "operationId": "comments_create",
         "parameters": [
           {
-            "name": "numero",
+            "name": "number",
             "required": true,
             "in": "path",
             "schema": {
@@ -999,7 +999,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NovoComentarioDto"
+                "$ref": "#/components/schemas/NewCommentDto"
               }
             }
           }
@@ -1010,20 +1010,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ComentarioDto_Output"
+                  "$ref": "#/components/schemas/CommentDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "comentarios"
+          "comments"
         ]
       }
     },
-    "/api/comentarios/{id}": {
+    "/api/comments/{id}": {
       "patch": {
-        "operationId": "comentarios_editar",
+        "operationId": "comments_update",
         "parameters": [
           {
             "name": "id",
@@ -1039,7 +1039,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EdicaoDeComentarioDto"
+                "$ref": "#/components/schemas/CommentUpdateDto"
               }
             }
           }
@@ -1050,18 +1050,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ComentarioDto_Output"
+                  "$ref": "#/components/schemas/CommentDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "comentarios"
+          "comments"
         ]
       },
       "delete": {
-        "operationId": "comentarios_remover",
+        "operationId": "comments_remove",
         "parameters": [
           {
             "name": "id",
@@ -1078,13 +1078,13 @@
           }
         },
         "tags": [
-          "comentarios"
+          "comments"
         ]
       }
     },
-    "/api/comentarios/{id}/ocultar": {
+    "/api/comments/{id}/hide": {
       "post": {
-        "operationId": "comentarios_ocultar",
+        "operationId": "comments_hide",
         "parameters": [
           {
             "name": "id",
@@ -1100,7 +1100,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/OcultacaoDeComentarioDto"
+                "$ref": "#/components/schemas/CommentHidingDto"
               }
             }
           }
@@ -1111,21 +1111,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ComentarioDto_Output"
+                  "$ref": "#/components/schemas/CommentDto_Output"
                 }
               }
             }
           }
         },
         "tags": [
-          "comentarios"
+          "comments"
         ]
       }
     }
   },
   "info": {
     "title": "SIM — Sistema de Ideias e Melhorias",
-    "description": "API REST do SIM",
+    "description": "SIM REST API",
     "version": "0.0.0",
     "contact": {}
   },
@@ -1157,7 +1157,7 @@
         ],
         "additionalProperties": false
       },
-      "MencionavelDto_Output": {
+      "MentionableDto_Output": {
         "type": "object",
         "properties": {
           "id": {
@@ -1165,17 +1165,17 @@
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
-          "nome": {
+          "name": {
             "type": "string"
           }
         },
         "required": [
           "id",
-          "nome"
+          "name"
         ],
         "additionalProperties": false
       },
-      "ColaboradorDto_Output": {
+      "CollaboratorDto_Output": {
         "type": "object",
         "properties": {
           "id": {
@@ -1183,7 +1183,7 @@
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
-          "nome": {
+          "name": {
             "type": "string"
           },
           "email": {
@@ -1191,7 +1191,7 @@
             "format": "email",
             "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
           },
-          "departamento": {
+          "department": {
             "anyOf": [
               {
                 "type": "string"
@@ -1201,7 +1201,7 @@
               }
             ]
           },
-          "fotoUrl": {
+          "pictureUrl": {
             "anyOf": [
               {
                 "type": "string"
@@ -1211,28 +1211,28 @@
               }
             ]
           },
-          "administrador": {
+          "administrator": {
             "type": "boolean"
           },
-          "ativo": {
+          "active": {
             "type": "boolean"
           }
         },
         "required": [
           "id",
-          "nome",
+          "name",
           "email",
-          "departamento",
-          "fotoUrl",
-          "administrador",
-          "ativo"
+          "department",
+          "pictureUrl",
+          "administrator",
+          "active"
         ],
         "additionalProperties": false
       },
-      "NovaContaLocalDto": {
+      "NewLocalAccountDto": {
         "type": "object",
         "properties": {
-          "nome": {
+          "name": {
             "type": "string",
             "minLength": 1,
             "maxLength": 120
@@ -1242,20 +1242,20 @@
             "format": "email",
             "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
           },
-          "administrador": {
+          "administrator": {
             "default": false,
             "type": "boolean"
           }
         },
         "required": [
-          "nome",
+          "name",
           "email"
         ]
       },
-      "ContaLocalCriadaDto_Output": {
+      "LocalAccountCreatedDto_Output": {
         "type": "object",
         "properties": {
-          "colaborador": {
+          "collaborator": {
             "type": "object",
             "properties": {
               "id": {
@@ -1263,7 +1263,7 @@
                 "format": "uuid",
                 "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
               },
-              "nome": {
+              "name": {
                 "type": "string"
               },
               "email": {
@@ -1271,76 +1271,79 @@
                 "format": "email",
                 "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
               },
-              "departamento": {
+              "department": {
                 "type": [
                   "string",
                   "null"
                 ]
               },
-              "fotoUrl": {
+              "pictureUrl": {
                 "type": [
                   "string",
                   "null"
                 ]
               },
-              "administrador": {
+              "administrator": {
                 "type": "boolean"
               },
-              "ativo": {
+              "active": {
                 "type": "boolean"
               }
             },
             "required": [
               "id",
-              "nome",
+              "name",
               "email",
-              "departamento",
-              "fotoUrl",
-              "administrador",
-              "ativo"
+              "department",
+              "pictureUrl",
+              "administrator",
+              "active"
             ],
             "additionalProperties": false
           },
-          "senhaTemporaria": {
+          "temporaryPassword": {
             "type": "string"
           }
         },
         "required": [
-          "colaborador",
-          "senhaTemporaria"
+          "collaborator",
+          "temporaryPassword"
         ],
         "additionalProperties": false
       },
-      "ConfiguracaoDeAcessoDto_Output": {
+      "AccessConfigurationDto_Output": {
         "type": "object",
         "properties": {
-          "loginLocal": {
+          "localLogin": {
             "type": "boolean"
           },
           "sso": {
             "type": "object",
             "properties": {
-              "habilitado": {
+              "enabled": {
                 "type": "boolean"
               },
-              "rotulo": {
-                "type": "string"
+              "label": {
+                "type": [
+                  "string",
+                  "null"
+                ]
               }
             },
             "required": [
-              "habilitado",
-              "rotulo"
+              "enabled",
+              "label"
             ],
             "additionalProperties": false
           }
         },
         "required": [
-          "loginLocal",
+          "localLogin",
           "sso"
         ],
         "additionalProperties": false
       },
-      "CredenciaisDto": {
+      "CredentialsDto": {
         "type": "object",
         "properties": {
           "email": {
@@ -1348,17 +1351,17 @@
             "format": "email",
             "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
           },
-          "senha": {
+          "password": {
             "type": "string",
             "minLength": 1
           }
         },
         "required": [
           "email",
-          "senha"
+          "password"
         ]
       },
-      "ColaboradorAtualDto_Output": {
+      "CurrentCollaboratorDto_Output": {
         "type": "object",
         "properties": {
           "id": {
@@ -1366,7 +1369,7 @@
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
-          "nome": {
+          "name": {
             "type": "string"
           },
           "email": {
@@ -1374,7 +1377,7 @@
             "format": "email",
             "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
           },
-          "departamento": {
+          "department": {
             "anyOf": [
               {
                 "type": "string"
@@ -1384,7 +1387,7 @@
               }
             ]
           },
-          "fotoUrl": {
+          "pictureUrl": {
             "anyOf": [
               {
                 "type": "string"
@@ -1394,43 +1397,43 @@
               }
             ]
           },
-          "administrador": {
+          "administrator": {
             "type": "boolean"
           },
-          "deveTrocarSenha": {
+          "mustChangePassword": {
             "type": "boolean"
           }
         },
         "required": [
           "id",
-          "nome",
+          "name",
           "email",
-          "departamento",
-          "fotoUrl",
-          "administrador",
-          "deveTrocarSenha"
+          "department",
+          "pictureUrl",
+          "administrator",
+          "mustChangePassword"
         ],
         "additionalProperties": false
       },
-      "TrocaDeSenhaDto": {
+      "PasswordChangeDto": {
         "type": "object",
         "properties": {
-          "senhaAtual": {
+          "currentPassword": {
             "type": "string",
             "minLength": 1
           },
-          "novaSenha": {
+          "newPassword": {
             "type": "string",
             "minLength": 12,
             "maxLength": 256
           }
         },
         "required": [
-          "senhaAtual",
-          "novaSenha"
+          "currentPassword",
+          "newPassword"
         ]
       },
-      "CategoriaDto_Output": {
+      "CategoryDto_Output": {
         "type": "object",
         "properties": {
           "id": {
@@ -1438,16 +1441,16 @@
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
-          "nome": {
+          "name": {
             "type": "string"
           },
-          "descricao": {
+          "description": {
             "type": "string"
           },
-          "ativa": {
+          "active": {
             "type": "boolean"
           },
-          "avaliadores": {
+          "reviewers": {
             "type": "array",
             "items": {
               "type": "object",
@@ -1457,13 +1460,13 @@
                   "format": "uuid",
                   "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                 },
-                "nome": {
+                "name": {
                   "type": "string"
                 }
               },
               "required": [
                 "id",
-                "nome"
+                "name"
               ],
               "additionalProperties": false
             }
@@ -1471,52 +1474,52 @@
         },
         "required": [
           "id",
-          "nome",
-          "descricao",
-          "ativa",
-          "avaliadores"
+          "name",
+          "description",
+          "active",
+          "reviewers"
         ],
         "additionalProperties": false
       },
-      "NovaCategoriaDto": {
+      "NewCategoryDto": {
         "type": "object",
         "properties": {
-          "nome": {
+          "name": {
             "type": "string",
             "minLength": 1,
             "maxLength": 60
           },
-          "descricao": {
+          "description": {
             "default": "",
             "type": "string",
             "maxLength": 280
           }
         },
         "required": [
-          "nome"
+          "name"
         ]
       },
-      "AtualizacaoDeCategoriaDto": {
+      "CategoryUpdateDto": {
         "type": "object",
         "properties": {
-          "nome": {
+          "name": {
             "type": "string",
             "minLength": 1,
             "maxLength": 60
           },
-          "descricao": {
+          "description": {
             "type": "string",
             "maxLength": 280
           },
-          "ativa": {
+          "active": {
             "type": "boolean"
           }
         }
       },
-      "AvaliadoresDto": {
+      "ReviewersDto": {
         "type": "object",
         "properties": {
-          "colaboradorIds": {
+          "collaboratorIds": {
             "maxItems": 100,
             "type": "array",
             "items": {
@@ -1527,10 +1530,10 @@
           }
         },
         "required": [
-          "colaboradorIds"
+          "collaboratorIds"
         ]
       },
-      "CampoPersonalizadoDto_Output": {
+      "CustomFieldDto_Output": {
         "type": "object",
         "properties": {
           "id": {
@@ -1538,86 +1541,86 @@
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
-          "rotulo": {
+          "label": {
             "type": "string"
           },
-          "ajuda": {
+          "help": {
             "type": "string"
           },
-          "tipo": {
+          "type": {
             "type": "string",
             "enum": [
-              "texto_curto",
-              "texto_longo",
-              "selecao_unica",
-              "selecao_multipla",
-              "numero",
-              "sim_nao"
+              "short_text",
+              "long_text",
+              "single_choice",
+              "multiple_choice",
+              "number",
+              "yes_no"
             ]
           },
-          "obrigatorio": {
+          "required": {
             "type": "boolean"
           },
-          "opcoes": {
+          "options": {
             "type": "array",
             "items": {
               "type": "string"
             }
           },
-          "usarNaDeteccao": {
+          "useForDetection": {
             "type": "boolean"
           },
-          "ordem": {
+          "position": {
             "type": "integer",
             "minimum": -9007199254740991,
             "maximum": 9007199254740991
           },
-          "ativo": {
+          "active": {
             "type": "boolean"
           }
         },
         "required": [
           "id",
-          "rotulo",
-          "ajuda",
-          "tipo",
-          "obrigatorio",
-          "opcoes",
-          "usarNaDeteccao",
-          "ordem",
-          "ativo"
+          "label",
+          "help",
+          "type",
+          "required",
+          "options",
+          "useForDetection",
+          "position",
+          "active"
         ],
         "additionalProperties": false
       },
-      "NovoCampoDto": {
+      "NewCustomFieldDto": {
         "type": "object",
         "properties": {
-          "rotulo": {
+          "label": {
             "type": "string",
             "minLength": 1,
             "maxLength": 80
           },
-          "ajuda": {
+          "help": {
             "default": "",
             "type": "string",
             "maxLength": 280
           },
-          "tipo": {
+          "type": {
             "type": "string",
             "enum": [
-              "texto_curto",
-              "texto_longo",
-              "selecao_unica",
-              "selecao_multipla",
-              "numero",
-              "sim_nao"
+              "short_text",
+              "long_text",
+              "single_choice",
+              "multiple_choice",
+              "number",
+              "yes_no"
             ]
           },
-          "obrigatorio": {
+          "required": {
             "default": false,
             "type": "boolean"
           },
-          "opcoes": {
+          "options": {
             "default": [],
             "maxItems": 50,
             "type": "array",
@@ -1627,17 +1630,17 @@
               "maxLength": 80
             }
           },
-          "usarNaDeteccao": {
+          "useForDetection": {
             "default": false,
             "type": "boolean"
           }
         },
         "required": [
-          "rotulo",
-          "tipo"
+          "label",
+          "type"
         ]
       },
-      "OrdemDosCamposDto": {
+      "CustomFieldOrderDto": {
         "type": "object",
         "properties": {
           "ids": {
@@ -1654,22 +1657,22 @@
           "ids"
         ]
       },
-      "AtualizacaoDeCampoDto": {
+      "CustomFieldUpdateDto": {
         "type": "object",
         "properties": {
-          "rotulo": {
+          "label": {
             "type": "string",
             "minLength": 1,
             "maxLength": 80
           },
-          "ajuda": {
+          "help": {
             "type": "string",
             "maxLength": 280
           },
-          "obrigatorio": {
+          "required": {
             "type": "boolean"
           },
-          "opcoes": {
+          "options": {
             "maxItems": 50,
             "type": "array",
             "items": {
@@ -1678,18 +1681,18 @@
               "maxLength": 80
             }
           },
-          "usarNaDeteccao": {
+          "useForDetection": {
             "type": "boolean"
           },
-          "ativo": {
+          "active": {
             "type": "boolean"
           }
         }
       },
-      "PaginaDeIdeiasDto_Output": {
+      "IdeaPageDto_Output": {
         "type": "object",
         "properties": {
-          "itens": {
+          "items": {
             "type": "array",
             "items": {
               "type": "object",
@@ -1699,29 +1702,29 @@
                   "format": "uuid",
                   "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                 },
-                "numero": {
+                "number": {
                   "type": "integer",
                   "minimum": -9007199254740991,
                   "maximum": 9007199254740991
                 },
-                "titulo": {
+                "title": {
                   "type": "string"
                 },
                 "status": {
                   "type": "string",
                   "enum": [
-                    "rascunho",
-                    "aberta",
-                    "em_analise",
-                    "aprovada",
-                    "em_execucao",
-                    "concluida",
-                    "recusada",
-                    "duplicada",
-                    "arquivada"
+                    "draft",
+                    "open",
+                    "under_review",
+                    "approved",
+                    "in_progress",
+                    "done",
+                    "declined",
+                    "duplicate",
+                    "archived"
                   ]
                 },
-                "categoria": {
+                "category": {
                   "type": "object",
                   "properties": {
                     "id": {
@@ -1729,17 +1732,17 @@
                       "format": "uuid",
                       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                     },
-                    "nome": {
+                    "name": {
                       "type": "string"
                     }
                   },
                   "required": [
                     "id",
-                    "nome"
+                    "name"
                   ],
                   "additionalProperties": false
                 },
-                "autor": {
+                "author": {
                   "type": "object",
                   "properties": {
                     "id": {
@@ -1747,17 +1750,17 @@
                       "format": "uuid",
                       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                     },
-                    "nome": {
+                    "name": {
                       "type": "string"
                     }
                   },
                   "required": [
                     "id",
-                    "nome"
+                    "name"
                   ],
                   "additionalProperties": false
                 },
-                "curtidas": {
+                "likes": {
                   "type": "object",
                   "properties": {
                     "total": {
@@ -1765,22 +1768,22 @@
                       "minimum": -9007199254740991,
                       "maximum": 9007199254740991
                     },
-                    "curtiu": {
+                    "liked": {
                       "type": "boolean"
                     }
                   },
                   "required": [
                     "total",
-                    "curtiu"
+                    "liked"
                   ],
                   "additionalProperties": false
                 },
-                "criadaEm": {
+                "createdAt": {
                   "type": "string",
                   "format": "date-time",
                   "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
                 },
-                "publicadaEm": {
+                "publishedAt": {
                   "anyOf": [
                     {
                       "type": "string",
@@ -1795,14 +1798,14 @@
               },
               "required": [
                 "id",
-                "numero",
-                "titulo",
+                "number",
+                "title",
                 "status",
-                "categoria",
-                "autor",
-                "curtidas",
-                "criadaEm",
-                "publicadaEm"
+                "category",
+                "author",
+                "likes",
+                "createdAt",
+                "publishedAt"
               ],
               "additionalProperties": false
             }
@@ -1812,39 +1815,39 @@
             "minimum": -9007199254740991,
             "maximum": 9007199254740991
           },
-          "pagina": {
+          "page": {
             "type": "integer",
             "minimum": -9007199254740991,
             "maximum": 9007199254740991
           },
-          "porPagina": {
+          "pageSize": {
             "type": "integer",
             "minimum": -9007199254740991,
             "maximum": 9007199254740991
           }
         },
         "required": [
-          "itens",
+          "items",
           "total",
-          "pagina",
-          "porPagina"
+          "page",
+          "pageSize"
         ],
         "additionalProperties": false
       },
-      "NovaIdeiaDto": {
+      "NewIdeaDto": {
         "type": "object",
         "properties": {
-          "titulo": {
+          "title": {
             "type": "string",
             "minLength": 1,
             "maxLength": 120
           },
-          "categoriaId": {
+          "categoryId": {
             "type": "string",
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
-          "valores": {
+          "values": {
             "default": {},
             "type": "object",
             "propertyNames": {
@@ -1873,17 +1876,17 @@
               ]
             }
           },
-          "publicar": {
+          "publish": {
             "default": false,
             "type": "boolean"
           }
         },
         "required": [
-          "titulo",
-          "categoriaId"
+          "title",
+          "categoryId"
         ]
       },
-      "IdeiaDto_Output": {
+      "IdeaDto_Output": {
         "type": "object",
         "properties": {
           "id": {
@@ -1891,29 +1894,29 @@
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
-          "numero": {
+          "number": {
             "type": "integer",
             "minimum": -9007199254740991,
             "maximum": 9007199254740991
           },
-          "titulo": {
+          "title": {
             "type": "string"
           },
           "status": {
             "type": "string",
             "enum": [
-              "rascunho",
-              "aberta",
-              "em_analise",
-              "aprovada",
-              "em_execucao",
-              "concluida",
-              "recusada",
-              "duplicada",
-              "arquivada"
+              "draft",
+              "open",
+              "under_review",
+              "approved",
+              "in_progress",
+              "done",
+              "declined",
+              "duplicate",
+              "archived"
             ]
           },
-          "categoria": {
+          "category": {
             "type": "object",
             "properties": {
               "id": {
@@ -1921,17 +1924,17 @@
                 "format": "uuid",
                 "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
               },
-              "nome": {
+              "name": {
                 "type": "string"
               }
             },
             "required": [
               "id",
-              "nome"
+              "name"
             ],
             "additionalProperties": false
           },
-          "autor": {
+          "author": {
             "type": "object",
             "properties": {
               "id": {
@@ -1939,17 +1942,17 @@
                 "format": "uuid",
                 "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
               },
-              "nome": {
+              "name": {
                 "type": "string"
               }
             },
             "required": [
               "id",
-              "nome"
+              "name"
             ],
             "additionalProperties": false
           },
-          "curtidas": {
+          "likes": {
             "type": "object",
             "properties": {
               "total": {
@@ -1957,22 +1960,22 @@
                 "minimum": -9007199254740991,
                 "maximum": 9007199254740991
               },
-              "curtiu": {
+              "liked": {
                 "type": "boolean"
               }
             },
             "required": [
               "total",
-              "curtiu"
+              "liked"
             ],
             "additionalProperties": false
           },
-          "criadaEm": {
+          "createdAt": {
             "type": "string",
             "format": "date-time",
             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
           },
-          "publicadaEm": {
+          "publishedAt": {
             "anyOf": [
               {
                 "type": "string",
@@ -1984,7 +1987,7 @@
               }
             ]
           },
-          "editadaEm": {
+          "editedAt": {
             "anyOf": [
               {
                 "type": "string",
@@ -1996,7 +1999,7 @@
               }
             ]
           },
-          "valores": {
+          "values": {
             "type": "object",
             "propertyNames": {
               "type": "string"
@@ -2024,31 +2027,31 @@
               ]
             }
           },
-          "respostas": {
+          "answers": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
-                "campoId": {
+                "fieldId": {
                   "type": "string",
                   "format": "uuid",
                   "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                 },
-                "rotulo": {
+                "label": {
                   "type": "string"
                 },
-                "tipo": {
+                "type": {
                   "type": "string",
                   "enum": [
-                    "texto_curto",
-                    "texto_longo",
-                    "selecao_unica",
-                    "selecao_multipla",
-                    "numero",
-                    "sim_nao"
+                    "short_text",
+                    "long_text",
+                    "single_choice",
+                    "multiple_choice",
+                    "number",
+                    "yes_no"
                   ]
                 },
-                "valor": {
+                "value": {
                   "anyOf": [
                     {
                       "type": "string"
@@ -2072,31 +2075,31 @@
                 }
               },
               "required": [
-                "campoId",
-                "rotulo",
-                "tipo",
-                "valor"
+                "fieldId",
+                "label",
+                "type",
+                "value"
               ],
               "additionalProperties": false
             }
           },
-          "ideiaOriginal": {
+          "originalIdea": {
             "anyOf": [
               {
                 "type": "object",
                 "properties": {
-                  "numero": {
+                  "number": {
                     "type": "integer",
                     "minimum": -9007199254740991,
                     "maximum": 9007199254740991
                   },
-                  "titulo": {
+                  "title": {
                     "type": "string"
                   }
                 },
                 "required": [
-                  "numero",
-                  "titulo"
+                  "number",
+                  "title"
                 ],
                 "additionalProperties": false
               },
@@ -2105,7 +2108,7 @@
               }
             ]
           },
-          "historico": {
+          "history": {
             "type": "array",
             "items": {
               "type": "object",
@@ -2115,29 +2118,29 @@
                   "format": "uuid",
                   "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                 },
-                "tipo": {
+                "type": {
                   "type": "string",
                   "enum": [
                     "status",
-                    "categoria"
+                    "category"
                   ]
                 },
-                "de": {
+                "from": {
                   "type": [
                     "string",
                     "null"
                   ]
                 },
-                "para": {
+                "to": {
                   "type": "string"
                 },
-                "justificativa": {
+                "justification": {
                   "type": [
                     "string",
                     "null"
                   ]
                 },
-                "colaborador": {
+                "collaborator": {
                   "type": "object",
                   "properties": {
                     "id": {
@@ -2145,17 +2148,17 @@
                       "format": "uuid",
                       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                     },
-                    "nome": {
+                    "name": {
                       "type": "string"
                     }
                   },
                   "required": [
                     "id",
-                    "nome"
+                    "name"
                   ],
                   "additionalProperties": false
                 },
-                "em": {
+                "createdAt": {
                   "type": "string",
                   "format": "date-time",
                   "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
@@ -2163,100 +2166,100 @@
               },
               "required": [
                 "id",
-                "tipo",
-                "de",
-                "para",
-                "justificativa",
-                "colaborador",
-                "em"
+                "type",
+                "from",
+                "to",
+                "justification",
+                "collaborator",
+                "createdAt"
               ],
               "additionalProperties": false
             }
           },
-          "permissoes": {
+          "permissions": {
             "type": "object",
             "properties": {
-              "podeEditar": {
+              "canEdit": {
                 "type": "boolean"
               },
-              "podeExcluir": {
+              "canDelete": {
                 "type": "boolean"
               },
-              "podePublicar": {
+              "canPublish": {
                 "type": "boolean"
               },
-              "podeCurtir": {
+              "canLike": {
                 "type": "boolean"
               },
-              "podeAvaliar": {
+              "canReview": {
                 "type": "boolean"
               },
-              "podeRecategorizar": {
+              "canRecategorize": {
                 "type": "boolean"
               },
-              "transicoes": {
+              "transitions": {
                 "type": "array",
                 "items": {
                   "type": "string",
                   "enum": [
-                    "rascunho",
-                    "aberta",
-                    "em_analise",
-                    "aprovada",
-                    "em_execucao",
-                    "concluida",
-                    "recusada",
-                    "duplicada",
-                    "arquivada"
+                    "draft",
+                    "open",
+                    "under_review",
+                    "approved",
+                    "in_progress",
+                    "done",
+                    "declined",
+                    "duplicate",
+                    "archived"
                   ]
                 }
               }
             },
             "required": [
-              "podeEditar",
-              "podeExcluir",
-              "podePublicar",
-              "podeCurtir",
-              "podeAvaliar",
-              "podeRecategorizar",
-              "transicoes"
+              "canEdit",
+              "canDelete",
+              "canPublish",
+              "canLike",
+              "canReview",
+              "canRecategorize",
+              "transitions"
             ],
             "additionalProperties": false
           }
         },
         "required": [
           "id",
-          "numero",
-          "titulo",
+          "number",
+          "title",
           "status",
-          "categoria",
-          "autor",
-          "curtidas",
-          "criadaEm",
-          "publicadaEm",
-          "editadaEm",
-          "valores",
-          "respostas",
-          "ideiaOriginal",
-          "historico",
-          "permissoes"
+          "category",
+          "author",
+          "likes",
+          "createdAt",
+          "publishedAt",
+          "editedAt",
+          "values",
+          "answers",
+          "originalIdea",
+          "history",
+          "permissions"
         ],
         "additionalProperties": false
       },
-      "EdicaoDeIdeiaDto": {
+      "IdeaUpdateDto": {
         "type": "object",
         "properties": {
-          "titulo": {
+          "title": {
             "type": "string",
             "minLength": 1,
             "maxLength": 120
           },
-          "categoriaId": {
+          "categoryId": {
             "type": "string",
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
-          "valores": {
+          "values": {
             "type": "object",
             "propertyNames": {
               "type": "string"
@@ -2286,61 +2289,61 @@
           }
         }
       },
-      "MudancaDeStatusDto": {
+      "StatusChangeDto": {
         "type": "object",
         "properties": {
-          "para": {
+          "to": {
             "type": "string",
             "enum": [
-              "aberta",
-              "em_analise",
-              "aprovada",
-              "em_execucao",
-              "concluida",
-              "recusada",
-              "duplicada",
-              "arquivada"
+              "open",
+              "under_review",
+              "approved",
+              "in_progress",
+              "done",
+              "declined",
+              "duplicate",
+              "archived"
             ]
           },
-          "justificativa": {
+          "justification": {
             "type": "string",
             "minLength": 1,
             "maxLength": 2000
           },
-          "ideiaOriginalNumero": {
+          "originalIdeaNumber": {
             "type": "integer",
             "exclusiveMinimum": 0,
             "maximum": 9007199254740991
           }
         },
         "required": [
-          "para",
-          "justificativa"
+          "to",
+          "justification"
         ]
       },
-      "RecategorizacaoDto": {
+      "RecategorizationDto": {
         "type": "object",
         "properties": {
-          "categoriaId": {
+          "categoryId": {
             "type": "string",
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
-          "justificativa": {
+          "justification": {
             "type": "string",
             "minLength": 1,
             "maxLength": 2000
           }
         },
         "required": [
-          "categoriaId",
-          "justificativa"
+          "categoryId",
+          "justification"
         ]
       },
-      "CurtidaDto_Output": {
+      "LikeDto_Output": {
         "type": "object",
         "properties": {
-          "colaborador": {
+          "collaborator": {
             "type": "object",
             "properties": {
               "id": {
@@ -2348,29 +2351,29 @@
                 "format": "uuid",
                 "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
               },
-              "nome": {
+              "name": {
                 "type": "string"
               }
             },
             "required": [
               "id",
-              "nome"
+              "name"
             ],
             "additionalProperties": false
           },
-          "em": {
+          "createdAt": {
             "type": "string",
             "format": "date-time",
             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
           }
         },
         "required": [
-          "colaborador",
-          "em"
+          "collaborator",
+          "createdAt"
         ],
         "additionalProperties": false
       },
-      "CurtidasDto_Output": {
+      "LikesDto_Output": {
         "type": "object",
         "properties": {
           "total": {
@@ -2378,17 +2381,17 @@
             "minimum": -9007199254740991,
             "maximum": 9007199254740991
           },
-          "curtiu": {
+          "liked": {
             "type": "boolean"
           }
         },
         "required": [
           "total",
-          "curtiu"
+          "liked"
         ],
         "additionalProperties": false
       },
-      "ComentarioDto_Output": {
+      "CommentDto_Output": {
         "type": "object",
         "properties": {
           "id": {
@@ -2396,7 +2399,7 @@
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           },
-          "autor": {
+          "author": {
             "type": "object",
             "properties": {
               "id": {
@@ -2404,17 +2407,17 @@
                 "format": "uuid",
                 "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
               },
-              "nome": {
+              "name": {
                 "type": "string"
               }
             },
             "required": [
               "id",
-              "nome"
+              "name"
             ],
             "additionalProperties": false
           },
-          "texto": {
+          "text": {
             "anyOf": [
               {
                 "type": "string"
@@ -2424,20 +2427,20 @@
               }
             ]
           },
-          "estado": {
+          "state": {
             "type": "string",
             "enum": [
-              "publicado",
-              "removido",
-              "oculto"
+              "published",
+              "removed",
+              "hidden"
             ]
           },
-          "criadoEm": {
+          "createdAt": {
             "type": "string",
             "format": "date-time",
             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
           },
-          "editadoEm": {
+          "editedAt": {
             "anyOf": [
               {
                 "type": "string",
@@ -2449,15 +2452,15 @@
               }
             ]
           },
-          "ocultacao": {
+          "hiding": {
             "anyOf": [
               {
                 "type": "object",
                 "properties": {
-                  "motivo": {
+                  "reason": {
                     "type": "string"
                   },
-                  "por": {
+                  "by": {
                     "type": "object",
                     "properties": {
                       "id": {
@@ -2465,26 +2468,26 @@
                         "format": "uuid",
                         "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                       },
-                      "nome": {
+                      "name": {
                         "type": "string"
                       }
                     },
                     "required": [
                       "id",
-                      "nome"
+                      "name"
                     ],
                     "additionalProperties": false
                   },
-                  "em": {
+                  "at": {
                     "type": "string",
                     "format": "date-time",
                     "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
                   }
                 },
                 "required": [
-                  "motivo",
-                  "por",
-                  "em"
+                  "reason",
+                  "by",
+                  "at"
                 ],
                 "additionalProperties": false
               },
@@ -2493,31 +2496,31 @@
               }
             ]
           },
-          "permissoes": {
+          "permissions": {
             "type": "object",
             "properties": {
-              "podeResponder": {
+              "canReply": {
                 "type": "boolean"
               },
-              "podeEditar": {
+              "canEdit": {
                 "type": "boolean"
               },
-              "podeRemover": {
+              "canRemove": {
                 "type": "boolean"
               },
-              "podeOcultar": {
+              "canHide": {
                 "type": "boolean"
               }
             },
             "required": [
-              "podeResponder",
-              "podeEditar",
-              "podeRemover",
-              "podeOcultar"
+              "canReply",
+              "canEdit",
+              "canRemove",
+              "canHide"
             ],
             "additionalProperties": false
           },
-          "respostas": {
+          "replies": {
             "type": "array",
             "items": {
               "type": "object",
@@ -2527,7 +2530,7 @@
                   "format": "uuid",
                   "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                 },
-                "autor": {
+                "author": {
                   "type": "object",
                   "properties": {
                     "id": {
@@ -2535,36 +2538,36 @@
                       "format": "uuid",
                       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                     },
-                    "nome": {
+                    "name": {
                       "type": "string"
                     }
                   },
                   "required": [
                     "id",
-                    "nome"
+                    "name"
                   ],
                   "additionalProperties": false
                 },
-                "texto": {
+                "text": {
                   "type": [
                     "string",
                     "null"
                   ]
                 },
-                "estado": {
+                "state": {
                   "type": "string",
                   "enum": [
-                    "publicado",
-                    "removido",
-                    "oculto"
+                    "published",
+                    "removed",
+                    "hidden"
                   ]
                 },
-                "criadoEm": {
+                "createdAt": {
                   "type": "string",
                   "format": "date-time",
                   "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
                 },
-                "editadoEm": {
+                "editedAt": {
                   "anyOf": [
                     {
                       "type": "string",
@@ -2576,15 +2579,15 @@
                     }
                   ]
                 },
-                "ocultacao": {
+                "hiding": {
                   "anyOf": [
                     {
                       "type": "object",
                       "properties": {
-                        "motivo": {
+                        "reason": {
                           "type": "string"
                         },
-                        "por": {
+                        "by": {
                           "type": "object",
                           "properties": {
                             "id": {
@@ -2592,26 +2595,26 @@
                               "format": "uuid",
                               "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                             },
-                            "nome": {
+                            "name": {
                               "type": "string"
                             }
                           },
                           "required": [
                             "id",
-                            "nome"
+                            "name"
                           ],
                           "additionalProperties": false
                         },
-                        "em": {
+                        "at": {
                           "type": "string",
                           "format": "date-time",
                           "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
                         }
                       },
                       "required": [
-                        "motivo",
-                        "por",
-                        "em"
+                        "reason",
+                        "by",
+                        "at"
                       ],
                       "additionalProperties": false
                     },
@@ -2620,40 +2623,40 @@
                     }
                   ]
                 },
-                "permissoes": {
+                "permissions": {
                   "type": "object",
                   "properties": {
-                    "podeResponder": {
+                    "canReply": {
                       "type": "boolean"
                     },
-                    "podeEditar": {
+                    "canEdit": {
                       "type": "boolean"
                     },
-                    "podeRemover": {
+                    "canRemove": {
                       "type": "boolean"
                     },
-                    "podeOcultar": {
+                    "canHide": {
                       "type": "boolean"
                     }
                   },
                   "required": [
-                    "podeResponder",
-                    "podeEditar",
-                    "podeRemover",
-                    "podeOcultar"
+                    "canReply",
+                    "canEdit",
+                    "canRemove",
+                    "canHide"
                   ],
                   "additionalProperties": false
                 }
               },
               "required": [
                 "id",
-                "autor",
-                "texto",
-                "estado",
-                "criadoEm",
-                "editadoEm",
-                "ocultacao",
-                "permissoes"
+                "author",
+                "text",
+                "state",
+                "createdAt",
+                "editedAt",
+                "hiding",
+                "permissions"
               ],
               "additionalProperties": false
             }
@@ -2661,59 +2664,59 @@
         },
         "required": [
           "id",
-          "autor",
-          "texto",
-          "estado",
-          "criadoEm",
-          "editadoEm",
-          "ocultacao",
-          "permissoes",
-          "respostas"
+          "author",
+          "text",
+          "state",
+          "createdAt",
+          "editedAt",
+          "hiding",
+          "permissions",
+          "replies"
         ],
         "additionalProperties": false
       },
-      "NovoComentarioDto": {
+      "NewCommentDto": {
         "type": "object",
         "properties": {
-          "texto": {
+          "text": {
             "type": "string",
             "minLength": 1,
             "maxLength": 5000
           },
-          "respostaAId": {
+          "replyToId": {
             "type": "string",
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           }
         },
         "required": [
-          "texto"
+          "text"
         ]
       },
-      "EdicaoDeComentarioDto": {
+      "CommentUpdateDto": {
         "type": "object",
         "properties": {
-          "texto": {
+          "text": {
             "type": "string",
             "minLength": 1,
             "maxLength": 5000
           }
         },
         "required": [
-          "texto"
+          "text"
         ]
       },
-      "OcultacaoDeComentarioDto": {
+      "CommentHidingDto": {
         "type": "object",
         "properties": {
-          "motivo": {
+          "reason": {
             "type": "string",
             "minLength": 1,
             "maxLength": 1000
           }
         },
         "required": [
-          "motivo"
+          "reason"
         ]
       }
     }

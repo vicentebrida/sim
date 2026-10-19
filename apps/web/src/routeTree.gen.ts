@@ -10,29 +10,29 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/_app'
-import { Route as EntrarRouteImport } from './routes/entrar'
-import { Route as TrocarSenhaRouteImport } from './routes/trocar-senha'
+import { Route as ChangePasswordRouteImport } from './routes/change-password'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppAdminRouteRouteImport } from './routes/_app/admin/route'
-import { Route as AppAdminCamposRouteImport } from './routes/_app/admin/campos'
-import { Route as AppAdminCategoriasRouteImport } from './routes/_app/admin/categorias'
-import { Route as AppAdminColaboradoresRouteImport } from './routes/_app/admin/colaboradores'
-import { Route as AppIdeiasNovaRouteImport } from './routes/_app/ideias/nova'
-import { Route as AppIdeiasNumeroIndexRouteImport } from './routes/_app/ideias/$numero/index'
-import { Route as AppIdeiasNumeroEditarRouteImport } from './routes/_app/ideias/$numero/editar'
+import { Route as AppAdminCategoriesRouteImport } from './routes/_app/admin/categories'
+import { Route as AppAdminCollaboratorsRouteImport } from './routes/_app/admin/collaborators'
+import { Route as AppAdminCustomFieldsRouteImport } from './routes/_app/admin/custom-fields'
+import { Route as AppIdeasNewRouteImport } from './routes/_app/ideas/new'
+import { Route as AppIdeasNumberIndexRouteImport } from './routes/_app/ideas/$number/index'
+import { Route as AppIdeasNumberEditRouteImport } from './routes/_app/ideas/$number/edit'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EntrarRoute = EntrarRouteImport.update({
-  id: '/entrar',
-  path: '/entrar',
+const ChangePasswordRoute = ChangePasswordRouteImport.update({
+  id: '/change-password',
+  path: '/change-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TrocarSenhaRoute = TrocarSenhaRouteImport.update({
-  id: '/trocar-senha',
-  path: '/trocar-senha',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -45,119 +45,119 @@ const AppAdminRouteRoute = AppAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAdminCamposRoute = AppAdminCamposRouteImport.update({
-  id: '/campos',
-  path: '/campos',
+const AppAdminCategoriesRoute = AppAdminCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
   getParentRoute: () => AppAdminRouteRoute,
 } as any)
-const AppAdminCategoriasRoute = AppAdminCategoriasRouteImport.update({
-  id: '/categorias',
-  path: '/categorias',
+const AppAdminCollaboratorsRoute = AppAdminCollaboratorsRouteImport.update({
+  id: '/collaborators',
+  path: '/collaborators',
   getParentRoute: () => AppAdminRouteRoute,
 } as any)
-const AppAdminColaboradoresRoute = AppAdminColaboradoresRouteImport.update({
-  id: '/colaboradores',
-  path: '/colaboradores',
+const AppAdminCustomFieldsRoute = AppAdminCustomFieldsRouteImport.update({
+  id: '/custom-fields',
+  path: '/custom-fields',
   getParentRoute: () => AppAdminRouteRoute,
 } as any)
-const AppIdeiasNovaRoute = AppIdeiasNovaRouteImport.update({
-  id: '/ideias/nova',
-  path: '/ideias/nova',
+const AppIdeasNewRoute = AppIdeasNewRouteImport.update({
+  id: '/ideas/new',
+  path: '/ideas/new',
   getParentRoute: () => AppRoute,
 } as any)
-const AppIdeiasNumeroIndexRoute = AppIdeiasNumeroIndexRouteImport.update({
-  id: '/ideias/$numero/',
-  path: '/ideias/$numero/',
+const AppIdeasNumberIndexRoute = AppIdeasNumberIndexRouteImport.update({
+  id: '/ideas/$number/',
+  path: '/ideas/$number/',
   getParentRoute: () => AppRoute,
 } as any)
-const AppIdeiasNumeroEditarRoute = AppIdeiasNumeroEditarRouteImport.update({
-  id: '/ideias/$numero/editar',
-  path: '/ideias/$numero/editar',
+const AppIdeasNumberEditRoute = AppIdeasNumberEditRouteImport.update({
+  id: '/ideas/$number/edit',
+  path: '/ideas/$number/edit',
   getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
-  '/entrar': typeof EntrarRoute
-  '/trocar-senha': typeof TrocarSenhaRoute
+  '/change-password': typeof ChangePasswordRoute
+  '/login': typeof LoginRoute
   '/admin': typeof AppAdminRouteRouteWithChildren
-  '/admin/campos': typeof AppAdminCamposRoute
-  '/admin/categorias': typeof AppAdminCategoriasRoute
-  '/admin/colaboradores': typeof AppAdminColaboradoresRoute
-  '/ideias/nova': typeof AppIdeiasNovaRoute
-  '/ideias/$numero/editar': typeof AppIdeiasNumeroEditarRoute
-  '/ideias/$numero/': typeof AppIdeiasNumeroIndexRoute
+  '/admin/categories': typeof AppAdminCategoriesRoute
+  '/admin/collaborators': typeof AppAdminCollaboratorsRoute
+  '/admin/custom-fields': typeof AppAdminCustomFieldsRoute
+  '/ideas/new': typeof AppIdeasNewRoute
+  '/ideas/$number/edit': typeof AppIdeasNumberEditRoute
+  '/ideas/$number/': typeof AppIdeasNumberIndexRoute
 }
 export interface FileRoutesByTo {
-  '/entrar': typeof EntrarRoute
-  '/trocar-senha': typeof TrocarSenhaRoute
+  '/change-password': typeof ChangePasswordRoute
+  '/login': typeof LoginRoute
   '/admin': typeof AppAdminRouteRouteWithChildren
   '/': typeof AppIndexRoute
-  '/admin/campos': typeof AppAdminCamposRoute
-  '/admin/categorias': typeof AppAdminCategoriasRoute
-  '/admin/colaboradores': typeof AppAdminColaboradoresRoute
-  '/ideias/nova': typeof AppIdeiasNovaRoute
-  '/ideias/$numero/editar': typeof AppIdeiasNumeroEditarRoute
-  '/ideias/$numero': typeof AppIdeiasNumeroIndexRoute
+  '/admin/categories': typeof AppAdminCategoriesRoute
+  '/admin/collaborators': typeof AppAdminCollaboratorsRoute
+  '/admin/custom-fields': typeof AppAdminCustomFieldsRoute
+  '/ideas/new': typeof AppIdeasNewRoute
+  '/ideas/$number/edit': typeof AppIdeasNumberEditRoute
+  '/ideas/$number': typeof AppIdeasNumberIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
-  '/entrar': typeof EntrarRoute
-  '/trocar-senha': typeof TrocarSenhaRoute
+  '/change-password': typeof ChangePasswordRoute
+  '/login': typeof LoginRoute
   '/_app/admin': typeof AppAdminRouteRouteWithChildren
   '/_app/': typeof AppIndexRoute
-  '/_app/admin/campos': typeof AppAdminCamposRoute
-  '/_app/admin/categorias': typeof AppAdminCategoriasRoute
-  '/_app/admin/colaboradores': typeof AppAdminColaboradoresRoute
-  '/_app/ideias/nova': typeof AppIdeiasNovaRoute
-  '/_app/ideias/$numero/editar': typeof AppIdeiasNumeroEditarRoute
-  '/_app/ideias/$numero/': typeof AppIdeiasNumeroIndexRoute
+  '/_app/admin/categories': typeof AppAdminCategoriesRoute
+  '/_app/admin/collaborators': typeof AppAdminCollaboratorsRoute
+  '/_app/admin/custom-fields': typeof AppAdminCustomFieldsRoute
+  '/_app/ideas/new': typeof AppIdeasNewRoute
+  '/_app/ideas/$number/edit': typeof AppIdeasNumberEditRoute
+  '/_app/ideas/$number/': typeof AppIdeasNumberIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/entrar'
-    | '/trocar-senha'
+    | '/change-password'
+    | '/login'
     | '/admin'
-    | '/admin/campos'
-    | '/admin/categorias'
-    | '/admin/colaboradores'
-    | '/ideias/nova'
-    | '/ideias/$numero/editar'
-    | '/ideias/$numero/'
+    | '/admin/categories'
+    | '/admin/collaborators'
+    | '/admin/custom-fields'
+    | '/ideas/new'
+    | '/ideas/$number/edit'
+    | '/ideas/$number/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/entrar'
-    | '/trocar-senha'
+    | '/change-password'
+    | '/login'
     | '/admin'
     | '/'
-    | '/admin/campos'
-    | '/admin/categorias'
-    | '/admin/colaboradores'
-    | '/ideias/nova'
-    | '/ideias/$numero/editar'
-    | '/ideias/$numero'
+    | '/admin/categories'
+    | '/admin/collaborators'
+    | '/admin/custom-fields'
+    | '/ideas/new'
+    | '/ideas/$number/edit'
+    | '/ideas/$number'
   id:
     | '__root__'
     | '/_app'
-    | '/entrar'
-    | '/trocar-senha'
+    | '/change-password'
+    | '/login'
     | '/_app/admin'
     | '/_app/'
-    | '/_app/admin/campos'
-    | '/_app/admin/categorias'
-    | '/_app/admin/colaboradores'
-    | '/_app/ideias/nova'
-    | '/_app/ideias/$numero/editar'
-    | '/_app/ideias/$numero/'
+    | '/_app/admin/categories'
+    | '/_app/admin/collaborators'
+    | '/_app/admin/custom-fields'
+    | '/_app/ideas/new'
+    | '/_app/ideas/$number/edit'
+    | '/_app/ideas/$number/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
-  EntrarRoute: typeof EntrarRoute
-  TrocarSenhaRoute: typeof TrocarSenhaRoute
+  ChangePasswordRoute: typeof ChangePasswordRoute
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -169,18 +169,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/entrar': {
-      id: '/entrar'
-      path: '/entrar'
-      fullPath: '/entrar'
-      preLoaderRoute: typeof EntrarRouteImport
+    '/change-password': {
+      id: '/change-password'
+      path: '/change-password'
+      fullPath: '/change-password'
+      preLoaderRoute: typeof ChangePasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/trocar-senha': {
-      id: '/trocar-senha'
-      path: '/trocar-senha'
-      fullPath: '/trocar-senha'
-      preLoaderRoute: typeof TrocarSenhaRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/': {
@@ -197,61 +197,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminRouteRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/admin/campos': {
-      id: '/_app/admin/campos'
-      path: '/campos'
-      fullPath: '/admin/campos'
-      preLoaderRoute: typeof AppAdminCamposRouteImport
+    '/_app/admin/categories': {
+      id: '/_app/admin/categories'
+      path: '/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AppAdminCategoriesRouteImport
       parentRoute: typeof AppAdminRouteRoute
     }
-    '/_app/admin/categorias': {
-      id: '/_app/admin/categorias'
-      path: '/categorias'
-      fullPath: '/admin/categorias'
-      preLoaderRoute: typeof AppAdminCategoriasRouteImport
+    '/_app/admin/collaborators': {
+      id: '/_app/admin/collaborators'
+      path: '/collaborators'
+      fullPath: '/admin/collaborators'
+      preLoaderRoute: typeof AppAdminCollaboratorsRouteImport
       parentRoute: typeof AppAdminRouteRoute
     }
-    '/_app/admin/colaboradores': {
-      id: '/_app/admin/colaboradores'
-      path: '/colaboradores'
-      fullPath: '/admin/colaboradores'
-      preLoaderRoute: typeof AppAdminColaboradoresRouteImport
+    '/_app/admin/custom-fields': {
+      id: '/_app/admin/custom-fields'
+      path: '/custom-fields'
+      fullPath: '/admin/custom-fields'
+      preLoaderRoute: typeof AppAdminCustomFieldsRouteImport
       parentRoute: typeof AppAdminRouteRoute
     }
-    '/_app/ideias/nova': {
-      id: '/_app/ideias/nova'
-      path: '/ideias/nova'
-      fullPath: '/ideias/nova'
-      preLoaderRoute: typeof AppIdeiasNovaRouteImport
+    '/_app/ideas/new': {
+      id: '/_app/ideas/new'
+      path: '/ideas/new'
+      fullPath: '/ideas/new'
+      preLoaderRoute: typeof AppIdeasNewRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/ideias/$numero/': {
-      id: '/_app/ideias/$numero/'
-      path: '/ideias/$numero'
-      fullPath: '/ideias/$numero/'
-      preLoaderRoute: typeof AppIdeiasNumeroIndexRouteImport
+    '/_app/ideas/$number/': {
+      id: '/_app/ideas/$number/'
+      path: '/ideas/$number'
+      fullPath: '/ideas/$number/'
+      preLoaderRoute: typeof AppIdeasNumberIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/ideias/$numero/editar': {
-      id: '/_app/ideias/$numero/editar'
-      path: '/ideias/$numero/editar'
-      fullPath: '/ideias/$numero/editar'
-      preLoaderRoute: typeof AppIdeiasNumeroEditarRouteImport
+    '/_app/ideas/$number/edit': {
+      id: '/_app/ideas/$number/edit'
+      path: '/ideas/$number/edit'
+      fullPath: '/ideas/$number/edit'
+      preLoaderRoute: typeof AppIdeasNumberEditRouteImport
       parentRoute: typeof AppRoute
     }
   }
 }
 
 interface AppAdminRouteRouteChildren {
-  AppAdminCamposRoute: typeof AppAdminCamposRoute
-  AppAdminCategoriasRoute: typeof AppAdminCategoriasRoute
-  AppAdminColaboradoresRoute: typeof AppAdminColaboradoresRoute
+  AppAdminCategoriesRoute: typeof AppAdminCategoriesRoute
+  AppAdminCollaboratorsRoute: typeof AppAdminCollaboratorsRoute
+  AppAdminCustomFieldsRoute: typeof AppAdminCustomFieldsRoute
 }
 
 const AppAdminRouteRouteChildren: AppAdminRouteRouteChildren = {
-  AppAdminCamposRoute: AppAdminCamposRoute,
-  AppAdminCategoriasRoute: AppAdminCategoriasRoute,
-  AppAdminColaboradoresRoute: AppAdminColaboradoresRoute,
+  AppAdminCategoriesRoute: AppAdminCategoriesRoute,
+  AppAdminCollaboratorsRoute: AppAdminCollaboratorsRoute,
+  AppAdminCustomFieldsRoute: AppAdminCustomFieldsRoute,
 }
 
 const AppAdminRouteRouteWithChildren = AppAdminRouteRoute._addFileChildren(
@@ -261,25 +261,25 @@ const AppAdminRouteRouteWithChildren = AppAdminRouteRoute._addFileChildren(
 interface AppRouteChildren {
   AppAdminRouteRoute: typeof AppAdminRouteRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
-  AppIdeiasNovaRoute: typeof AppIdeiasNovaRoute
-  AppIdeiasNumeroEditarRoute: typeof AppIdeiasNumeroEditarRoute
-  AppIdeiasNumeroIndexRoute: typeof AppIdeiasNumeroIndexRoute
+  AppIdeasNewRoute: typeof AppIdeasNewRoute
+  AppIdeasNumberEditRoute: typeof AppIdeasNumberEditRoute
+  AppIdeasNumberIndexRoute: typeof AppIdeasNumberIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRouteRoute: AppAdminRouteRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
-  AppIdeiasNovaRoute: AppIdeiasNovaRoute,
-  AppIdeiasNumeroEditarRoute: AppIdeiasNumeroEditarRoute,
-  AppIdeiasNumeroIndexRoute: AppIdeiasNumeroIndexRoute,
+  AppIdeasNewRoute: AppIdeasNewRoute,
+  AppIdeasNumberEditRoute: AppIdeasNumberEditRoute,
+  AppIdeasNumberIndexRoute: AppIdeasNumberIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
-  EntrarRoute: EntrarRoute,
-  TrocarSenhaRoute: TrocarSenhaRoute,
+  ChangePasswordRoute: ChangePasswordRoute,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

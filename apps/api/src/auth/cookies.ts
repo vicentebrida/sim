@@ -1,10 +1,10 @@
 import type { CookieOptions } from 'express';
 import type { Env } from '../config/env';
 
-export const COOKIE_SESSAO = 'sim_sessao';
-export const COOKIE_SSO = 'sim_sso';
+export const SESSION_COOKIE = 'sim_session';
+export const SSO_COOKIE = 'sim_sso';
 
-export function opcoesCookie(env: Env, maxAge: number, path = '/'): CookieOptions {
+export function cookieOptions(env: Env, maxAge: number, path = '/'): CookieOptions {
   return {
     httpOnly: true,
     sameSite: 'lax',

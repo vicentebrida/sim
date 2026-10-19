@@ -21,9 +21,9 @@ const optionalString = z
   .optional()
   .transform((value) => value || undefined);
 
-export const SENHA_MINIMA = 12;
+export const MIN_PASSWORD_LENGTH = 12;
 
-// Integrações vêm de variáveis de ambiente, não da tela do Administrador (ADR-0007).
+// Integrations come from environment variables, not from the Administrator screens (ADR-0007).
 const ssoSchema = z
   .object({
     SIM_SSO_MODE: z.enum(['off', 'oidc', 'oauth2']).default('off'),
@@ -42,11 +42,12 @@ const ssoSchema = z
     SIM_SSO_CLAIM_NAME: z.string().default('name'),
     SIM_SSO_CLAIM_DEPARTMENT: optionalString,
     SIM_SSO_CLAIM_PICTURE: z.string().default('picture'),
-    SIM_SSO_BUTTON_LABEL: z.string().default('Entrar com SSO'),
+    // Unset, the web app shows a translated "Sign in with SSO".
+    SIM_SSO_BUTTON_LABEL: optionalString,
   })
   .superRefine((sso, ctx) => {
     if (sso.SIM_SSO_MODE === 'off') return;
-    const exigidas: (keyof typeof sso)[] =
+    const required: (keyof typeof sso)[] =
       sso.SIM_SSO_MODE === 'oidc'
         ? ['SIM_SSO_CLIENT_ID', 'SIM_SSO_ISSUER']
         : [
@@ -56,12 +57,12 @@ const ssoSchema = z
             'SIM_SSO_USERINFO_URL',
             'SIM_SSO_SCOPES',
           ];
-    for (const chave of exigidas) {
-      if (!sso[chave]) {
+    for (const key of required) {
+      if (!sso[key]) {
         ctx.addIssue({
           code: 'custom',
-          path: [chave],
-          message: `obrigatória quando SIM_SSO_MODE=${sso.SIM_SSO_MODE}`,
+          path: [key],
+          message: `required when SIM_SSO_MODE=${sso.SIM_SSO_MODE}`,
         });
       }
     }
@@ -79,20 +80,20 @@ const baseSchema = z
       .email()
       .transform((email) => email.toLowerCase())
       .optional(),
-    SIM_EMERGENCY_PASSWORD: z.string().min(SENHA_MINIMA).optional(),
+    SIM_EMERGENCY_PASSWORD: z.string().min(MIN_PASSWORD_LENGTH).optional(),
     SIM_WEB_DIST: z.string().optional(),
-    // Valor do `trust proxy` do Express: true, número de proxies ou lista de IPs/sub-redes.
+    // Express `trust proxy` value: true, number of proxies or a list of IPs/subnets.
     SIM_TRUST_PROXY: z
       .string()
       .default('false')
-      .transform((valor): boolean | number | string => {
-        if (valor === 'true' || valor === 'false') return valor === 'true';
-        return /^\d+$/.test(valor) ? Number(valor) : valor;
+      .transform((value): boolean | number | string => {
+        if (value === 'true' || value === 'false') return value === 'true';
+        return /^\d+$/.test(value) ? Number(value) : value;
       }),
   })
   .refine((env) => Boolean(env.SIM_EMERGENCY_EMAIL) === Boolean(env.SIM_EMERGENCY_PASSWORD), {
     path: ['SIM_EMERGENCY_PASSWORD'],
-    message: 'SIM_EMERGENCY_EMAIL e SIM_EMERGENCY_PASSWORD devem ser definidas juntas',
+    message: 'SIM_EMERGENCY_EMAIL and SIM_EMERGENCY_PASSWORD must be set together',
   });
 
 export const envSchema = z.intersection(baseSchema, ssoSchema);
@@ -102,7 +103,7 @@ export type Env = z.infer<typeof envSchema>;
 export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
   const result = envSchema.safeParse(source);
   if (!result.success) {
-    throw new Error(`Configuração inválida:\n${z.prettifyError(result.error)}`);
+    throw new Error(`Invalid configuration:\n${z.prettifyError(result.error)}`);
   }
   return result.data;
 }

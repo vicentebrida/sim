@@ -4,7 +4,7 @@ import { afterAll, afterEach, beforeAll } from 'vitest';
 import i18n from '../i18n';
 import { server } from './server';
 
-// A primeira carga de uma rota (code splitting) pode passar de 1s em máquinas de CI mais lentas.
+// The first load of a route (code splitting) may take over 1s on slower CI machines.
 configure({ asyncUtilTimeout: 5000 });
 
 beforeAll(async () => {

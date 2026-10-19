@@ -1,36 +1,37 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
-import { SENHA_MINIMA } from '../config/env';
+import { MIN_PASSWORD_LENGTH } from '../config/env';
 
-export class ConfiguracaoDeAcessoDto extends createZodDto(
+export class AccessConfigurationDto extends createZodDto(
   z.object({
-    loginLocal: z.boolean(),
-    sso: z.object({ habilitado: z.boolean(), rotulo: z.string() }),
+    localLogin: z.boolean(),
+    // `label` is null when SIM_SSO_BUTTON_LABEL is unset; the web app shows a translated default.
+    sso: z.object({ enabled: z.boolean(), label: z.string().nullable() }),
   }),
 ) {}
 
-export class CredenciaisDto extends createZodDto(
+export class CredentialsDto extends createZodDto(
   z.object({
     email: z.email().transform((email) => email.toLowerCase()),
-    senha: z.string().min(1),
+    password: z.string().min(1),
   }),
 ) {}
 
-export class TrocaDeSenhaDto extends createZodDto(
+export class PasswordChangeDto extends createZodDto(
   z.object({
-    senhaAtual: z.string().min(1),
-    novaSenha: z.string().min(SENHA_MINIMA).max(256),
+    currentPassword: z.string().min(1),
+    newPassword: z.string().min(MIN_PASSWORD_LENGTH).max(256),
   }),
 ) {}
 
-export class ColaboradorAtualDto extends createZodDto(
+export class CurrentCollaboratorDto extends createZodDto(
   z.object({
     id: z.uuid(),
-    nome: z.string(),
+    name: z.string(),
     email: z.email(),
-    departamento: z.string().nullable(),
-    fotoUrl: z.string().nullable(),
-    administrador: z.boolean(),
-    deveTrocarSenha: z.boolean(),
+    department: z.string().nullable(),
+    pictureUrl: z.string().nullable(),
+    administrator: z.boolean(),
+    mustChangePassword: z.boolean(),
   }),
 ) {}

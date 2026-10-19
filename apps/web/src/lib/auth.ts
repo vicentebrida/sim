@@ -1,28 +1,37 @@
-import { ApiError, type ColaboradorAtualDtoOutput, getAuthMeQueryOptions } from '@sim/api-client';
+import {
+  ApiError,
+  type CurrentCollaboratorDtoOutput,
+  getAuthMeQueryOptions,
+} from '@sim/api-client';
 import type { QueryClient } from '@tanstack/react-query';
 
-// Espelha a validação da API (TrocaDeSenhaDto).
-export const SENHA_MINIMA = 12;
+// Mirrors the API validation (PasswordChangeDto).
+export const MIN_PASSWORD_LENGTH = 12;
 
-export const colaboradorAtualQuery = getAuthMeQueryOptions({ query: { staleTime: 60_000 } });
+export const currentCollaboratorQuery = getAuthMeQueryOptions({ query: { staleTime: 60_000 } });
 
-/** Colaborador da sessão atual, ou `null` quando não há sessão. */
-export async function obterColaboradorAtual(
+/** Collaborator of the current session, or `null` when there is no session. */
+export async function getCurrentCollaborator(
   queryClient: QueryClient,
-): Promise<ColaboradorAtualDtoOutput | null> {
+): Promise<CurrentCollaboratorDtoOutput | null> {
   try {
-    const resposta = await queryClient.ensureQueryData(colaboradorAtualQuery);
-    return resposta.data;
-  } catch (erro) {
-    if (erro instanceof ApiError && erro.status === 401) return null;
-    throw erro;
+    const response = await queryClient.ensureQueryData(currentCollaboratorQuery);
+    return response.data;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) return null;
+    throw error;
   }
 }
 
-/** Retorno pós-login só pode ser um caminho interno (o backend aplica a mesma regra no SSO). */
-export function retornoSeguro(retorno: string | undefined): string {
-  if (!retorno || !retorno.startsWith('/') || retorno.startsWith('//') || retorno.includes('\\')) {
+/** The post-login return must be an internal path (the backend applies the same rule for SSO). */
+export function safeReturnTo(returnTo: string | undefined): string {
+  if (
+    !returnTo ||
+    !returnTo.startsWith('/') ||
+    returnTo.startsWith('//') ||
+    returnTo.includes('\\')
+  ) {
     return '/';
   }
-  return retorno;
+  return returnTo;
 }

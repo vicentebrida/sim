@@ -9,6 +9,9 @@ export const DB = Symbol('DB');
 export const PG_POOL = Symbol('PG_POOL');
 
 export type Database = NodePgDatabase<typeof schema>;
+export type Transaction = Parameters<Parameters<Database['transaction']>[0]>[0];
+/** Database or an ongoing transaction: side effects join the caller's transaction. */
+export type Executor = Database | Transaction;
 
 @Global()
 @Module({

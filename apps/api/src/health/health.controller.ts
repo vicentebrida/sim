@@ -2,13 +2,13 @@ import { Controller, Get, Inject } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { sql } from 'drizzle-orm';
 import { ZodResponse } from 'nestjs-zod';
-import { Publico } from '../auth/decorators';
+import { Public } from '../auth/decorators';
 import { DB, type Database } from '../database/database.module';
 import { HealthDto } from './health.dto';
 
 @ApiTags('health')
 @Controller('health')
-@Publico()
+@Public()
 export class HealthController {
   constructor(@Inject(DB) private readonly db: Database) {}
 

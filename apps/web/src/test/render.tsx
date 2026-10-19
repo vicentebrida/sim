@@ -4,17 +4,17 @@ import { render } from '@testing-library/react';
 import type { ReactElement } from 'react';
 import { routeTree } from '@/routeTree.gen';
 
-function novoQueryClient() {
+function newQueryClient() {
   return new QueryClient({ defaultOptions: { queries: { retry: false } } });
 }
 
 export function renderWithProviders(ui: ReactElement) {
-  return render(<QueryClientProvider client={novoQueryClient()}>{ui}</QueryClientProvider>);
+  return render(<QueryClientProvider client={newQueryClient()}>{ui}</QueryClientProvider>);
 }
 
-/** Renderiza o app inteiro, com roteador em memória, a partir de uma URL. */
+/** Renders the whole app, with an in-memory router, starting at a URL. */
 export function renderApp(url: string) {
-  const queryClient = novoQueryClient();
+  const queryClient = newQueryClient();
   const router = createRouter({
     routeTree,
     history: createMemoryHistory({ initialEntries: [url] }),

@@ -1,28 +1,28 @@
 import { createParamDecorator, type ExecutionContext, SetMetadata } from '@nestjs/common';
 import type { Request } from 'express';
-import type { Colaborador } from '../database/schema';
+import type { Collaborator } from '../database/schema';
 
-export const PUBLICO = 'sim:publico';
-export const PERMITE_SENHA_TEMPORARIA = 'sim:permite-senha-temporaria';
-export const SOMENTE_ADMINISTRADOR = 'sim:somente-administrador';
+export const PUBLIC = 'sim:public';
+export const ALLOWS_TEMPORARY_PASSWORD = 'sim:allows-temporary-password';
+export const ADMINISTRATOR_ONLY = 'sim:administrator-only';
 
-/** Rota acessível sem sessão. */
-export const Publico = () => SetMetadata(PUBLICO, true);
+/** Route reachable without a session. */
+export const Public = () => SetMetadata(PUBLIC, true);
 
-/** Rota acessível mesmo enquanto o Colaborador ainda precisa trocar a senha temporária. */
-export const PermiteSenhaTemporaria = () => SetMetadata(PERMITE_SENHA_TEMPORARIA, true);
+/** Route reachable while the Collaborator still has to change the temporary password. */
+export const AllowsTemporaryPassword = () => SetMetadata(ALLOWS_TEMPORARY_PASSWORD, true);
 
-export const SomenteAdministrador = () => SetMetadata(SOMENTE_ADMINISTRADOR, true);
+export const AdministratorOnly = () => SetMetadata(ADMINISTRATOR_ONLY, true);
 
-export const ColaboradorAtual = createParamDecorator(
-  (_: unknown, context: ExecutionContext): Colaborador => {
+export const CurrentCollaborator = createParamDecorator(
+  (_: unknown, context: ExecutionContext): Collaborator => {
     const request = context.switchToHttp().getRequest<Request>();
-    return request.colaborador!;
+    return request.collaborator!;
   },
 );
 
 declare module 'express' {
   interface Request {
-    colaborador?: Colaborador;
+    collaborator?: Collaborator;
   }
 }

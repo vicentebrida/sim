@@ -5,31 +5,33 @@ import { LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ApiStatus } from '@/components/api-status';
 import { Button } from '@/components/ui/button';
-import { obterColaboradorAtual } from '@/lib/auth';
+import { getCurrentCollaborator } from '@/lib/auth';
 
-/** Layout das páginas que exigem sessão. */
+/** Layout of the pages that require a session. */
 export const Route = createFileRoute('/_app')({
   beforeLoad: async ({ context, location }) => {
-    const colaborador = await obterColaboradorAtual(context.queryClient);
-    if (!colaborador) {
-      throw redirect({ to: '/entrar', search: { retorno: location.href } });
+    const collaborator = await getCurrentCollaborator(context.queryClient);
+    if (!collaborator) {
+      throw redirect({ to: '/login', search: { returnTo: location.href } });
     }
-    if (colaborador.deveTrocarSenha) throw redirect({ to: '/trocar-senha' });
-    return { colaborador };
+    if (collaborator.mustChangePassword) throw redirect({ to: '/change-password' });
+    return { collaborator };
   },
   component: AppLayout,
 });
 
+const NAV_LINK = 'text-muted-foreground [&.active]:text-foreground';
+
 function AppLayout() {
   const { t } = useTranslation();
-  const { colaborador } = Route.useRouteContext();
+  const { collaborator } = Route.useRouteContext();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const logout = useAuthLogout({
     mutation: {
       onSettled: async () => {
         queryClient.clear();
-        await navigate({ to: '/entrar' });
+        await navigate({ to: '/login' });
       },
     },
   });
@@ -45,35 +47,26 @@ function AppLayout() {
             </span>
           </Link>
           <nav className="flex gap-4 text-sm">
-            <Link to="/" className="text-muted-foreground [&.active]:text-foreground">
+            <Link to="/" className={NAV_LINK}>
               {t('nav.ideas')}
             </Link>
-            {colaborador.administrador && (
+            {collaborator.administrator && (
               <>
-                <Link
-                  to="/admin/categorias"
-                  className="text-muted-foreground [&.active]:text-foreground"
-                >
-                  {t('nav.categorias')}
+                <Link to="/admin/categories" className={NAV_LINK}>
+                  {t('nav.categories')}
                 </Link>
-                <Link
-                  to="/admin/campos"
-                  className="text-muted-foreground [&.active]:text-foreground"
-                >
-                  {t('nav.campos')}
+                <Link to="/admin/custom-fields" className={NAV_LINK}>
+                  {t('nav.fields')}
                 </Link>
-                <Link
-                  to="/admin/colaboradores"
-                  className="text-muted-foreground [&.active]:text-foreground"
-                >
-                  {t('nav.colaboradores')}
+                <Link to="/admin/collaborators" className={NAV_LINK}>
+                  {t('nav.collaborators')}
                 </Link>
               </>
             )}
           </nav>
           <div className="ml-auto flex items-center gap-3">
             <ApiStatus />
-            <span className="hidden text-sm sm:inline">{colaborador.nome}</span>
+            <span className="hidden text-sm sm:inline">{collaborator.name}</span>
             <Button
               variant="ghost"
               size="sm"

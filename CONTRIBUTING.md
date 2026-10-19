@@ -30,6 +30,8 @@ pnpm dev                                          # API em :3000, web em :5173
 
 ## Convenções
 
+- **Idioma**: código, comentários, testes, banco e API em inglês; documentação e glossário em português. Cada termo do [`CONTEXT.md`](./CONTEXT.md) indica o nome usado no código (ADR-0008). Textos da interface ficam nos arquivos de i18n (`apps/web/src/i18n/locales`).
+- **Erros de regra de negócio** saem da API com um `code` estável (ex.: `LIKE_UNAVAILABLE`); a interface traduz o código em `errors.codes`.
 - **Commits** seguem [Conventional Commits](https://www.conventionalcommits.org/pt-br/) (`feat:`, `fix:`, `docs:`...).
 - **Changesets**: mudanças visíveis para quem instala o SIM precisam de um `pnpm changeset`.
 - **Regras de domínio** (transições de Status, quem pode curtir etc.) ficam em código puro, sem NestJS nem banco, e são cobertas por testes unitários.

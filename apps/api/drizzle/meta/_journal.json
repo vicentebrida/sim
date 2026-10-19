@@ -5,50 +5,22 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1792379240391,
-      "tag": "0000_extensoes",
+      "when": 1792417666730,
+      "tag": "0000_extensions",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1792379945587,
-      "tag": "0001_colaboradores_e_sessoes",
+      "when": 1792417667251,
+      "tag": "0001_initial_schema",
       "breakpoints": true
     },
     {
       "idx": 2,
       "version": "7",
-      "when": 1792381508841,
-      "tag": "0002_categorias_e_avaliadores",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1792381963539,
-      "tag": "0003_ideias",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1792381964060,
-      "tag": "0004_campos_padrao",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1792413129073,
-      "tag": "0005_curtidas",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1792414923753,
-      "tag": "0006_comentarios",
+      "when": 1792417667770,
+      "tag": "0002_default_custom_fields",
       "breakpoints": true
     }
   ]

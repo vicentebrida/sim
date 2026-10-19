@@ -11,11 +11,11 @@ export function FormField({ id, label, error, ...input }: FormFieldProps) {
       <Input
         id={id}
         aria-invalid={Boolean(error)}
-        aria-describedby={error ? `${id}-erro` : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
         {...input}
       />
       {error && (
-        <p id={`${id}-erro`} className="text-sm text-destructive">
+        <p id={`${id}-error`} className="text-sm text-destructive">
           {error}
         </p>
       )}
