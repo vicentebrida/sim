@@ -3,8 +3,10 @@
 
 FROM node:26-alpine AS base
 ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH
-RUN corepack enable
 WORKDIR /repo
+# O Node 25+ não traz mais o corepack: instala o pnpm na versão de `packageManager`.
+COPY package.json ./
+RUN npm install -g "$(node -p 'require("./package.json").packageManager')"
 
 FROM base AS build
 COPY . .

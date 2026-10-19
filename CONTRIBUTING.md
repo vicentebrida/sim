@@ -8,7 +8,7 @@ Obrigado pelo interesse! Antes de começar, leia:
 
 ## Ambiente de desenvolvimento
 
-Requisitos: Node 22 (veja `.nvmrc`), pnpm (via `corepack enable`) e Docker.
+Requisitos: Node 26 (veja `.nvmrc`), pnpm (`npm install -g pnpm`; a versão está em `packageManager`) e Docker.
 
 ```bash
 corepack enable
