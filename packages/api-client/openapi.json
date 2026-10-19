@@ -1201,7 +1201,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NotificationPreferencesDto"
+                "$ref": "#/components/schemas/UpdateNotificationPreferencesDto"
               }
             }
           }
@@ -2899,23 +2899,31 @@
         "properties": {
           "newComments": {
             "type": "boolean"
-          }
-        },
-        "required": [
-          "newComments"
-        ],
-        "additionalProperties": false
-      },
-      "NotificationPreferencesDto": {
-        "type": "object",
-        "properties": {
-          "newComments": {
+          },
+          "byEmail": {
+            "type": "boolean"
+          },
+          "emailAvailable": {
             "type": "boolean"
           }
         },
         "required": [
-          "newComments"
-        ]
+          "newComments",
+          "byEmail",
+          "emailAvailable"
+        ],
+        "additionalProperties": false
+      },
+      "UpdateNotificationPreferencesDto": {
+        "type": "object",
+        "properties": {
+          "newComments": {
+            "type": "boolean"
+          },
+          "byEmail": {
+            "type": "boolean"
+          }
+        }
       },
       "CommentDto_Output": {
         "type": "object",

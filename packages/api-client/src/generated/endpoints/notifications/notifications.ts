@@ -26,10 +26,10 @@ import type {
 
 import type {
   NotificationPageDtoOutput,
-  NotificationPreferencesDto,
   NotificationPreferencesDtoOutput,
   NotificationsListParams,
-  UnreadCountDtoOutput
+  UnreadCountDtoOutput,
+  UpdateNotificationPreferencesDto
 } from '../../model';
 
 import { simFetch } from '../../../fetcher.ts';
@@ -558,7 +558,7 @@ export const getNotificationsSetPreferencesUrl = () => {
   return `/api/notifications/preferences`
 }
 
-export const notificationsSetPreferences = async (notificationPreferencesDto: NotificationPreferencesDto, options?: Parameters<typeof simFetch>[1]): Promise<notificationsSetPreferencesResponse> => {
+export const notificationsSetPreferences = async (updateNotificationPreferencesDto: UpdateNotificationPreferencesDto, options?: Parameters<typeof simFetch>[1]): Promise<notificationsSetPreferencesResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -579,7 +579,7 @@ return simFetch<notificationsSetPreferencesResponse>(getNotificationsSetPreferen
     ...options,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(notificationPreferencesDto)
+    body: JSON.stringify(updateNotificationPreferencesDto)
   }
 );}
 
@@ -617,9 +617,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type NotificationsSetPreferencesMutationResult = NonNullable<Awaited<ReturnType<typeof notificationsSetPreferences>>>
-    export type NotificationsSetPreferencesMutationBody = BodyType<NotificationPreferencesDto>
+    export type NotificationsSetPreferencesMutationBody = BodyType<UpdateNotificationPreferencesDto>
     export type NotificationsSetPreferencesMutationError = ErrorType<unknown>
-    export type NotificationsSetPreferencesMutationVariables = {data: BodyType<NotificationPreferencesDto>}
+    export type NotificationsSetPreferencesMutationVariables = {data: BodyType<UpdateNotificationPreferencesDto>}
 
     export const useNotificationsSetPreferences = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof notificationsSetPreferences>>, TError,NotificationsSetPreferencesMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}

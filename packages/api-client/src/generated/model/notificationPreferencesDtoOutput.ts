@@ -8,4 +8,6 @@
 
 export interface NotificationPreferencesDtoOutput {
   newComments: boolean;
+  byEmail: boolean;
+  emailAvailable: boolean;
 }

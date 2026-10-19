@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.0.0
  */
 
-export interface NotificationPreferencesDto {
-  newComments: boolean;
+export interface UpdateNotificationPreferencesDto {
+  newComments?: boolean;
+  byEmail?: boolean;
 }

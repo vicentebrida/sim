@@ -27,7 +27,7 @@ function notification(
 /** Simulated Notifications API with an in-memory list. */
 function simulateNotifications(initial: NotificationPageDtoOutputItemsItem[]) {
   let items = initial;
-  let newComments = true;
+  let preferences = { newComments: true, byEmail: true };
   const unread = () => items.filter((n) => !n.read).length;
   server.use(
     http.get('*/api/notifications/unread-count', () => HttpResponse.json({ unread: unread() })),
@@ -42,13 +42,15 @@ function simulateNotifications(initial: NotificationPageDtoOutputItemsItem[]) {
       items = items.map((n) => (n.id === params.id ? { ...n, read: true } : n));
       return new HttpResponse(null, { status: 204 });
     }),
-    http.get('*/api/notifications/preferences', () => HttpResponse.json({ newComments })),
+    http.get('*/api/notifications/preferences', () =>
+      HttpResponse.json({ ...preferences, emailAvailable: true }),
+    ),
     http.put('*/api/notifications/preferences', async ({ request }) => {
-      ({ newComments } = (await request.json()) as { newComments: boolean });
-      return HttpResponse.json({ newComments });
+      preferences = { ...preferences, ...((await request.json()) as object) };
+      return HttpResponse.json({ ...preferences, emailAvailable: true });
     }),
   );
-  return { preferences: () => ({ newComments }) };
+  return { preferences: () => preferences };
 }
 
 describe('the bell', () => {
@@ -108,7 +110,12 @@ describe('the bell', () => {
     await user.click(
       screen.getByRole('checkbox', { name: 'Avisar sobre novos comentários nas ideias que sigo' }),
     );
-    await waitFor(() => expect(api.preferences()).toEqual({ newComments: false }));
+    await waitFor(() => expect(api.preferences().newComments).toBe(false));
+
+    await user.click(
+      screen.getByRole('checkbox', { name: 'Receber também estas notificações por e-mail' }),
+    );
+    await waitFor(() => expect(api.preferences().byEmail).toBe(false));
   });
 
   it('shows an empty state', async () => {

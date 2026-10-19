@@ -17,6 +17,7 @@ import {
   ListNotificationsQueryDto,
   NotificationPageDto,
   NotificationPreferencesDto,
+  UpdateNotificationPreferencesDto,
   UnreadCountDto,
 } from './notifications.dto';
 import { NotificationsService } from './notifications.service';
@@ -69,7 +70,7 @@ export class NotificationsController {
   @ZodResponse({ status: 200, type: NotificationPreferencesDto })
   setPreferences(
     @CurrentCollaborator() collaborator: Collaborator,
-    @Body() data: NotificationPreferencesDto,
+    @Body() data: UpdateNotificationPreferencesDto,
   ) {
     return this.notifications.setPreferences(collaborator, data);
   }

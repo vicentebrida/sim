@@ -1,4 +1,4 @@
-# Instalação de produção mínima. Redis entra no Marco 2 (ADR-0006).
+# Instalação de produção mínima: SIM + Postgres + Redis (ADR-0006).
 # Uso: copie .env.example para .env, ajuste e rode `docker compose -f docker/compose.yml up -d`.
 services:
   sim:
@@ -9,11 +9,20 @@ services:
     env_file: ../.env
     environment:
       DATABASE_URL: postgres://sim:${POSTGRES_PASSWORD:-sim}@postgres:5432/sim
+      REDIS_URL: redis://redis:6379
     ports:
       - '3000:3000'
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis:/data
     restart: unless-stopped
 
   postgres:
@@ -32,3 +41,4 @@ services:
 
 volumes:
   postgres:
+  redis:

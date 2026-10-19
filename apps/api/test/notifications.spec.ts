@@ -232,7 +232,7 @@ describe('Following and Notifications', () => {
 
     it('turning off new Comment notifications keeps Replies and Mentions', async () => {
       await ana.put('/api/notifications/preferences').send({ newComments: false }).expect(200);
-      expect((await ana.get('/api/notifications/preferences').expect(200)).body).toEqual({
+      expect((await ana.get('/api/notifications/preferences').expect(200)).body).toMatchObject({
         newComments: false,
       });
 

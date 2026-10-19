@@ -1,5 +1,9 @@
 # Changelog
 
+## Não lançado
+
+- **Notificações por e-mail**: cada Notificação também chega por e-mail (com o link da Ideia, sem o texto do Comentário), se a instalação configurar `SMTP_URL` e o Colaborador não desligar nas preferências do sininho. O envio roda em segundo plano com BullMQ + Redis; o `docker/compose.yml` agora inclui o Redis. Novas variáveis: `REDIS_URL`, `SMTP_URL`, `SIM_MAIL_FROM`, `SIM_LOCALE`.
+
 ## 0.1.0
 
 Primeira versão: o núcleo utilizável do SIM (Marco 1 do [PRD](./docs/PRD.md)).

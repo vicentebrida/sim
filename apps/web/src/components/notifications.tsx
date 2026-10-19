@@ -142,12 +142,12 @@ function NotificationPanel({ onNavigate }: { onNavigate: () => void }) {
           </li>
         ))}
       </ul>
-      <NewCommentsPreference />
+      <Preferences />
     </section>
   );
 }
 
-function NewCommentsPreference() {
+function Preferences() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { data } = useNotificationsPreferences();
@@ -158,16 +158,33 @@ function NewCommentsPreference() {
     },
   });
   if (!data) return null;
+  const preferences = data.data;
   return (
-    <label className="flex items-center gap-2 px-4 py-3 text-sm">
-      <input
-        type="checkbox"
-        className="size-4"
-        checked={data.data.newComments}
-        disabled={setPreferences.isPending}
-        onChange={(event) => setPreferences.mutate({ data: { newComments: event.target.checked } })}
-      />
-      {t('notifications.newCommentsPreference')}
-    </label>
+    <div className="space-y-2 px-4 py-3 text-sm">
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          className="size-4"
+          checked={preferences.newComments}
+          disabled={setPreferences.isPending}
+          onChange={(event) =>
+            setPreferences.mutate({ data: { newComments: event.target.checked } })
+          }
+        />
+        {t('notifications.newCommentsPreference')}
+      </label>
+      {preferences.emailAvailable && (
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            className="size-4"
+            checked={preferences.byEmail}
+            disabled={setPreferences.isPending}
+            onChange={(event) => setPreferences.mutate({ data: { byEmail: event.target.checked } })}
+          />
+          {t('notifications.emailPreference')}
+        </label>
+      )}
+    </div>
   );
 }

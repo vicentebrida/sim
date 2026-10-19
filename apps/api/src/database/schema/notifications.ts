@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import {
   check,
   index,
+  integer,
   jsonb,
   pgTable,
   primaryKey,
@@ -13,6 +14,8 @@ import type { NotificationType } from '../../notifications/domain/recipients';
 import { collaborators } from './collaborators';
 import { comments } from './comments';
 import { ideas } from './ideas';
+
+export type EmailStatus = 'none' | 'pending' | 'sent' | 'failed';
 
 /** Who Follows each Idea and gets Notifications about it. */
 export const followers = pgTable(
@@ -54,12 +57,24 @@ export const notifications = pgTable(
     data: jsonb().$type<Record<string, unknown>>().notNull().default({}),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     readAt: timestamp({ withTimezone: true }),
+    // E-mail copy: `pending` is picked up by the dispatcher job (ADR-0006: the database is the
+    // source of truth, the queue is only the way to get there).
+    emailStatus: text().$type<EmailStatus>().notNull().default('none'),
+    emailAttempts: integer().notNull().default(0),
+    emailSentAt: timestamp({ withTimezone: true }),
   },
   (table) => [
     index().on(table.recipientId, table.createdAt),
     index('notifications_unread_index')
       .on(table.recipientId)
       .where(sql`${table.readAt} is null`),
+    index('notifications_email_pending_index')
+      .on(table.createdAt)
+      .where(sql`${table.emailStatus} = 'pending'`),
+    check(
+      'notifications_valid_email_status',
+      sql`${table.emailStatus} in ('none','pending','sent','failed')`,
+    ),
     check(
       'notifications_valid_type',
       sql`${table.type} in ('status','duplicate','comment','reply','mention','new_idea')`,
