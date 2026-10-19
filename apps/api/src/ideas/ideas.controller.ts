@@ -13,9 +13,10 @@ import {
 } from '@nestjs/common';
 import { ApiNoContentResponse, ApiTags } from '@nestjs/swagger';
 import { ZodResponse } from 'nestjs-zod';
-import { CurrentCollaborator } from '../auth/decorators';
+import { AdministratorOnly, CurrentCollaborator } from '../auth/decorators';
 import type { Collaborator } from '../database/schema';
 import {
+  AuthorDto,
   FollowingDto,
   IdeaDto,
   IdeaPageDto,
@@ -72,6 +73,17 @@ export class IdeasController {
     @Body() data: IdeaUpdateDto,
   ) {
     return this.ideas.update(collaborator, number, data);
+  }
+
+  /** Shows who wrote an Idea whose Author chose to hide the name. Recorded in the audit log. */
+  @Post(':number/reveal-author')
+  @AdministratorOnly()
+  @ZodResponse({ status: 200, type: AuthorDto })
+  revealAuthor(
+    @CurrentCollaborator() administrator: Collaborator,
+    @Param('number', ParseIntPipe) number: number,
+  ) {
+    return this.ideas.revealAuthor(administrator, number);
   }
 
   @Post(':number/publish')

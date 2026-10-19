@@ -4,6 +4,11 @@ import { alias } from 'drizzle-orm/pg-core';
 import { DomainError } from '../common/domain-error';
 import { CustomFieldsService } from '../custom-fields/custom-fields.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { AuditService } from '../audit/audit.service';
+import { ENV } from '../config/config.module';
+import type { Env } from '../config/env';
+import { SettingsService } from '../settings/settings.service';
+import { presentPerson } from './domain/authorship';
 import { StatusesService } from '../statuses/statuses.service';
 import { AttachmentStore } from '../attachments/attachment-store';
 import { isStalledSql } from './domain/stalled';
@@ -82,7 +87,17 @@ export class IdeasService {
     private readonly stalledIdeas: StalledIdeasService,
     private readonly attachmentStore: AttachmentStore,
     private readonly statuses: StatusesService,
+    private readonly settings: SettingsService,
+    private readonly audit: AuditService,
+    @Inject(ENV) private readonly env: Env,
   ) {}
+
+  /** Hiding needs the installation setting; showing the name again is always allowed. */
+  private async assertCanHide(hide: boolean | undefined) {
+    if (hide && !(await this.settings.get()).hiddenAuthorshipEnabled) {
+      throw new DomainError('HIDDEN_AUTHORSHIP_DISABLED', 'Hidden authorship is turned off');
+    }
+  }
 
   /** The Stalled mark is only for Administrators and the Reviewers of the Category (not the Author). */
   private stalledFlag(collaborator: Collaborator) {
@@ -134,7 +149,8 @@ export class IdeasService {
       items: rows.map((row) => ({
         ...this.summary(row.idea),
         category: row.category,
-        author: row.author,
+        author: presentPerson(row.idea, row.author, collaborator.id, this.env.SIM_LOCALE),
+        hiddenAuthorship: row.idea.hiddenAuthorship,
         likes: row.likes,
         stalled: row.stalled,
       })),
@@ -221,7 +237,8 @@ export class IdeasService {
       ...this.summary(idea),
       editedAt: iso(idea.editedAt),
       category: category!,
-      author: author!,
+      author: presentPerson(idea, author!, collaborator.id, this.env.SIM_LOCALE),
+      hiddenAuthorship: idea.hiddenAuthorship,
       likes: likeState,
       following,
       stalled: stalledRow?.stalled ?? false,
@@ -242,7 +259,7 @@ export class IdeasService {
         from: display(event.type, event.fromValue),
         to: display(event.type, event.toValue)!,
         justification: event.justification,
-        collaborator: who,
+        collaborator: presentPerson(idea, who, collaborator.id, this.env.SIM_LOCALE),
         createdAt: event.createdAt.toISOString(),
       })),
       permissions: actions,
@@ -253,9 +270,16 @@ export class IdeasService {
 
   async create(
     collaborator: Collaborator,
-    data: { title: string; categoryId: string; values: FieldValues; publish: boolean },
+    data: {
+      title: string;
+      categoryId: string;
+      values: FieldValues;
+      publish: boolean;
+      hiddenAuthorship?: boolean;
+    },
   ) {
     await this.requireActiveCategory(data.categoryId);
+    await this.assertCanHide(data.hiddenAuthorship);
     const values = normalizeValues(
       await this.fieldDefinitions(),
       data.values,
@@ -273,6 +297,7 @@ export class IdeasService {
           title: data.title,
           categoryId: data.categoryId,
           authorId: collaborator.id,
+          hiddenAuthorship: data.hiddenAuthorship ?? false,
           status: data.publish ? 'open' : 'draft',
           values,
           publishedAt: data.publish ? now : null,
@@ -290,10 +315,16 @@ export class IdeasService {
   async update(
     collaborator: Collaborator,
     number: number,
-    data: { title?: string; categoryId?: string; values?: FieldValues },
+    data: {
+      title?: string;
+      categoryId?: string;
+      values?: FieldValues;
+      hiddenAuthorship?: boolean;
+    },
   ) {
     const { idea, actor } = await this.access(collaborator, { number });
     assertCanEdit(idea, actor);
+    await this.assertCanHide(data.hiddenAuthorship);
     if (data.categoryId && data.categoryId !== idea.categoryId) {
       await this.requireActiveCategory(data.categoryId);
     }
@@ -312,12 +343,33 @@ export class IdeasService {
           title: data.title,
           categoryId: data.categoryId,
           values,
+          hiddenAuthorship: data.hiddenAuthorship,
           editedAt: published ? new Date() : undefined,
         })
         .where(eq(ideas.id, idea.id));
       if (values) await refreshDetectionText(tx, eq(ideas.id, idea.id));
     });
     return this.detail(collaborator, number);
+  }
+
+  /** Administrators only, and every time is recorded in the audit log. */
+  async revealAuthor(administrator: Collaborator, number: number) {
+    const idea = await this.find(number);
+    if (!idea.hiddenAuthorship) {
+      throw new DomainError('AUTHORSHIP_NOT_HIDDEN', 'The Author of this Idea is not hidden');
+    }
+    const [author] = await this.db
+      .select({ id: collaborators.id, name: collaborators.name })
+      .from(collaborators)
+      .where(eq(collaborators.id, idea.authorId));
+    await this.audit.record(this.db, {
+      actorId: administrator.id,
+      action: 'authorship.revealed',
+      targetType: 'idea',
+      targetId: String(idea.number),
+      details: { authorId: idea.authorId },
+    });
+    return author!;
   }
 
   async publish(collaborator: Collaborator, number: number) {

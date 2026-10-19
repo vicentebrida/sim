@@ -23,7 +23,8 @@
     "categories": "Categories",
     "fields": "Fields",
     "collaborators": "People",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "settings": "Settings"
   },
   "login": {
     "title": "Sign in to SIM",
@@ -128,7 +129,9 @@
       "EMERGENCY_PASSWORD_FROM_ENV": "The emergency account password is set in the server configuration.",
       "NO_LOCAL_PASSWORD": "You sign in with SSO and have no local password.",
       "WRONG_CURRENT_PASSWORD": "Current password is wrong.",
-      "SAME_PASSWORD": "The new password must differ from the current one."
+      "SAME_PASSWORD": "The new password must differ from the current one.",
+      "HIDDEN_AUTHORSHIP_DISABLED": "Hidden authorship is turned off on this installation.",
+      "AUTHORSHIP_NOT_HIDDEN": "The Author of this idea is not hidden."
     },
     "fields": {
       "required": "Required.",
@@ -261,7 +264,9 @@
       "collaborator.deactivated": "Deactivated a person",
       "collaborator.reactivated": "Reactivated a person",
       "collaborator.auto_deactivated": "Deactivated a person for inactivity",
-      "collaborator.anonymized": "Anonymized a person"
+      "collaborator.anonymized": "Anonymized a person",
+      "authorship.revealed": "Revealed the author of an idea",
+      "settings.hidden_authorship_changed": "Changed the hidden authorship setting"
     }
   },
   "status": {
@@ -426,5 +431,23 @@
     "help": "How about supporting one of them with a like or adding to it with a comment? If yours is different, you can still publish it.",
     "archivedHint": "This idea was archived. Comment on it to ask for it to be reopened.",
     "newTab": "opens in a new tab"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Product choices for the installation.",
+    "hiddenAuthorship": "Hidden authorship",
+    "hiddenAuthorshipEnable": "Let Authors hide their name on an idea",
+    "hiddenAuthorshipHelp": "Off by default. When on, the Author can appear as \"Anonymous collaborator\" on the idea and in their comments there. Administrators can identify the Author, and each identification is recorded in the audit log. Turning it off does not reveal ideas that are already hidden."
+  },
+  "authorship": {
+    "hide": "Hide my name on this idea",
+    "hideHelp": "Colleagues and reviewers will see \"Anonymous collaborator\". Administrators can identify you, and that is recorded in the audit log.",
+    "youAreHidden": "Your name is hidden on this idea. Only administrators can identify you.",
+    "hiddenNotice": "The Author of this idea chose to hide their name.",
+    "reveal": "Reveal author",
+    "revealWarning": "The identification is recorded in the audit log, with your name.",
+    "revealConfirm": "Reveal and record",
+    "cancel": "Cancel",
+    "revealed": "Author: {{name}}"
   }
 }

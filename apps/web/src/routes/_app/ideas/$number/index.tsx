@@ -8,11 +8,12 @@ import {
   useIdeasChangeStatus,
   useIdeasDelete,
   useIdeasDetail,
+  useIdeasRevealAuthor,
   useIdeasPublish,
   useIdeasRecategorize,
 } from '@sim/api-client';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate, useRouteContext } from '@tanstack/react-router';
 import { Pencil, Send, Trash2 } from 'lucide-react';
 import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -91,6 +92,8 @@ function IdeaPage() {
           </AlertDescription>
         </Alert>
       )}
+
+      <HiddenAuthorship idea={idea} />
 
       <AuthorActions idea={idea} />
 
@@ -359,5 +362,56 @@ function Recategorize({ idea }: { idea: IdeaDtoOutput }) {
         {t('ideas.recategorize')}
       </Button>
     </form>
+  );
+}
+
+/** Tells the Author their name is hidden, and lets an Administrator reveal it (audited). */
+function HiddenAuthorship({ idea }: { idea: IdeaDtoOutput }) {
+  const { t } = useTranslation();
+  const { collaborator } = useRouteContext({ from: '/_app' });
+  const [asking, setAsking] = useState(false);
+  const reveal = useIdeasRevealAuthor();
+  if (!idea.hiddenAuthorship) return null;
+
+  const revealed = reveal.data?.data;
+  return (
+    <Alert>
+      <AlertDescription className="space-y-2">
+        {idea.author.id === collaborator.id ? (
+          <p>{t('authorship.youAreHidden')}</p>
+        ) : (
+          <p>{t('authorship.hiddenNotice')}</p>
+        )}
+        {collaborator.administrator && idea.author.id !== collaborator.id && (
+          <>
+            {revealed && (
+              <p className="font-medium">{t('authorship.revealed', { name: revealed.name })}</p>
+            )}
+            {!revealed && !asking && (
+              <Button size="sm" variant="outline" onClick={() => setAsking(true)}>
+                {t('authorship.reveal')}
+              </Button>
+            )}
+            {!revealed && asking && (
+              <div className="space-y-2">
+                <p>{t('authorship.revealWarning')}</p>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    disabled={reveal.isPending}
+                    onClick={() => reveal.mutate({ number: idea.number })}
+                  >
+                    {t('authorship.revealConfirm')}
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => setAsking(false)}>
+                    {t('authorship.cancel')}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </AlertDescription>
+    </Alert>
   );
 }

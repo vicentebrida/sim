@@ -23,7 +23,8 @@
     "categories": "Categorias",
     "fields": "Campos",
     "collaborators": "Colaboradores",
-    "logout": "Sair"
+    "logout": "Sair",
+    "settings": "Configurações"
   },
   "login": {
     "title": "Entrar no SIM",
@@ -128,7 +129,9 @@
       "EMERGENCY_PASSWORD_FROM_ENV": "A senha da conta de emergência é definida na configuração do servidor.",
       "NO_LOCAL_PASSWORD": "Você entra pelo SSO e não tem senha local.",
       "WRONG_CURRENT_PASSWORD": "Senha atual incorreta.",
-      "SAME_PASSWORD": "A nova senha deve ser diferente da atual."
+      "SAME_PASSWORD": "A nova senha deve ser diferente da atual.",
+      "HIDDEN_AUTHORSHIP_DISABLED": "A autoria oculta está desligada nesta instalação.",
+      "AUTHORSHIP_NOT_HIDDEN": "O autor desta ideia não está oculto."
     },
     "fields": {
       "required": "Campo obrigatório.",
@@ -261,7 +264,9 @@
       "collaborator.deactivated": "Desativou um colaborador",
       "collaborator.reactivated": "Reativou um colaborador",
       "collaborator.auto_deactivated": "Desativou um colaborador por inatividade",
-      "collaborator.anonymized": "Anonimizou um colaborador"
+      "collaborator.anonymized": "Anonimizou um colaborador",
+      "authorship.revealed": "Revelou o autor de uma ideia",
+      "settings.hidden_authorship_changed": "Alterou a configuração de autoria oculta"
     }
   },
   "status": {
@@ -426,5 +431,23 @@
     "help": "Que tal apoiar uma delas com uma curtida ou complementar com um comentário? Se a sua for diferente, pode publicar mesmo assim.",
     "archivedHint": "Esta ideia foi arquivada. Comente nela para pedir que seja reaberta.",
     "newTab": "abre em nova aba"
+  },
+  "settings": {
+    "title": "Configurações",
+    "subtitle": "Escolhas de produto da instalação.",
+    "hiddenAuthorship": "Autoria oculta",
+    "hiddenAuthorshipEnable": "Permitir que o Autor oculte o nome numa ideia",
+    "hiddenAuthorshipHelp": "Desligada por padrão. Quando ligada, o Autor pode se mostrar como \"Colaborador anônimo\" na ideia e nos comentários dele nela. Administradores podem identificar o Autor, e cada identificação fica registrada na Auditoria. Desligar não revela as ideias que já estão ocultas."
+  },
+  "authorship": {
+    "hide": "Ocultar meu nome nesta ideia",
+    "hideHelp": "Os colegas e os avaliadores verão \"Colaborador anônimo\". Administradores podem identificar você, e isso fica registrado na Auditoria.",
+    "youAreHidden": "Seu nome está oculto nesta ideia. Só administradores podem identificar você.",
+    "hiddenNotice": "O Autor desta ideia optou por ocultar o nome.",
+    "reveal": "Revelar autor",
+    "revealWarning": "A identificação fica registrada na Auditoria, com o seu nome.",
+    "revealConfirm": "Revelar e registrar",
+    "cancel": "Cancelar",
+    "revealed": "Autor: {{name}}"
   }
 }

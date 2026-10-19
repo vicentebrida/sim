@@ -59,6 +59,7 @@ export function sampleIdea(partial: Partial<IdeaDtoOutput> = {}): IdeaDtoOutput 
     likes: { total: 0, liked: false },
     following: false,
     stalled: false,
+    hiddenAuthorship: false,
     attachments: [],
     createdAt: '2026-10-01T12:00:00.000Z',
     publishedAt: '2026-10-01T12:00:00.000Z',

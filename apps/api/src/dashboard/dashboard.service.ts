@@ -1,11 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
+import { ENV } from '../config/config.module';
+import type { Env } from '../config/env';
 import { DB, type Database } from '../database/database.module';
 import { categories, collaborators, comments, ideas, likes } from '../database/schema';
 import type { Status } from '../ideas/domain/idea';
 import { isStalledSql } from '../ideas/domain/stalled';
 import { StalledIdeasService } from '../ideas/stalled-ideas.service';
+import { anonymousName } from '../ideas/domain/authorship';
 import { toCsv } from './csv';
 
 /** Statuses that answer the Author: the first time an Idea reaches one, it was decided. */
@@ -35,6 +38,7 @@ export class DashboardService {
   constructor(
     @Inject(DB) private readonly db: Database,
     private readonly stalledIdeas: StalledIdeasService,
+    @Inject(ENV) private readonly env: Env,
   ) {}
 
   async overview() {
@@ -123,7 +127,7 @@ export class DashboardService {
         title: ideas.title,
         status: ideas.status,
         category: categories.name,
-        author: author.name,
+        author: sql<string>`case when ${ideas.hiddenAuthorship} then ${anonymousName(this.env.SIM_LOCALE)} else ${author.name} end`,
         publishedAt: ideas.publishedAt,
         statusChangedAt: ideas.statusChangedAt,
         firstDecisionAt,

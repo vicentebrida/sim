@@ -17,4 +17,5 @@ export interface NewIdeaDto {
   categoryId: string;
   values?: NewIdeaDtoValues;
   publish?: boolean;
+  hiddenAuthorship?: boolean;
 }

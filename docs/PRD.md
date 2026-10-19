@@ -128,9 +128,9 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 
 ### 3.10 Autoria Oculta
 
-- Configuração da instalação, desligada por padrão.
+- Configuração da instalação (tela **Configurações**, Administradores), desligada por padrão. Desligar não revela as Ideias já ocultas; só impede novas ocultações (mostrar o nome de novo é sempre permitido).
 - Quando ligada, o Autor pode ocultar o nome numa Ideia. Isso cobre a Ideia e os Comentários dele nela.
-- Só Administradores podem revelar o Autor, e cada revelação fica registrada em **Auditoria**.
+- Só Administradores podem revelar o Autor, e cada revelação fica registrada em **Auditoria**. Por padrão nem os Administradores veem o nome: precisam usar "Revelar autor", que registra quem pediu e qual Ideia. Quem não é o Autor (Colaboradores, Avaliadores, Administradores) vê "Colaborador anônimo" na Ideia, na lista, no Histórico, nos Comentários dele ali, nas Notificações, nos e-mails e na exportação CSV; o Autor continua vendo o próprio nome. Menções feitas por outras pessoas e textos digitados à mão não são reescritos.
 - O texto da tela informa claramente que Administradores podem identificar o Autor.
 
 ### 3.11 Ciclo de vida do Colaborador e LGPD

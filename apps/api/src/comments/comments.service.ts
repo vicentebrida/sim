@@ -2,6 +2,8 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { and, asc, eq, inArray } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { AttachmentStore, type presentAttachment } from '../attachments/attachment-store';
+import { ENV } from '../config/config.module';
+import type { Env } from '../config/env';
 import { DB, type Database, type Transaction } from '../database/database.module';
 import {
   type Collaborator,
@@ -10,6 +12,7 @@ import {
   comments,
   mentions,
 } from '../database/schema';
+import { type IdeaAuthorship, presentPerson } from '../ideas/domain/authorship';
 import type { Actor, IdeaForRules } from '../ideas/domain/idea';
 import { IdeasService } from '../ideas/ideas.service';
 import { NotificationsService } from '../notifications/notifications.service';
@@ -41,6 +44,7 @@ export class CommentsService {
     private readonly ideas: IdeasService,
     private readonly notifications: NotificationsService,
     private readonly attachmentStore: AttachmentStore,
+    @Inject(ENV) private readonly env: Env,
   ) {}
 
   /** The Idea's Comments in chronological order, each with its Replies. */
@@ -158,7 +162,7 @@ export class CommentsService {
       .$dynamic();
   }
 
-  private async detail(id: string, idea: IdeaForRules, actor: Actor) {
+  private async detail(id: string, idea: IdeaForRules & IdeaAuthorship, actor: Actor) {
     const [row] = await this.query().where(eq(comments.id, id));
     const files = await this.attachmentStore.ofComments([id]);
     return { ...this.present(row!, idea, actor, files), replies: [] };
@@ -166,7 +170,7 @@ export class CommentsService {
 
   private present(
     { comment, author, hiddenBy }: CommentWithNames,
-    idea: IdeaForRules,
+    idea: IdeaForRules & IdeaAuthorship,
     actor: Actor,
     files: Map<string, ReturnType<typeof presentAttachment>[]>,
   ) {
@@ -174,7 +178,8 @@ export class CommentsService {
     const state = rules.removed ? 'removed' : rules.hidden ? 'hidden' : 'published';
     return {
       id: comment.id,
-      author,
+      // Whoever wrote the Idea with a hidden name stays hidden in their own Comments there.
+      author: presentPerson(idea, author, actor.id, this.env.SIM_LOCALE),
       text: canReadText(rules, idea, actor) ? comment.text : null,
       state,
       createdAt: comment.createdAt.toISOString(),

@@ -882,6 +882,36 @@
         ]
       }
     },
+    "/api/ideas/{number}/reveal-author": {
+      "post": {
+        "operationId": "ideas_revealAuthor",
+        "parameters": [
+          {
+            "name": "number",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "ideas"
+        ]
+      }
+    },
     "/api/ideas/{number}/publish": {
       "post": {
         "operationId": "ideas_publish",
@@ -1938,6 +1968,56 @@
           "audit"
         ]
       }
+    },
+    "/api/settings": {
+      "get": {
+        "operationId": "settings_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "settings"
+        ]
+      },
+      "patch": {
+        "operationId": "settings_update",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "settings"
+        ]
+      }
     }
   },
   "info": {
@@ -2674,6 +2754,9 @@
                   ],
                   "additionalProperties": false
                 },
+                "hiddenAuthorship": {
+                  "type": "boolean"
+                },
                 "likes": {
                   "type": "object",
                   "properties": {
@@ -2720,6 +2803,7 @@
                 "status",
                 "category",
                 "author",
+                "hiddenAuthorship",
                 "likes",
                 "stalled",
                 "createdAt",
@@ -2797,6 +2881,9 @@
           "publish": {
             "default": false,
             "type": "boolean"
+          },
+          "hiddenAuthorship": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -2869,6 +2956,9 @@
               "name"
             ],
             "additionalProperties": false
+          },
+          "hiddenAuthorship": {
+            "type": "boolean"
           },
           "likes": {
             "type": "object",
@@ -3193,6 +3283,7 @@
           "status",
           "category",
           "author",
+          "hiddenAuthorship",
           "likes",
           "stalled",
           "createdAt",
@@ -3310,8 +3401,29 @@
                 }
               ]
             }
+          },
+          "hiddenAuthorship": {
+            "type": "boolean"
           }
         }
+      },
+      "AuthorDto_Output": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "additionalProperties": false
       },
       "StatusChangeDto": {
         "type": "object",
@@ -4526,6 +4638,26 @@
           "pageSize"
         ],
         "additionalProperties": false
+      },
+      "SettingsDto_Output": {
+        "type": "object",
+        "properties": {
+          "hiddenAuthorshipEnabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "hiddenAuthorshipEnabled"
+        ],
+        "additionalProperties": false
+      },
+      "SettingsUpdateDto": {
+        "type": "object",
+        "properties": {
+          "hiddenAuthorshipEnabled": {
+            "type": "boolean"
+          }
+        }
       }
     }
   }
