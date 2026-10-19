@@ -10,84 +10,84 @@ import {
 } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
-import { ColaboradoresService } from '../../colaboradores/colaboradores.service';
+import { CollaboratorsService } from '../../collaborators/collaborators.service';
 import { ENV } from '../../config/config.module';
 import type { Env } from '../../config/env';
-import { COOKIE_SESSAO, COOKIE_SSO, opcoesCookie } from '../cookies';
-import { Publico } from '../decorators';
-import { DURACAO_SESSAO_MS, SessoesService } from '../sessoes.service';
-import { SsoService, type TransacaoSso } from './sso.service';
+import { cookieOptions, SESSION_COOKIE, SSO_COOKIE } from '../cookies';
+import { Public } from '../decorators';
+import { SESSION_DURATION_MS, SessionsService } from '../sessions.service';
+import { SsoService, type SsoTransaction } from './sso.service';
 
-const CAMINHO_COOKIE_SSO = '/api/auth/sso';
-const VALIDADE_TRANSACAO_MS = 10 * 60 * 1000;
+const SSO_COOKIE_PATH = '/api/auth/sso';
+const TRANSACTION_TTL_MS = 10 * 60 * 1000;
 
-/** Só aceita caminhos internos, para o retorno pós-login não virar um open redirect. */
-export function retornoSeguro(retorno: unknown): string {
-  if (typeof retorno !== 'string' || !retorno.startsWith('/') || retorno.startsWith('//')) {
+/** Only accepts internal paths, so the post-login return does not become an open redirect. */
+export function safeReturnTo(returnTo: unknown): string {
+  if (typeof returnTo !== 'string' || !returnTo.startsWith('/') || returnTo.startsWith('//')) {
     return '/';
   }
-  return retorno.includes('\\') ? '/' : retorno;
+  return returnTo.includes('\\') ? '/' : returnTo;
 }
 
-function lerTransacao(valor: unknown): TransacaoSso | undefined {
-  if (typeof valor !== 'string') return undefined;
+function readTransaction(value: unknown): SsoTransaction | undefined {
+  if (typeof value !== 'string') return undefined;
   try {
-    return JSON.parse(Buffer.from(valor, 'base64url').toString('utf8')) as TransacaoSso;
+    return JSON.parse(Buffer.from(value, 'base64url').toString('utf8')) as SsoTransaction;
   } catch {
     return undefined;
   }
 }
 
-/** Fluxo de navegação (redirecionamentos), não faz parte da API REST documentada. */
+/** Browser flow (redirects), not part of the documented REST API. */
 @ApiExcludeController()
 @Controller('auth/sso')
-@Publico()
+@Public()
 export class SsoController {
   private readonly logger = new Logger(SsoController.name);
 
   constructor(
     @Inject(ENV) private readonly env: Env,
     private readonly sso: SsoService,
-    private readonly colaboradores: ColaboradoresService,
-    private readonly sessoes: SessoesService,
+    private readonly collaborators: CollaboratorsService,
+    private readonly sessions: SessionsService,
   ) {}
 
-  @Get('entrar')
-  async entrar(@Query('retorno') retorno: unknown, @Res() res: Response) {
-    if (!this.sso.habilitado) throw new NotFoundException();
+  @Get('start')
+  async start(@Query('returnTo') returnTo: unknown, @Res() res: Response) {
+    if (!this.sso.enabled) throw new NotFoundException();
     try {
-      const { url, transacao } = await this.sso.iniciar(retornoSeguro(retorno));
+      const { url, transaction } = await this.sso.start(safeReturnTo(returnTo));
       res.cookie(
-        COOKIE_SSO,
-        Buffer.from(JSON.stringify(transacao)).toString('base64url'),
-        opcoesCookie(this.env, VALIDADE_TRANSACAO_MS, CAMINHO_COOKIE_SSO),
+        SSO_COOKIE,
+        Buffer.from(JSON.stringify(transaction)).toString('base64url'),
+        cookieOptions(this.env, TRANSACTION_TTL_MS, SSO_COOKIE_PATH),
       );
       res.redirect(url.toString());
-    } catch (erro) {
-      this.logger.error('Não foi possível iniciar o login via SSO', erro as Error);
-      res.redirect('/entrar?erro=sso');
+    } catch (error) {
+      this.logger.error('Could not start the SSO login', error as Error);
+      res.redirect('/login?error=sso');
     }
   }
 
-  @Get('retorno')
-  async retorno(@Req() req: Request, @Res() res: Response) {
-    if (!this.sso.habilitado) throw new NotFoundException();
-    const transacao = lerTransacao(req.cookies?.[COOKIE_SSO]);
-    res.clearCookie(COOKIE_SSO, { path: CAMINHO_COOKIE_SSO });
-    if (!transacao) return res.redirect('/entrar?erro=sso');
+  @Get('callback')
+  async callback(@Req() req: Request, @Res() res: Response) {
+    if (!this.sso.enabled) throw new NotFoundException();
+    const transaction = readTransaction(req.cookies?.[SSO_COOKIE]);
+    res.clearCookie(SSO_COOKIE, { path: SSO_COOKIE_PATH });
+    if (!transaction) return res.redirect('/login?error=sso');
 
     try {
-      const urlAtual = new URL(req.originalUrl, this.env.SIM_PUBLIC_URL);
-      const perfil = await this.sso.concluir(urlAtual, transacao);
-      const colaborador = await this.colaboradores.provisionarViaSso(perfil);
-      if (!colaborador.ativo) return res.redirect('/entrar?erro=inativo');
+      const currentUrl = new URL(req.originalUrl, this.env.SIM_PUBLIC_URL);
+      const profile = await this.sso.finish(currentUrl, transaction);
+      const collaborator = await this.collaborators.provisionFromSso(profile);
+      if (!collaborator.active) return res.redirect('/login?error=inactive');
 
-      const token = await this.sessoes.criar(colaborador.id);
-      res.cookie(COOKIE_SESSAO, token, opcoesCookie(this.env, DURACAO_SESSAO_MS));
-      return res.redirect(retornoSeguro(transacao.retorno));
-    } catch (erro) {
-      this.logger.error('Falha no retorno do SSO', erro as Error);
-      return res.redirect('/entrar?erro=sso');
+      const token = await this.sessions.create(collaborator.id);
+      res.cookie(SESSION_COOKIE, token, cookieOptions(this.env, SESSION_DURATION_MS));
+      return res.redirect(safeReturnTo(transaction.returnTo));
+    } catch (error) {
+      this.logger.error('SSO callback failed', error as Error);
+      return res.redirect('/login?error=sso');
     }
   }
 }

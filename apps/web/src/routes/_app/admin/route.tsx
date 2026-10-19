@@ -1,9 +1,9 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
-/** Área de configuração do SIM: só Administradores. */
+/** SIM settings area: Administrators only. */
 export const Route = createFileRoute('/_app/admin')({
   beforeLoad: ({ context }) => {
-    if (!context.colaborador.administrador) throw redirect({ to: '/' });
+    if (!context.collaborator.administrator) throw redirect({ to: '/' });
   },
   component: Outlet,
 });

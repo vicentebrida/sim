@@ -6,41 +6,43 @@ import { Client, type Pool } from 'pg';
 import request from 'supertest';
 import { inject } from 'vitest';
 import { AppModule } from '../../src/app.module';
-import { ContaDeEmergenciaService } from '../../src/colaboradores/conta-de-emergencia.service';
+import { EmergencyAccountService } from '../../src/collaborators/emergency-account.service';
+import { configureApp } from '../../src/configure-app';
 import { PG_POOL } from '../../src/database/database.module';
 import { runMigrations } from '../../src/database/migrate';
-import { configureApp } from '../../src/configure-app';
 
-export const EMERGENCIA = { email: 'emergencia@sim.test', senha: 'senha-de-emergencia-123' };
+export const EMERGENCY = { email: 'emergency@sim.test', password: 'emergency-password-123' };
 
-export interface AppDeTeste {
+export interface TestApp {
   app: INestApplication;
   pool: Pool;
   http: () => ReturnType<typeof request>;
-  /** Cliente HTTP que guarda cookies entre requisições, como um navegador. */
-  navegador: () => ReturnType<typeof request.agent>;
-  fechar: () => Promise<void>;
+  /** HTTP client that keeps cookies between requests, like a browser. */
+  browser: () => ReturnType<typeof request.agent>;
+  close: () => Promise<void>;
 }
 
-async function criarBanco(): Promise<string> {
+export type Browser = ReturnType<TestApp['browser']>;
+
+async function createDatabase(): Promise<string> {
   const base = new URL(inject('postgresUri'));
-  const nome = `teste_${randomUUID().replaceAll('-', '')}`;
+  const name = `test_${randomUUID().replaceAll('-', '')}`;
   const client = new Client({ connectionString: base.toString() });
   await client.connect();
-  await client.query(`CREATE DATABASE ${nome}`);
+  await client.query(`CREATE DATABASE ${name}`);
   await client.end();
-  base.pathname = `/${nome}`;
+  base.pathname = `/${name}`;
   return base.toString();
 }
 
-/** Sobe o SIM completo contra um banco novo, com a conta de emergência configurada. */
-export async function criarApp(env: Record<string, string> = {}): Promise<AppDeTeste> {
-  const envOriginal = { ...process.env };
+/** Starts the whole SIM against a fresh database, with the emergency account configured. */
+export async function createApp(env: Record<string, string> = {}): Promise<TestApp> {
+  const originalEnv = { ...process.env };
   Object.assign(process.env, {
-    DATABASE_URL: await criarBanco(),
+    DATABASE_URL: await createDatabase(),
     SIM_PUBLIC_URL: 'http://localhost:3000',
-    SIM_EMERGENCY_EMAIL: EMERGENCIA.email,
-    SIM_EMERGENCY_PASSWORD: EMERGENCIA.senha,
+    SIM_EMERGENCY_EMAIL: EMERGENCY.email,
+    SIM_EMERGENCY_PASSWORD: EMERGENCY.password,
     ...env,
   });
 
@@ -50,52 +52,47 @@ export async function criarApp(env: Record<string, string> = {}): Promise<AppDeT
     configureApp(app);
     const pool = app.get<Pool>(PG_POOL);
     await runMigrations(pool);
-    await app.get(ContaDeEmergenciaService).garantir();
+    await app.get(EmergencyAccountService).ensure();
     await app.init();
 
     return {
       app,
       pool,
       http: () => request(app.getHttpServer()),
-      navegador: () => request.agent(app.getHttpServer()),
-      fechar: () => app.close(),
+      browser: () => request.agent(app.getHttpServer()),
+      close: () => app.close(),
     };
   } finally {
-    process.env = envOriginal;
+    process.env = originalEnv;
   }
 }
 
-/** Navegador com sessão da conta de emergência (Administrador). */
-export async function entrarComoAdministrador(sim: AppDeTeste) {
-  const navegador = sim.navegador();
-  await navegador
+/** Browser signed in with the emergency account (Administrator). */
+export async function signInAsAdministrator(sim: TestApp) {
+  const browser = sim.browser();
+  await browser
     .post('/api/auth/login')
-    .send({ email: EMERGENCIA.email, senha: EMERGENCIA.senha })
+    .send({ email: EMERGENCY.email, password: EMERGENCY.password })
     .expect(200);
-  return navegador;
+  return browser;
 }
 
-/** Cria uma conta local pelo Administrador e devolve um navegador já logado com senha definitiva. */
-export async function criarColaborador(
-  sim: AppDeTeste,
-  admin: ReturnType<AppDeTeste['navegador']>,
-  nome: string,
-) {
-  const usuario = nome
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/\s+/g, '.');
-  const email = `${usuario}@empresa.test`;
-  const conta = await admin.post('/api/colaboradores').send({ nome, email }).expect(201);
-  const navegador = sim.navegador();
-  await navegador
+/** Creates a local account through the Administrator and returns a browser with a final password. */
+export async function createCollaborator(sim: TestApp, admin: Browser, name: string) {
+  const user = name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, '.');
+  const email = `${user}@company.test`;
+  const account = await admin.post('/api/collaborators').send({ name, email }).expect(201);
+  const browser = sim.browser();
+  await browser
     .post('/api/auth/login')
-    .send({ email, senha: conta.body.senhaTemporaria })
+    .send({ email, password: account.body.temporaryPassword })
     .expect(200);
-  await navegador
-    .post('/api/auth/trocar-senha')
-    .send({ senhaAtual: conta.body.senhaTemporaria, novaSenha: `senha-de-${nome}-123` })
+  await browser
+    .post('/api/auth/change-password')
+    .send({
+      currentPassword: account.body.temporaryPassword,
+      newPassword: `password-of-${name}-123`,
+    })
     .expect(204);
-  return { navegador, id: conta.body.colaborador.id as string };
+  return { browser, id: account.body.collaborator.id as string };
 }

@@ -1,11 +1,11 @@
 {
-  "id": "1277fef1-c904-47f6-a2fa-4f067ccc43dd",
-  "prevId": "a76411e2-d390-4148-a371-e0eacc1f392f",
+  "id": "994c1d13-3334-4700-82f7-874b1a5f9260",
+  "prevId": "9c1b01cf-318c-4565-bb17-ac736c5f908f",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.colaboradores": {
-      "name": "colaboradores",
+    "public.collaborators": {
+      "name": "collaborators",
       "schema": "",
       "columns": {
         "id": {
@@ -15,8 +15,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "nome": {
-          "name": "nome",
+        "name": {
+          "name": "name",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -27,14 +27,14 @@
           "primaryKey": false,
           "notNull": true
         },
-        "senha_hash": {
-          "name": "senha_hash",
+        "password_hash": {
+          "name": "password_hash",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "deve_trocar_senha": {
-          "name": "deve_trocar_senha",
+        "must_change_password": {
+          "name": "must_change_password",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
@@ -46,41 +46,41 @@
           "primaryKey": false,
           "notNull": false
         },
-        "departamento": {
-          "name": "departamento",
+        "department": {
+          "name": "department",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "foto_url": {
-          "name": "foto_url",
+        "picture_url": {
+          "name": "picture_url",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "administrador": {
-          "name": "administrador",
+        "administrator": {
+          "name": "administrator",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "default": false
         },
-        "ativo": {
-          "name": "ativo",
+        "active": {
+          "name": "active",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "default": true
         },
-        "criado_em": {
-          "name": "criado_em",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
-        "ultimo_login_em": {
-          "name": "ultimo_login_em",
+        "last_login_at": {
+          "name": "last_login_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
@@ -90,15 +90,15 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "colaboradores_email_unique": {
-          "name": "colaboradores_email_unique",
+        "collaborators_email_unique": {
+          "name": "collaborators_email_unique",
           "nullsNotDistinct": false,
           "columns": [
             "email"
           ]
         },
-        "colaboradores_ssoSubject_unique": {
-          "name": "colaboradores_ssoSubject_unique",
+        "collaborators_ssoSubject_unique": {
+          "name": "collaborators_ssoSubject_unique",
           "nullsNotDistinct": false,
           "columns": [
             "sso_subject"
@@ -109,8 +109,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.sessoes": {
-      "name": "sessoes",
+    "public.sessions": {
+      "name": "sessions",
       "schema": "",
       "columns": {
         "token_hash": {
@@ -119,32 +119,32 @@
           "primaryKey": true,
           "notNull": true
         },
-        "colaborador_id": {
-          "name": "colaborador_id",
+        "collaborator_id": {
+          "name": "collaborator_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "criada_em": {
-          "name": "criada_em",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
-        "expira_em": {
-          "name": "expira_em",
+        "expires_at": {
+          "name": "expires_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {
-        "sessoes_colaborador_id_index": {
-          "name": "sessoes_colaborador_id_index",
+        "sessions_collaborator_id_index": {
+          "name": "sessions_collaborator_id_index",
           "columns": [
             {
-              "expression": "colaborador_id",
+              "expression": "collaborator_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -157,12 +157,12 @@
         }
       },
       "foreignKeys": {
-        "sessoes_colaborador_id_colaboradores_id_fk": {
-          "name": "sessoes_colaborador_id_colaboradores_id_fk",
-          "tableFrom": "sessoes",
-          "tableTo": "colaboradores",
+        "sessions_collaborator_id_collaborators_id_fk": {
+          "name": "sessions_collaborator_id_collaborators_id_fk",
+          "tableFrom": "sessions",
+          "tableTo": "collaborators",
           "columnsFrom": [
-            "colaborador_id"
+            "collaborator_id"
           ],
           "columnsTo": [
             "id"
@@ -172,6 +172,898 @@
         }
       },
       "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.categories": {
+      "name": "categories",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "categories_name_unique": {
+          "name": "categories_name_unique",
+          "columns": [
+            {
+              "expression": "lower(\"name\")",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.reviewers": {
+      "name": "reviewers",
+      "schema": "",
+      "columns": {
+        "category_id": {
+          "name": "category_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "collaborator_id": {
+          "name": "collaborator_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assigned_at": {
+          "name": "assigned_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "reviewers_collaborator_id_index": {
+          "name": "reviewers_collaborator_id_index",
+          "columns": [
+            {
+              "expression": "collaborator_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "reviewers_category_id_categories_id_fk": {
+          "name": "reviewers_category_id_categories_id_fk",
+          "tableFrom": "reviewers",
+          "tableTo": "categories",
+          "columnsFrom": [
+            "category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "reviewers_collaborator_id_collaborators_id_fk": {
+          "name": "reviewers_collaborator_id_collaborators_id_fk",
+          "tableFrom": "reviewers",
+          "tableTo": "collaborators",
+          "columnsFrom": [
+            "collaborator_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "reviewers_category_id_collaborator_id_pk": {
+          "name": "reviewers_category_id_collaborator_id_pk",
+          "columns": [
+            "category_id",
+            "collaborator_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.custom_fields": {
+      "name": "custom_fields",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "label": {
+          "name": "label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "help": {
+          "name": "help",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "required": {
+          "name": "required",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "options": {
+          "name": "options",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "use_for_detection": {
+          "name": "use_for_detection",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.idea_history": {
+      "name": "idea_history",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "idea_id": {
+          "name": "idea_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "from_value": {
+          "name": "from_value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "to_value": {
+          "name": "to_value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "justification": {
+          "name": "justification",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "collaborator_id": {
+          "name": "collaborator_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idea_history_idea_id_created_at_index": {
+          "name": "idea_history_idea_id_created_at_index",
+          "columns": [
+            {
+              "expression": "idea_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "idea_history_idea_id_ideas_id_fk": {
+          "name": "idea_history_idea_id_ideas_id_fk",
+          "tableFrom": "idea_history",
+          "tableTo": "ideas",
+          "columnsFrom": [
+            "idea_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "idea_history_collaborator_id_collaborators_id_fk": {
+          "name": "idea_history_collaborator_id_collaborators_id_fk",
+          "tableFrom": "idea_history",
+          "tableTo": "collaborators",
+          "columnsFrom": [
+            "collaborator_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ideas": {
+      "name": "ideas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "number": {
+          "name": "number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "ideas_number_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "values": {
+          "name": "values",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "original_idea_id": {
+          "name": "original_idea_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "edited_at": {
+          "name": "edited_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status_changed_at": {
+          "name": "status_changed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "ideas_status_index": {
+          "name": "ideas_status_index",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "ideas_category_id_index": {
+          "name": "ideas_category_id_index",
+          "columns": [
+            {
+              "expression": "category_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "ideas_author_id_index": {
+          "name": "ideas_author_id_index",
+          "columns": [
+            {
+              "expression": "author_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "ideas_published_at_index": {
+          "name": "ideas_published_at_index",
+          "columns": [
+            {
+              "expression": "published_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "ideas_category_id_categories_id_fk": {
+          "name": "ideas_category_id_categories_id_fk",
+          "tableFrom": "ideas",
+          "tableTo": "categories",
+          "columnsFrom": [
+            "category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ideas_author_id_collaborators_id_fk": {
+          "name": "ideas_author_id_collaborators_id_fk",
+          "tableFrom": "ideas",
+          "tableTo": "collaborators",
+          "columnsFrom": [
+            "author_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ideas_original_idea_id_ideas_id_fk": {
+          "name": "ideas_original_idea_id_ideas_id_fk",
+          "tableFrom": "ideas",
+          "tableTo": "ideas",
+          "columnsFrom": [
+            "original_idea_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ideas_number_unique": {
+          "name": "ideas_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "number"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "ideas_valid_status": {
+          "name": "ideas_valid_status",
+          "value": "\"ideas\".\"status\" in ('draft','open','under_review','approved','in_progress','done','declined','duplicate','archived')"
+        },
+        "ideas_duplicate_has_original": {
+          "name": "ideas_duplicate_has_original",
+          "value": "(\"ideas\".\"status\" = 'duplicate') = (\"ideas\".\"original_idea_id\" is not null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.likes": {
+      "name": "likes",
+      "schema": "",
+      "columns": {
+        "idea_id": {
+          "name": "idea_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "collaborator_id": {
+          "name": "collaborator_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "likes_collaborator_id_index": {
+          "name": "likes_collaborator_id_index",
+          "columns": [
+            {
+              "expression": "collaborator_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "likes_idea_id_ideas_id_fk": {
+          "name": "likes_idea_id_ideas_id_fk",
+          "tableFrom": "likes",
+          "tableTo": "ideas",
+          "columnsFrom": [
+            "idea_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "likes_collaborator_id_collaborators_id_fk": {
+          "name": "likes_collaborator_id_collaborators_id_fk",
+          "tableFrom": "likes",
+          "tableTo": "collaborators",
+          "columnsFrom": [
+            "collaborator_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "likes_idea_id_collaborator_id_pk": {
+          "name": "likes_idea_id_collaborator_id_pk",
+          "columns": [
+            "idea_id",
+            "collaborator_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.comments": {
+      "name": "comments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "idea_id": {
+          "name": "idea_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reply_to_id": {
+          "name": "reply_to_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "edited_at": {
+          "name": "edited_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "removed_at": {
+          "name": "removed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hidden_at": {
+          "name": "hidden_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hidden_by_id": {
+          "name": "hidden_by_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hidden_reason": {
+          "name": "hidden_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "comments_idea_id_created_at_index": {
+          "name": "comments_idea_id_created_at_index",
+          "columns": [
+            {
+              "expression": "idea_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "comments_reply_to_id_index": {
+          "name": "comments_reply_to_id_index",
+          "columns": [
+            {
+              "expression": "reply_to_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "comments_idea_id_ideas_id_fk": {
+          "name": "comments_idea_id_ideas_id_fk",
+          "tableFrom": "comments",
+          "tableTo": "ideas",
+          "columnsFrom": [
+            "idea_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "comments_author_id_collaborators_id_fk": {
+          "name": "comments_author_id_collaborators_id_fk",
+          "tableFrom": "comments",
+          "tableTo": "collaborators",
+          "columnsFrom": [
+            "author_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "comments_reply_to_id_comments_id_fk": {
+          "name": "comments_reply_to_id_comments_id_fk",
+          "tableFrom": "comments",
+          "tableTo": "comments",
+          "columnsFrom": [
+            "reply_to_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "comments_hidden_by_id_collaborators_id_fk": {
+          "name": "comments_hidden_by_id_collaborators_id_fk",
+          "tableFrom": "comments",
+          "tableTo": "collaborators",
+          "columnsFrom": [
+            "hidden_by_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "comments_hiding_complete": {
+          "name": "comments_hiding_complete",
+          "value": "(\"comments\".\"hidden_at\" is null) = (\"comments\".\"hidden_by_id\" is null) and (\"comments\".\"hidden_at\" is null) = (\"comments\".\"hidden_reason\" is null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.mentions": {
+      "name": "mentions",
+      "schema": "",
+      "columns": {
+        "comment_id": {
+          "name": "comment_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "collaborator_id": {
+          "name": "collaborator_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "mentions_collaborator_id_index": {
+          "name": "mentions_collaborator_id_index",
+          "columns": [
+            {
+              "expression": "collaborator_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "mentions_comment_id_comments_id_fk": {
+          "name": "mentions_comment_id_comments_id_fk",
+          "tableFrom": "mentions",
+          "tableTo": "comments",
+          "columnsFrom": [
+            "comment_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "mentions_collaborator_id_collaborators_id_fk": {
+          "name": "mentions_collaborator_id_collaborators_id_fk",
+          "tableFrom": "mentions",
+          "tableTo": "collaborators",
+          "columnsFrom": [
+            "collaborator_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "mentions_comment_id_collaborator_id_pk": {
+          "name": "mentions_comment_id_collaborator_id_pk",
+          "columns": [
+            "comment_id",
+            "collaborator_id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},

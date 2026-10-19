@@ -1,64 +1,64 @@
-import { useCategoriasListar, useIdeiasListar } from '@sim/api-client';
+import { useCategoriesList, useIdeasList } from '@sim/api-client';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { Lightbulb } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
-import { ContadorDeCurtidas } from '@/components/curtidas';
+import { LikeCount } from '@/components/likes';
 import { NativeSelect } from '@/components/native-select';
 import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { formatarData } from '@/lib/datas';
+import { formatDate } from '@/lib/dates';
 
-const STATUS_FILTRAVEIS = [
-  'aberta',
-  'em_analise',
-  'aprovada',
-  'em_execucao',
-  'concluida',
-  'recusada',
-  'duplicada',
-  'arquivada',
+const FILTERABLE_STATUSES = [
+  'open',
+  'under_review',
+  'approved',
+  'in_progress',
+  'done',
+  'declined',
+  'duplicate',
+  'archived',
 ] as const;
 
-const ORDENS = ['em_alta', 'mais_curtidas', 'mais_recentes'] as const;
+const SORT_ORDERS = ['trending', 'most_liked', 'newest'] as const;
 
-const filtrosSchema = z.object({
-  // Ausente na URL é "Em alta", a ordenação padrão.
-  ordem: z.enum(ORDENS).optional().catch(undefined),
-  status: z.enum(STATUS_FILTRAVEIS).optional().catch(undefined),
-  categoriaId: z.string().optional().catch(undefined),
-  minhas: z.boolean().optional().catch(undefined),
-  pagina: z.number().int().min(1).optional().catch(undefined),
+const filtersSchema = z.object({
+  status: z.enum(FILTERABLE_STATUSES).optional().catch(undefined),
+  categoryId: z.string().optional().catch(undefined),
+  mine: z.boolean().optional().catch(undefined),
+  // Missing from the URL means "trending", the default order.
+  sort: z.enum(SORT_ORDERS).optional().catch(undefined),
+  page: z.number().int().min(1).optional().catch(undefined),
 });
 
 export const Route = createFileRoute('/_app/')({
-  validateSearch: filtrosSchema,
+  validateSearch: filtersSchema,
   component: HomePage,
 });
 
-const POR_PAGINA = 20;
+const PAGE_SIZE = 20;
 
 function HomePage() {
   const { t } = useTranslation();
-  const filtros = Route.useSearch();
+  const filters = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
-  const pagina = filtros.pagina ?? 1;
-  const { data: categoriasResposta } = useCategoriasListar();
-  const { data } = useIdeiasListar({
-    status: filtros.status,
-    categoriaId: filtros.categoriaId,
-    autor: filtros.minhas ? 'eu' : undefined,
-    ordem: filtros.ordem,
-    pagina,
-    porPagina: POR_PAGINA,
+  const page = filters.page ?? 1;
+  const { data: categoriesResponse } = useCategoriesList();
+  const { data } = useIdeasList({
+    status: filters.status,
+    categoryId: filters.categoryId,
+    author: filters.mine ? 'me' : undefined,
+    sort: filters.sort,
+    page,
+    pageSize: PAGE_SIZE,
   });
-  const resultado = data?.data;
-  const totalDePaginas = resultado ? Math.max(1, Math.ceil(resultado.total / POR_PAGINA)) : 1;
+  const result = data?.data;
+  const pageCount = result ? Math.max(1, Math.ceil(result.total / PAGE_SIZE)) : 1;
 
-  const filtrar = (mudanca: Partial<z.infer<typeof filtrosSchema>>) =>
-    navigate({ search: (atual) => ({ ...atual, ...mudanca, pagina: undefined }) });
+  const filter = (change: Partial<z.infer<typeof filtersSchema>>) =>
+    navigate({ search: (current) => ({ ...current, ...change, page: undefined }) });
 
   return (
     <div className="space-y-6">
@@ -68,7 +68,7 @@ function HomePage() {
           <p className="text-muted-foreground">{t('home.subtitle')}</p>
         </div>
         <Button asChild>
-          <Link to="/ideias/nova">
+          <Link to="/ideas/new">
             <Lightbulb />
             {t('home.newIdea')}
           </Link>
@@ -77,16 +77,16 @@ function HomePage() {
 
       <div className="flex flex-wrap items-end gap-4">
         <div className="grid min-w-44 gap-1">
-          <Label htmlFor="filtro-status">{t('ideias.filtros.status')}</Label>
+          <Label htmlFor="filter-status">{t('ideas.filters.status')}</Label>
           <NativeSelect
-            id="filtro-status"
-            value={filtros.status ?? ''}
-            onChange={(evento) =>
-              filtrar({ status: (evento.target.value || undefined) as typeof filtros.status })
+            id="filter-status"
+            value={filters.status ?? ''}
+            onChange={(event) =>
+              filter({ status: (event.target.value || undefined) as typeof filters.status })
             }
           >
-            <option value="">{t('ideias.filtros.todos')}</option>
-            {STATUS_FILTRAVEIS.map((status) => (
+            <option value="">{t('ideas.filters.all')}</option>
+            {FILTERABLE_STATUSES.map((status) => (
               <option key={status} value={status}>
                 {t(`status.${status}`)}
               </option>
@@ -94,33 +94,33 @@ function HomePage() {
           </NativeSelect>
         </div>
         <div className="grid min-w-44 gap-1">
-          <Label htmlFor="filtro-categoria">{t('ideias.filtros.categoria')}</Label>
+          <Label htmlFor="filter-category">{t('ideas.filters.category')}</Label>
           <NativeSelect
-            id="filtro-categoria"
-            value={filtros.categoriaId ?? ''}
-            onChange={(evento) => filtrar({ categoriaId: evento.target.value || undefined })}
+            id="filter-category"
+            value={filters.categoryId ?? ''}
+            onChange={(event) => filter({ categoryId: event.target.value || undefined })}
           >
-            <option value="">{t('ideias.filtros.todas')}</option>
-            {(categoriasResposta?.data ?? []).map((categoria) => (
-              <option key={categoria.id} value={categoria.id}>
-                {categoria.nome}
+            <option value="">{t('ideas.filters.allCategories')}</option>
+            {(categoriesResponse?.data ?? []).map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
               </option>
             ))}
           </NativeSelect>
         </div>
         <div className="grid min-w-44 gap-1">
-          <Label htmlFor="filtro-ordem">{t('ideias.ordem.label')}</Label>
+          <Label htmlFor="filter-sort">{t('ideas.sort.label')}</Label>
           <NativeSelect
-            id="filtro-ordem"
-            value={filtros.ordem ?? 'em_alta'}
-            onChange={(evento) => {
-              const ordem = evento.target.value as (typeof ORDENS)[number];
-              filtrar({ ordem: ordem === 'em_alta' ? undefined : ordem });
+            id="filter-sort"
+            value={filters.sort ?? 'trending'}
+            onChange={(event) => {
+              const sort = event.target.value as (typeof SORT_ORDERS)[number];
+              filter({ sort: sort === 'trending' ? undefined : sort });
             }}
           >
-            {ORDENS.map((ordem) => (
-              <option key={ordem} value={ordem}>
-                {t(`ideias.ordem.${ordem}`)}
+            {SORT_ORDERS.map((sort) => (
+              <option key={sort} value={sort}>
+                {t(`ideas.sort.${sort}`)}
               </option>
             ))}
           </NativeSelect>
@@ -129,69 +129,69 @@ function HomePage() {
           <input
             type="checkbox"
             className="size-4"
-            checked={Boolean(filtros.minhas)}
-            onChange={(evento) => filtrar({ minhas: evento.target.checked || undefined })}
+            checked={Boolean(filters.mine)}
+            onChange={(event) => filter({ mine: event.target.checked || undefined })}
           />
-          {t('ideias.filtros.minhas')}
+          {t('ideas.filters.mine')}
         </label>
       </div>
 
-      {resultado && resultado.itens.length === 0 && (
+      {result && result.items.length === 0 && (
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
-            {t('ideias.vazio')}
+            {t('ideas.empty')}
           </CardContent>
         </Card>
       )}
 
       <ul className="space-y-3">
-        {resultado?.itens.map((ideia) => (
-          <li key={ideia.id}>
+        {result?.items.map((idea) => (
+          <li key={idea.id}>
             <Link
-              to="/ideias/$numero"
-              params={{ numero: String(ideia.numero) }}
+              to="/ideas/$number"
+              params={{ number: String(idea.number) }}
               className="block rounded-xl border bg-card p-4 transition-colors hover:bg-muted/50"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <StatusBadge status={ideia.status} />
-                <span className="text-sm text-muted-foreground">#{ideia.numero}</span>
-                <span className="text-sm text-muted-foreground">· {ideia.categoria.nome}</span>
+                <StatusBadge status={idea.status} />
+                <span className="text-sm text-muted-foreground">#{idea.number}</span>
+                <span className="text-sm text-muted-foreground">· {idea.category.name}</span>
               </div>
-              <h2 className="mt-2 font-medium">{ideia.titulo}</h2>
+              <h2 className="mt-2 font-medium">{idea.title}</h2>
               <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm text-muted-foreground">
-                  {t('ideias.por', { nome: ideia.autor.nome })} ·{' '}
-                  {ideia.publicadaEm
-                    ? t('ideias.publicadaEm', { data: formatarData(ideia.publicadaEm) })
-                    : t('ideias.criadaEm', { data: formatarData(ideia.criadaEm) })}
+                  {t('ideas.by', { name: idea.author.name })} ·{' '}
+                  {idea.publishedAt
+                    ? t('ideas.publishedOn', { date: formatDate(idea.publishedAt) })
+                    : t('ideas.createdOn', { date: formatDate(idea.createdAt) })}
                 </p>
-                {ideia.status !== 'rascunho' && <ContadorDeCurtidas {...ideia.curtidas} />}
+                {idea.status !== 'draft' && <LikeCount {...idea.likes} />}
               </div>
             </Link>
           </li>
         ))}
       </ul>
 
-      {resultado && totalDePaginas > 1 && (
-        <nav className="flex items-center justify-center gap-4" aria-label="Paginação">
+      {result && pageCount > 1 && (
+        <nav className="flex items-center justify-center gap-4" aria-label="Pagination">
           <Button
             variant="outline"
             size="sm"
-            disabled={pagina <= 1}
-            onClick={() => navigate({ search: (atual) => ({ ...atual, pagina: pagina - 1 }) })}
+            disabled={page <= 1}
+            onClick={() => navigate({ search: (current) => ({ ...current, page: page - 1 }) })}
           >
-            {t('ideias.anterior')}
+            {t('ideas.previous')}
           </Button>
           <span className="text-sm text-muted-foreground">
-            {t('ideias.pagina', { pagina, total: totalDePaginas })}
+            {t('ideas.page', { page, total: pageCount })}
           </span>
           <Button
             variant="outline"
             size="sm"
-            disabled={pagina >= totalDePaginas}
-            onClick={() => navigate({ search: (atual) => ({ ...atual, pagina: pagina + 1 }) })}
+            disabled={page >= pageCount}
+            onClick={() => navigate({ search: (current) => ({ ...current, page: page + 1 }) })}
           >
-            {t('ideias.proxima')}
+            {t('ideas.next')}
           </Button>
         </nav>
       )}

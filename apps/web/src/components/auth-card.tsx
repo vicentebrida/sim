@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-/** Moldura das telas de acesso (login, troca de senha). */
+/** Frame of the access screens (login, password change). */
 export function AuthCard(props: { title: string; description?: string; children: ReactNode }) {
   const { t } = useTranslation();
   return (

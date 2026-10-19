@@ -1,53 +1,59 @@
-import type { ColaboradorAtualDtoOutput } from '@sim/api-client';
+import type { CurrentCollaboratorDtoOutput } from '@sim/api-client';
 import { http, HttpResponse } from 'msw';
 import { server } from './server';
 
-export const ana: ColaboradorAtualDtoOutput = {
+export const ana: CurrentCollaboratorDtoOutput = {
   id: '6f1c2a4e-0d7b-4f5e-9a51-3c2b1d0e9f8a',
-  nome: 'Ana Souza',
-  email: 'ana@empresa.test',
-  departamento: null,
-  fotoUrl: null,
-  administrador: false,
-  deveTrocarSenha: false,
+  name: 'Ana Souza',
+  email: 'ana@company.test',
+  department: null,
+  pictureUrl: null,
+  administrator: false,
+  mustChangePassword: false,
 };
 
-/** API de autenticação simulada, com sessão em memória. */
-export function simularAuth(opcoes: {
-  sessao?: ColaboradorAtualDtoOutput;
-  sso?: { habilitado: boolean; rotulo: string };
-  aoEntrar?: ColaboradorAtualDtoOutput;
-  bloqueado?: boolean;
+/** Simulated authentication API, with an in-memory session. */
+export function simulateAuth(options: {
+  session?: CurrentCollaboratorDtoOutput;
+  sso?: { enabled: boolean; label: string | null };
+  onLogin?: CurrentCollaboratorDtoOutput;
+  locked?: boolean;
 }) {
-  let sessao = opcoes.sessao;
+  let session = options.session;
   server.use(
     http.get('*/api/health', () => HttpResponse.json({ status: 'ok', database: 'up' })),
-    http.get('*/api/auth/configuracao', () =>
+    http.get('*/api/auth/configuration', () =>
       HttpResponse.json({
-        loginLocal: true,
-        sso: opcoes.sso ?? { habilitado: false, rotulo: 'Entrar com SSO' },
+        localLogin: true,
+        sso: options.sso ?? { enabled: false, label: null },
       }),
     ),
     http.get('*/api/auth/me', () =>
-      sessao ? HttpResponse.json(sessao) : HttpResponse.json({}, { status: 401 }),
+      session ? HttpResponse.json(session) : HttpResponse.json({}, { status: 401 }),
     ),
     http.post('*/api/auth/login', async ({ request }) => {
-      if (opcoes.bloqueado) {
-        return HttpResponse.json({ message: 'Muitas tentativas' }, { status: 429 });
+      if (options.locked) {
+        return HttpResponse.json(
+          { message: 'Too many attempts', code: 'TOO_MANY_ATTEMPTS' },
+          { status: 429 },
+        );
       }
-      const { senha } = (await request.json()) as { senha: string };
-      if (!opcoes.aoEntrar || senha !== 'senha-correta') {
-        return HttpResponse.json({ message: 'E-mail ou senha inválidos' }, { status: 401 });
+      const { password } = (await request.json()) as { password: string };
+      if (!options.onLogin || password !== 'right-password') {
+        return HttpResponse.json(
+          { message: 'Invalid e-mail or password', code: 'INVALID_CREDENTIALS' },
+          { status: 401 },
+        );
       }
-      sessao = opcoes.aoEntrar;
-      return HttpResponse.json(sessao);
+      session = options.onLogin;
+      return HttpResponse.json(session);
     }),
-    http.post('*/api/auth/trocar-senha', () => {
-      if (sessao) sessao = { ...sessao, deveTrocarSenha: false };
+    http.post('*/api/auth/change-password', () => {
+      if (session) session = { ...session, mustChangePassword: false };
       return new HttpResponse(null, { status: 204 });
     }),
     http.post('*/api/auth/logout', () => {
-      sessao = undefined;
+      session = undefined;
       return new HttpResponse(null, { status: 204 });
     }),
   );

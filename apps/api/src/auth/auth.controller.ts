@@ -1,136 +1,127 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  Inject,
-  Post,
-  Req,
-  Res,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Inject, Post, Req, Res } from '@nestjs/common';
 import { ApiNoContentResponse, ApiTags, ApiTooManyRequestsResponse } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { ZodResponse } from 'nestjs-zod';
-import { ColaboradoresService } from '../colaboradores/colaboradores.service';
-import { ContaDeEmergenciaService } from '../colaboradores/conta-de-emergencia.service';
+import { CollaboratorsService } from '../collaborators/collaborators.service';
+import { EmergencyAccountService } from '../collaborators/emergency-account.service';
+import { DomainError } from '../common/domain-error';
 import { ENV } from '../config/config.module';
 import type { Env } from '../config/env';
-import type { Colaborador } from '../database/schema';
+import type { Collaborator } from '../database/schema';
 import {
-  ColaboradorAtualDto,
-  ConfiguracaoDeAcessoDto,
-  CredenciaisDto,
-  TrocaDeSenhaDto,
+  AccessConfigurationDto,
+  CredentialsDto,
+  CurrentCollaboratorDto,
+  PasswordChangeDto,
 } from './auth.dto';
-import { COOKIE_SESSAO, opcoesCookie } from './cookies';
-import { ColaboradorAtual, PermiteSenhaTemporaria, Publico } from './decorators';
-import { verificarSenha } from './senha';
-import { DURACAO_SESSAO_MS, SessoesService } from './sessoes.service';
+import { cookieOptions, SESSION_COOKIE } from './cookies';
+import { AllowsTemporaryPassword, CurrentCollaborator, Public } from './decorators';
+import { LoginAttemptsService, TooManyAttemptsException } from './login-attempts';
+import { verifyPassword } from './password';
+import { SESSION_DURATION_MS, SessionsService } from './sessions.service';
 import { SsoService } from './sso/sso.service';
-import { MuitasTentativasException, TentativasDeLoginService } from './tentativas-de-login';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
     @Inject(ENV) private readonly env: Env,
-    private readonly colaboradores: ColaboradoresService,
-    private readonly contaDeEmergencia: ContaDeEmergenciaService,
-    private readonly sessoes: SessoesService,
+    private readonly collaborators: CollaboratorsService,
+    private readonly emergencyAccount: EmergencyAccountService,
+    private readonly sessions: SessionsService,
     private readonly sso: SsoService,
-    private readonly tentativas: TentativasDeLoginService,
+    private readonly attempts: LoginAttemptsService,
   ) {}
 
-  @Get('configuracao')
-  @Publico()
-  @ZodResponse({ status: 200, type: ConfiguracaoDeAcessoDto })
-  configuracao() {
+  @Get('configuration')
+  @Public()
+  @ZodResponse({ status: 200, type: AccessConfigurationDto })
+  configuration() {
     return {
-      loginLocal: true,
-      sso: { habilitado: this.sso.habilitado, rotulo: this.sso.rotulo },
+      localLogin: true,
+      sso: { enabled: this.sso.enabled, label: this.sso.label ?? null },
     };
   }
 
   @Post('login')
-  @Publico()
-  @ApiTooManyRequestsResponse({ description: 'Muitas tentativas; aguarde e tente novamente' })
-  @ZodResponse({ status: 200, type: ColaboradorAtualDto })
+  @Public()
+  @ApiTooManyRequestsResponse({ description: 'Too many attempts; wait and try again' })
+  @ZodResponse({ status: 200, type: CurrentCollaboratorDto })
   async login(
-    @Body() credenciais: CredenciaisDto,
+    @Body() credentials: CredentialsDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const ip = req.ip ?? 'desconhecido';
+    const ip = req.ip ?? 'unknown';
     try {
-      this.tentativas.verificar(ip, credenciais.email);
-    } catch (erro) {
-      if (erro instanceof MuitasTentativasException) {
-        res.setHeader('Retry-After', String(erro.retryAfterSegundos));
+      this.attempts.check(ip, credentials.email);
+    } catch (error) {
+      if (error instanceof TooManyAttemptsException) {
+        res.setHeader('Retry-After', String(error.retryAfterSeconds));
       }
-      throw erro;
+      throw error;
     }
 
-    const colaborador = await this.colaboradores.buscarPorEmail(credenciais.email);
-    const senhaConfere = await verificarSenha(colaborador?.senhaHash, credenciais.senha);
-    // Mesma resposta para e-mail inexistente, senha errada e Colaborador Inativo.
-    if (!colaborador || !senhaConfere || !colaborador.ativo) {
-      this.tentativas.registrarFalha(ip, credenciais.email);
-      throw new UnauthorizedException('E-mail ou senha inválidos');
+    const collaborator = await this.collaborators.findByEmail(credentials.email);
+    const passwordMatches = await verifyPassword(collaborator?.passwordHash, credentials.password);
+    // Same answer for unknown e-mail, wrong password and inactive Collaborator.
+    if (!collaborator || !passwordMatches || !collaborator.active) {
+      this.attempts.recordFailure(ip, credentials.email);
+      throw new DomainError('INVALID_CREDENTIALS', 'Invalid e-mail or password');
     }
-    this.tentativas.registrarSucesso(ip, credenciais.email);
-    await this.iniciarSessao(colaborador.id, res);
-    return colaborador;
+    this.attempts.recordSuccess(ip, credentials.email);
+    await this.startSession(collaborator.id, res);
+    return collaborator;
   }
 
   @Post('logout')
-  @PermiteSenhaTemporaria()
+  @AllowsTemporaryPassword()
   @HttpCode(204)
   @ApiNoContentResponse()
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const token: unknown = req.cookies?.[COOKIE_SESSAO];
-    if (typeof token === 'string') await this.sessoes.encerrar(token);
-    res.clearCookie(COOKIE_SESSAO, { ...opcoesCookie(this.env, 0), maxAge: undefined });
+    const token: unknown = req.cookies?.[SESSION_COOKIE];
+    if (typeof token === 'string') await this.sessions.end(token);
+    res.clearCookie(SESSION_COOKIE, { ...cookieOptions(this.env, 0), maxAge: undefined });
   }
 
   @Get('me')
-  @PermiteSenhaTemporaria()
-  @ZodResponse({ status: 200, type: ColaboradorAtualDto })
-  me(@ColaboradorAtual() colaborador: Colaborador) {
-    return colaborador;
+  @AllowsTemporaryPassword()
+  @ZodResponse({ status: 200, type: CurrentCollaboratorDto })
+  me(@CurrentCollaborator() collaborator: Collaborator) {
+    return collaborator;
   }
 
-  @Post('trocar-senha')
-  @PermiteSenhaTemporaria()
+  @Post('change-password')
+  @AllowsTemporaryPassword()
   @HttpCode(204)
   @ApiNoContentResponse()
-  async trocarSenha(
-    @ColaboradorAtual() colaborador: Colaborador,
-    @Body() dados: TrocaDeSenhaDto,
+  async changePassword(
+    @CurrentCollaborator() collaborator: Collaborator,
+    @Body() data: PasswordChangeDto,
     @Req() req: Request,
   ) {
-    if (this.contaDeEmergencia.ehContaDeEmergencia(colaborador.email)) {
-      throw new BadRequestException(
-        'A senha da conta de emergência é definida por SIM_EMERGENCY_PASSWORD',
+    if (this.emergencyAccount.isEmergencyAccount(collaborator.email)) {
+      throw new DomainError(
+        'EMERGENCY_PASSWORD_FROM_ENV',
+        'The emergency account password is set by SIM_EMERGENCY_PASSWORD',
       );
     }
-    if (!colaborador.senhaHash) {
-      throw new BadRequestException('Este Colaborador entra pelo SSO e não tem senha local');
+    if (!collaborator.passwordHash) {
+      throw new DomainError('NO_LOCAL_PASSWORD', 'This Collaborator signs in with SSO only');
     }
-    if (!(await verificarSenha(colaborador.senhaHash, dados.senhaAtual))) {
-      throw new BadRequestException('Senha atual incorreta');
+    if (!(await verifyPassword(collaborator.passwordHash, data.currentPassword))) {
+      throw new DomainError('WRONG_CURRENT_PASSWORD', 'Current password is wrong');
     }
-    if (dados.novaSenha === dados.senhaAtual) {
-      throw new BadRequestException('A nova senha deve ser diferente da atual');
+    if (data.newPassword === data.currentPassword) {
+      throw new DomainError('SAME_PASSWORD', 'The new password must differ from the current one');
     }
-    await this.colaboradores.definirSenha(colaborador.id, dados.novaSenha);
-    await this.sessoes.encerrarOutras(colaborador.id, req.cookies[COOKIE_SESSAO] as string);
+    await this.collaborators.setPassword(collaborator.id, data.newPassword);
+    await this.sessions.endOthers(collaborator.id, req.cookies[SESSION_COOKIE] as string);
   }
 
-  async iniciarSessao(colaboradorId: string, res: Response) {
-    const token = await this.sessoes.criar(colaboradorId);
-    await this.colaboradores.registrarLogin(colaboradorId);
-    res.cookie(COOKIE_SESSAO, token, opcoesCookie(this.env, DURACAO_SESSAO_MS));
+  async startSession(collaboratorId: string, res: Response) {
+    const token = await this.sessions.create(collaboratorId);
+    await this.collaborators.recordLogin(collaboratorId);
+    res.cookie(SESSION_COOKIE, token, cookieOptions(this.env, SESSION_DURATION_MS));
   }
 }

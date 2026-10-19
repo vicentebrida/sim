@@ -1,206 +1,205 @@
 import { OAuth2Server } from 'oauth2-mock-server';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { type AppDeTeste, criarApp } from './support/app';
+import { type Browser, createApp, EMERGENCY, type TestApp } from './support/app';
 
-type Navegador = ReturnType<AppDeTeste['navegador']>;
 type Claims = Record<string, unknown>;
 
-/** Provedor de identidade de mentira; cada teste define quem "está logado" nele. */
-async function iniciarProvedor() {
-  const provedor = new OAuth2Server();
-  await provedor.issuer.keys.generate('RS256');
-  await provedor.start(0, '127.0.0.1');
+/** Fake identity provider; each test decides who is "signed in" there. */
+async function startProvider() {
+  const provider = new OAuth2Server();
+  await provider.issuer.keys.generate('RS256');
+  await provider.start(0, '127.0.0.1');
   let idToken: Claims = {};
   let userinfo: Claims = {};
-  provedor.service.on('beforeTokenSigning', (token) => Object.assign(token.payload, idToken));
-  provedor.service.on('beforeUserinfo', (resposta) => {
-    resposta.body = userinfo;
+  provider.service.on('beforeTokenSigning', (token) => Object.assign(token.payload, idToken));
+  provider.service.on('beforeUserinfo', (response) => {
+    response.body = userinfo;
   });
   return {
-    provedor,
-    url: provedor.issuer.url!,
-    identidade(claims: { idToken?: Claims; userinfo?: Claims }) {
+    provider,
+    url: provider.issuer.url!,
+    identity(claims: { idToken?: Claims; userinfo?: Claims }) {
       idToken = claims.idToken ?? {};
       userinfo = claims.userinfo ?? {};
     },
   };
 }
 
-/** Faz o caminho do navegador: SIM → provedor → retorno ao SIM. Devolve o destino final. */
-async function entrarViaSso(navegador: Navegador, retorno = '/') {
-  const inicio = await navegador.get('/api/auth/sso/entrar').query({ retorno }).expect(302);
-  const noProvedor = await fetch(inicio.headers.location!, { redirect: 'manual' });
-  const deVolta = new URL(noProvedor.headers.get('location')!);
-  const final = await navegador.get(deVolta.pathname + deVolta.search).expect(302);
+/** Walks the browser path: SIM → provider → back to SIM. Returns the final destination. */
+async function signInWithSso(browser: Browser, returnTo = '/') {
+  const start = await browser.get('/api/auth/sso/start').query({ returnTo }).expect(302);
+  const atProvider = await fetch(start.headers.location!, { redirect: 'manual' });
+  const back = new URL(atProvider.headers.get('location')!);
+  const final = await browser.get(back.pathname + back.search).expect(302);
   return final.headers.location as string;
 }
 
-describe('SSO em modo OIDC', () => {
-  let sim: AppDeTeste;
-  let idp: Awaited<ReturnType<typeof iniciarProvedor>>;
+describe('SSO in OIDC mode', () => {
+  let sim: TestApp;
+  let idp: Awaited<ReturnType<typeof startProvider>>;
 
   beforeAll(async () => {
-    idp = await iniciarProvedor();
-    sim = await criarApp({
+    idp = await startProvider();
+    sim = await createApp({
       SIM_SSO_MODE: 'oidc',
       SIM_SSO_ISSUER: idp.url,
       SIM_SSO_CLIENT_ID: 'sim',
-      SIM_SSO_CLIENT_SECRET: 'segredo',
+      SIM_SSO_CLIENT_SECRET: 'secret',
       SIM_SSO_CLAIM_DEPARTMENT: 'department',
       SIM_SSO_BUTTON_LABEL: 'Entrar com a conta Acme',
-      SIM_ADMIN_EMAILS: 'diretora@acme.test',
+      SIM_ADMIN_EMAILS: 'director@acme.test',
     });
   });
 
   afterAll(async () => {
-    await sim.fechar();
-    await idp.provedor.stop();
+    await sim.close();
+    await idp.provider.stop();
   });
 
   beforeEach(() => {
     const claims = {
-      sub: 'func-001',
+      sub: 'emp-001',
       email: 'Maria@Acme.test',
       name: 'Maria Silva',
       department: 'Financeiro',
     };
-    idp.identidade({ idToken: claims, userinfo: claims });
+    idp.identity({ idToken: claims, userinfo: claims });
   });
 
-  it('anuncia o botão de SSO ao frontend', async () => {
-    const response = await sim.http().get('/api/auth/configuracao').expect(200);
-    expect(response.body.sso).toEqual({ habilitado: true, rotulo: 'Entrar com a conta Acme' });
+  it('announces the SSO button to the web app', async () => {
+    const response = await sim.http().get('/api/auth/configuration').expect(200);
+    expect(response.body.sso).toEqual({ enabled: true, label: 'Entrar com a conta Acme' });
   });
 
-  it('cria o Colaborador no primeiro login e volta para a página pedida', async () => {
-    const navegador = sim.navegador();
-    expect(await entrarViaSso(navegador, '/ideias/123')).toBe('/ideias/123');
+  it('creates the Collaborator on first login and goes back to the requested page', async () => {
+    const browser = sim.browser();
+    expect(await signInWithSso(browser, '/ideas/123')).toBe('/ideas/123');
 
-    const me = await navegador.get('/api/auth/me').expect(200);
+    const me = await browser.get('/api/auth/me').expect(200);
     expect(me.body).toMatchObject({
-      nome: 'Maria Silva',
+      name: 'Maria Silva',
       email: 'maria@acme.test',
-      departamento: 'Financeiro',
-      administrador: false,
-      deveTrocarSenha: false,
+      department: 'Financeiro',
+      administrator: false,
+      mustChangePassword: false,
     });
   });
 
-  it('atualiza os dados do Colaborador a cada login, sem duplicá-lo', async () => {
-    await entrarViaSso(sim.navegador());
-    idp.identidade({
-      idToken: { sub: 'func-001', email: 'maria@acme.test', name: 'Maria S. Souza' },
-      userinfo: { sub: 'func-001', email: 'maria@acme.test', name: 'Maria S. Souza' },
+  it('refreshes the Collaborator data on each login, without duplicating it', async () => {
+    await signInWithSso(sim.browser());
+    idp.identity({
+      idToken: { sub: 'emp-001', email: 'maria@acme.test', name: 'Maria S. Souza' },
+      userinfo: { sub: 'emp-001', email: 'maria@acme.test', name: 'Maria S. Souza' },
     });
-    const navegador = sim.navegador();
-    await entrarViaSso(navegador);
+    const browser = sim.browser();
+    await signInWithSso(browser);
 
-    const me = await navegador.get('/api/auth/me').expect(200);
-    expect(me.body.nome).toBe('Maria S. Souza');
+    const me = await browser.get('/api/auth/me').expect(200);
+    expect(me.body.name).toBe('Maria S. Souza');
     const { rows } = await sim.pool.query(
-      `select 1 from colaboradores where sso_subject = 'func-001'`,
+      `select 1 from collaborators where sso_subject = 'emp-001'`,
     );
     expect(rows).toHaveLength(1);
   });
 
-  it('promove a Administrador quem está em SIM_ADMIN_EMAILS', async () => {
-    const claims = { sub: 'func-002', email: 'diretora@acme.test', name: 'Diretora' };
-    idp.identidade({ idToken: claims, userinfo: claims });
-    const navegador = sim.navegador();
-    await entrarViaSso(navegador);
-    const me = await navegador.get('/api/auth/me').expect(200);
-    expect(me.body.administrador).toBe(true);
+  it('promotes whoever is in SIM_ADMIN_EMAILS to Administrator', async () => {
+    const claims = { sub: 'emp-002', email: 'director@acme.test', name: 'Director' };
+    idp.identity({ idToken: claims, userinfo: claims });
+    const browser = sim.browser();
+    await signInWithSso(browser);
+    const me = await browser.get('/api/auth/me').expect(200);
+    expect(me.body.administrator).toBe(true);
   });
 
-  it('vincula ao Colaborador local que já tinha o mesmo e-mail', async () => {
-    const admin = sim.navegador();
+  it('links to the local Collaborator that already had the same e-mail', async () => {
+    const admin = sim.browser();
     await admin
       .post('/api/auth/login')
-      .send({ email: 'emergencia@sim.test', senha: 'senha-de-emergencia-123' });
-    const criado = await admin
-      .post('/api/colaboradores')
-      .send({ nome: 'João', email: 'joao@acme.test' })
+      .send({ email: EMERGENCY.email, password: EMERGENCY.password });
+    const created = await admin
+      .post('/api/collaborators')
+      .send({ name: 'João', email: 'joao@acme.test' })
       .expect(201);
 
-    const claims = { sub: 'func-003', email: 'joao@acme.test', name: 'João Pereira' };
-    idp.identidade({ idToken: claims, userinfo: claims });
-    const navegador = sim.navegador();
-    await entrarViaSso(navegador);
+    const claims = { sub: 'emp-003', email: 'joao@acme.test', name: 'João Pereira' };
+    idp.identity({ idToken: claims, userinfo: claims });
+    const browser = sim.browser();
+    await signInWithSso(browser);
 
-    const me = await navegador.get('/api/auth/me').expect(200);
-    expect(me.body.id).toBe(criado.body.colaborador.id);
+    const me = await browser.get('/api/auth/me').expect(200);
+    expect(me.body.id).toBe(created.body.collaborator.id);
   });
 
-  it('não redireciona para fora do SIM depois do login', async () => {
-    expect(await entrarViaSso(sim.navegador(), '//site-malicioso.test')).toBe('/');
-    expect(await entrarViaSso(sim.navegador(), 'https://site-malicioso.test')).toBe('/');
+  it('does not redirect outside SIM after login', async () => {
+    expect(await signInWithSso(sim.browser(), '//malicious.test')).toBe('/');
+    expect(await signInWithSso(sim.browser(), 'https://malicious.test')).toBe('/');
   });
 
-  it('recusa um retorno sem a transação iniciada pelo SIM', async () => {
+  it('rejects a callback without the transaction started by SIM', async () => {
     const response = await sim
       .http()
-      .get('/api/auth/sso/retorno?code=qualquer&state=forjado')
+      .get('/api/auth/sso/callback?code=anything&state=forged')
       .expect(302);
-    expect(response.headers.location).toBe('/entrar?erro=sso');
+    expect(response.headers.location).toBe('/login?error=sso');
   });
 
-  it('não deixa Colaborador Inativo entrar', async () => {
-    await entrarViaSso(sim.navegador());
-    await sim.pool.query(`update colaboradores set ativo = false where sso_subject = 'func-001'`);
-    expect(await entrarViaSso(sim.navegador())).toBe('/entrar?erro=inativo');
+  it('does not let an inactive Collaborator in', async () => {
+    await signInWithSso(sim.browser());
+    await sim.pool.query(`update collaborators set active = false where sso_subject = 'emp-001'`);
+    expect(await signInWithSso(sim.browser())).toBe('/login?error=inactive');
   });
 });
 
-describe('SSO em modo OAuth2 genérico', () => {
-  let sim: AppDeTeste;
-  let idp: Awaited<ReturnType<typeof iniciarProvedor>>;
+describe('SSO in generic OAuth2 mode', () => {
+  let sim: TestApp;
+  let idp: Awaited<ReturnType<typeof startProvider>>;
 
   beforeAll(async () => {
-    idp = await iniciarProvedor();
-    sim = await criarApp({
+    idp = await startProvider();
+    sim = await createApp({
       SIM_SSO_MODE: 'oauth2',
       SIM_SSO_CLIENT_ID: 'sim',
-      SIM_SSO_CLIENT_SECRET: 'segredo',
+      SIM_SSO_CLIENT_SECRET: 'secret',
       SIM_SSO_TOKEN_AUTH_METHOD: 'client_secret_post',
       SIM_SSO_AUTHORIZATION_URL: `${idp.url}/authorize`,
       SIM_SSO_TOKEN_URL: `${idp.url}/token`,
       SIM_SSO_USERINFO_URL: `${idp.url}/userinfo`,
-      SIM_SSO_SCOPES: 'perfil',
-      // Provedor corporativo com nomes de campo próprios e departamento aninhado.
+      SIM_SSO_SCOPES: 'profile',
+      // Corporate provider with its own field names and a nested department.
       SIM_SSO_CLAIM_ID: 'id',
       SIM_SSO_CLAIM_EMAIL: 'mail',
       SIM_SSO_CLAIM_NAME: 'displayName',
-      SIM_SSO_CLAIM_DEPARTMENT: 'org.unidade',
+      SIM_SSO_CLAIM_DEPARTMENT: 'org.unit',
     });
   });
 
   afterAll(async () => {
-    await sim.fechar();
-    await idp.provedor.stop();
+    await sim.close();
+    await idp.provider.stop();
   });
 
-  it('lê a identidade do userinfo usando o mapeamento de campos', async () => {
-    idp.identidade({
+  it('reads the identity from userinfo using the field mapping', async () => {
+    idp.identity({
       userinfo: {
         id: 48151623,
         mail: 'pedro@acme.test',
         displayName: 'Pedro Santos',
-        org: { unidade: 'Logística' },
+        org: { unit: 'Logística' },
       },
     });
-    const navegador = sim.navegador();
-    expect(await entrarViaSso(navegador)).toBe('/');
+    const browser = sim.browser();
+    expect(await signInWithSso(browser)).toBe('/');
 
-    const me = await navegador.get('/api/auth/me').expect(200);
+    const me = await browser.get('/api/auth/me').expect(200);
     expect(me.body).toMatchObject({
-      nome: 'Pedro Santos',
+      name: 'Pedro Santos',
       email: 'pedro@acme.test',
-      departamento: 'Logística',
+      department: 'Logística',
     });
   });
 
-  it('falha de forma controlada quando o provedor não envia o e-mail', async () => {
-    idp.identidade({ userinfo: { id: 1, displayName: 'Sem E-mail' } });
-    expect(await entrarViaSso(sim.navegador())).toBe('/entrar?erro=sso');
+  it('fails gracefully when the provider does not send the e-mail', async () => {
+    idp.identity({ userinfo: { id: 1, displayName: 'No E-mail' } });
+    expect(await signInWithSso(sim.browser())).toBe('/login?error=sso');
   });
 });

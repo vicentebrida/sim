@@ -7,43 +7,43 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
-import { COOKIE_SESSAO } from './cookies';
-import { PERMITE_SENHA_TEMPORARIA, PUBLICO, SOMENTE_ADMINISTRADOR } from './decorators';
-import { SessoesService } from './sessoes.service';
+import { DomainError } from '../common/domain-error';
+import { SESSION_COOKIE } from './cookies';
+import { ADMINISTRATOR_ONLY, ALLOWS_TEMPORARY_PASSWORD, PUBLIC } from './decorators';
+import { SessionsService } from './sessions.service';
 
-export const CODIGO_TROCA_DE_SENHA_PENDENTE = 'TROCA_DE_SENHA_PENDENTE';
-
-/** Guard global: toda rota exige sessão, salvo as marcadas com `@Publico()`. */
+/** Global guard: every route requires a session, except those marked `@Public()`. */
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    private readonly sessoes: SessoesService,
+    private readonly sessions: SessionsService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const alvos = [context.getHandler(), context.getClass()];
-    if (this.reflector.getAllAndOverride<boolean>(PUBLICO, alvos)) return true;
+    const targets = [context.getHandler(), context.getClass()];
+    if (this.reflector.getAllAndOverride<boolean>(PUBLIC, targets)) return true;
 
     const request = context.switchToHttp().getRequest<Request>();
-    const token: unknown = request.cookies?.[COOKIE_SESSAO];
-    const colaborador = typeof token === 'string' ? await this.sessoes.validar(token) : undefined;
-    if (!colaborador) throw new UnauthorizedException();
-    request.colaborador = colaborador;
+    const token: unknown = request.cookies?.[SESSION_COOKIE];
+    const collaborator =
+      typeof token === 'string' ? await this.sessions.validate(token) : undefined;
+    if (!collaborator) throw new UnauthorizedException();
+    request.collaborator = collaborator;
 
     if (
-      colaborador.deveTrocarSenha &&
-      !this.reflector.getAllAndOverride<boolean>(PERMITE_SENHA_TEMPORARIA, alvos)
+      collaborator.mustChangePassword &&
+      !this.reflector.getAllAndOverride<boolean>(ALLOWS_TEMPORARY_PASSWORD, targets)
     ) {
-      throw new ForbiddenException({
-        message: 'Troque a senha temporária para continuar',
-        codigo: CODIGO_TROCA_DE_SENHA_PENDENTE,
-      });
+      throw new DomainError(
+        'PASSWORD_CHANGE_REQUIRED',
+        'Change the temporary password to continue',
+      );
     }
 
     if (
-      this.reflector.getAllAndOverride<boolean>(SOMENTE_ADMINISTRADOR, alvos) &&
-      !colaborador.administrador
+      this.reflector.getAllAndOverride<boolean>(ADMINISTRATOR_ONLY, targets) &&
+      !collaborator.administrator
     ) {
       throw new ForbiddenException();
     }

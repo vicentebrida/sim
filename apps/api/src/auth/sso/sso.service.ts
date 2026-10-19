@@ -1,90 +1,87 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import * as client from 'openid-client';
-import type { PerfilSso } from '../../colaboradores/colaboradores.service';
+import type { SsoProfile } from '../../collaborators/collaborators.service';
 import { ENV } from '../../config/config.module';
 import type { Env } from '../../config/env';
 
-/** O que precisa sobreviver entre o redirecionamento ao provedor e o retorno (cookie httpOnly). */
-export interface TransacaoSso {
-  estado: string;
-  verificador: string;
+/** What must survive between the redirect to the provider and the callback (httpOnly cookie). */
+export interface SsoTransaction {
+  state: string;
+  verifier: string;
   nonce?: string;
-  retorno: string;
+  returnTo: string;
 }
 
-export class FalhaSso extends Error {}
+export class SsoFailure extends Error {}
 
-const ESCOPOS_OIDC_PADRAO = 'openid profile email';
+const DEFAULT_OIDC_SCOPES = 'openid profile email';
 
-/** Lê um claim que pode estar aninhado, ex.: `profile.department`. */
-function lerClaim(
-  claims: Record<string, unknown>,
-  caminho: string | undefined,
-): string | undefined {
-  if (!caminho) return undefined;
-  let valor: unknown = claims;
-  for (const parte of caminho.split('.')) {
-    if (typeof valor !== 'object' || valor === null) return undefined;
-    valor = (valor as Record<string, unknown>)[parte];
+/** Reads a claim that may be nested, e.g. `profile.department`. */
+function readClaim(claims: Record<string, unknown>, path: string | undefined): string | undefined {
+  if (!path) return undefined;
+  let value: unknown = claims;
+  for (const part of path.split('.')) {
+    if (typeof value !== 'object' || value === null) return undefined;
+    value = (value as Record<string, unknown>)[part];
   }
-  if (typeof valor === 'string' && valor.trim()) return valor.trim();
-  if (typeof valor === 'number') return String(valor);
+  if (typeof value === 'string' && value.trim()) return value.trim();
+  if (typeof value === 'number') return String(value);
   return undefined;
 }
 
 /**
- * Um único provedor OAuth2/OIDC (ADR-0003). Em modo `oidc` os endpoints vêm do discovery; em modo
- * `oauth2` são informados manualmente e a identidade vem só do endpoint userinfo.
+ * A single OAuth2/OIDC provider (ADR-0003). In `oidc` mode the endpoints come from discovery; in
+ * `oauth2` mode they are set manually and the identity comes only from the userinfo endpoint.
  */
 @Injectable()
 export class SsoService {
   private readonly logger = new Logger(SsoService.name);
-  private configuracao?: Promise<client.Configuration>;
+  private configuration?: Promise<client.Configuration>;
 
   constructor(@Inject(ENV) private readonly env: Env) {}
 
-  get habilitado() {
+  get enabled() {
     return this.env.SIM_SSO_MODE !== 'off';
   }
 
-  get rotulo() {
+  get label() {
     return this.env.SIM_SSO_BUTTON_LABEL;
   }
 
-  get urlDeRetorno() {
-    return new URL('/api/auth/sso/retorno', this.env.SIM_PUBLIC_URL).toString();
+  get callbackUrl() {
+    return new URL('/api/auth/sso/callback', this.env.SIM_PUBLIC_URL).toString();
   }
 
-  private autenticacaoDoCliente(): client.ClientAuth {
-    const segredo = this.env.SIM_SSO_CLIENT_SECRET;
-    if (!segredo) return client.None();
+  private clientAuthentication(): client.ClientAuth {
+    const secret = this.env.SIM_SSO_CLIENT_SECRET;
+    if (!secret) return client.None();
     return this.env.SIM_SSO_TOKEN_AUTH_METHOD === 'client_secret_post'
-      ? client.ClientSecretPost(segredo)
-      : client.ClientSecretBasic(segredo);
+      ? client.ClientSecretPost(secret)
+      : client.ClientSecretBasic(secret);
   }
 
-  private permitirHttpSeNecessario(url: string, configuracao?: client.Configuration) {
+  private allowHttpIfNeeded(url: string, configuration?: client.Configuration) {
     if (!url.startsWith('http://')) return [];
     this.logger.warn(
-      `Provedor SSO sem HTTPS (${url}); use apenas em desenvolvimento ou rede confiável`,
+      `SSO provider without HTTPS (${url}); use only in development or trusted networks`,
     );
-    if (configuracao) client.allowInsecureRequests(configuracao);
+    if (configuration) client.allowInsecureRequests(configuration);
     return [client.allowInsecureRequests];
   }
 
-  private async criarConfiguracao(): Promise<client.Configuration> {
+  private async createConfiguration(): Promise<client.Configuration> {
     const env = this.env;
     const clientId = env.SIM_SSO_CLIENT_ID!;
 
     if (env.SIM_SSO_MODE === 'oidc') {
       const issuer = env.SIM_SSO_ISSUER!;
-      return client.discovery(new URL(issuer), clientId, undefined, this.autenticacaoDoCliente(), {
-        execute: this.permitirHttpSeNecessario(issuer),
+      return client.discovery(new URL(issuer), clientId, undefined, this.clientAuthentication(), {
+        execute: this.allowHttpIfNeeded(issuer),
       });
     }
 
     const authorizationUrl = env.SIM_SSO_AUTHORIZATION_URL!;
-    const configuracao = new client.Configuration(
+    const configuration = new client.Configuration(
       {
         issuer: new URL(authorizationUrl).origin,
         authorization_endpoint: authorizationUrl,
@@ -93,85 +90,89 @@ export class SsoService {
       },
       clientId,
       undefined,
-      this.autenticacaoDoCliente(),
+      this.clientAuthentication(),
     );
-    this.permitirHttpSeNecessario(authorizationUrl, configuracao);
-    return configuracao;
+    this.allowHttpIfNeeded(authorizationUrl, configuration);
+    return configuration;
   }
 
-  private obterConfiguracao() {
-    this.configuracao ??= this.criarConfiguracao().catch((erro: unknown) => {
-      this.configuracao = undefined; // tenta de novo no próximo login
-      throw erro;
+  private getConfiguration() {
+    this.configuration ??= this.createConfiguration().catch((error: unknown) => {
+      this.configuration = undefined; // try again on the next login
+      throw error;
     });
-    return this.configuracao;
+    return this.configuration;
   }
 
-  async iniciar(retorno: string): Promise<{ url: URL; transacao: TransacaoSso }> {
-    const configuracao = await this.obterConfiguracao();
+  async start(returnTo: string): Promise<{ url: URL; transaction: SsoTransaction }> {
+    const configuration = await this.getConfiguration();
     const oidc = this.env.SIM_SSO_MODE === 'oidc';
-    const transacao: TransacaoSso = {
-      estado: client.randomState(),
-      verificador: client.randomPKCECodeVerifier(),
+    const transaction: SsoTransaction = {
+      state: client.randomState(),
+      verifier: client.randomPKCECodeVerifier(),
       nonce: oidc ? client.randomNonce() : undefined,
-      retorno,
+      returnTo,
     };
-    const parametros: Record<string, string> = {
-      redirect_uri: this.urlDeRetorno,
-      scope: this.env.SIM_SSO_SCOPES ?? ESCOPOS_OIDC_PADRAO,
-      state: transacao.estado,
-      code_challenge: await client.calculatePKCECodeChallenge(transacao.verificador),
+    const parameters: Record<string, string> = {
+      redirect_uri: this.callbackUrl,
+      scope: this.env.SIM_SSO_SCOPES ?? DEFAULT_OIDC_SCOPES,
+      state: transaction.state,
+      code_challenge: await client.calculatePKCECodeChallenge(transaction.verifier),
       code_challenge_method: 'S256',
     };
-    if (transacao.nonce) parametros.nonce = transacao.nonce;
-    return { url: client.buildAuthorizationUrl(configuracao, parametros), transacao };
+    if (transaction.nonce) parameters.nonce = transaction.nonce;
+    return { url: client.buildAuthorizationUrl(configuration, parameters), transaction };
   }
 
-  async concluir(urlAtual: URL, transacao: TransacaoSso): Promise<PerfilSso> {
-    const configuracao = await this.obterConfiguracao();
-    const tokens = await client.authorizationCodeGrant(configuracao, urlAtual, {
-      pkceCodeVerifier: transacao.verificador,
-      expectedState: transacao.estado,
-      expectedNonce: transacao.nonce,
+  async finish(currentUrl: URL, transaction: SsoTransaction): Promise<SsoProfile> {
+    const configuration = await this.getConfiguration();
+    const tokens = await client.authorizationCodeGrant(configuration, currentUrl, {
+      pkceCodeVerifier: transaction.verifier,
+      expectedState: transaction.state,
+      expectedNonce: transaction.nonce,
       idTokenExpected: this.env.SIM_SSO_MODE === 'oidc',
     });
 
-    const claims = await this.lerClaims(configuracao, tokens);
-    const subject = lerClaim(claims, this.env.SIM_SSO_CLAIM_ID);
-    const email = lerClaim(claims, this.env.SIM_SSO_CLAIM_EMAIL);
+    const claims = await this.readClaims(configuration, tokens);
+    const subject = readClaim(claims, this.env.SIM_SSO_CLAIM_ID);
+    const email = readClaim(claims, this.env.SIM_SSO_CLAIM_EMAIL);
     if (!subject || !email) {
-      throw new FalhaSso(
-        `O provedor não enviou os claims "${this.env.SIM_SSO_CLAIM_ID}" e "${this.env.SIM_SSO_CLAIM_EMAIL}"`,
+      throw new SsoFailure(
+        `The provider did not send the "${this.env.SIM_SSO_CLAIM_ID}" and "${this.env.SIM_SSO_CLAIM_EMAIL}" claims`,
       );
     }
     return {
       subject,
       email,
-      nome: lerClaim(claims, this.env.SIM_SSO_CLAIM_NAME) ?? email,
-      departamento: lerClaim(claims, this.env.SIM_SSO_CLAIM_DEPARTMENT),
-      fotoUrl: lerClaim(claims, this.env.SIM_SSO_CLAIM_PICTURE),
+      name: readClaim(claims, this.env.SIM_SSO_CLAIM_NAME) ?? email,
+      department: readClaim(claims, this.env.SIM_SSO_CLAIM_DEPARTMENT),
+      pictureUrl: readClaim(claims, this.env.SIM_SSO_CLAIM_PICTURE),
     };
   }
 
-  private async lerClaims(
-    configuracao: client.Configuration,
+  private async readClaims(
+    configuration: client.Configuration,
     tokens: Awaited<ReturnType<typeof client.authorizationCodeGrant>>,
   ): Promise<Record<string, unknown>> {
     if (this.env.SIM_SSO_MODE === 'oidc') {
-      const doIdToken = tokens.claims();
-      if (!doIdToken) throw new FalhaSso('O provedor não devolveu id_token');
-      if (!configuracao.serverMetadata().userinfo_endpoint) return { ...doIdToken };
-      const userinfo = await client.fetchUserInfo(configuracao, tokens.access_token, doIdToken.sub);
-      return { ...doIdToken, ...userinfo };
+      const fromIdToken = tokens.claims();
+      if (!fromIdToken) throw new SsoFailure('The provider did not return an id_token');
+      if (!configuration.serverMetadata().userinfo_endpoint) return { ...fromIdToken };
+      const userinfo = await client.fetchUserInfo(
+        configuration,
+        tokens.access_token,
+        fromIdToken.sub,
+      );
+      return { ...fromIdToken, ...userinfo };
     }
 
-    const resposta = await client.fetchProtectedResource(
-      configuracao,
+    const response = await client.fetchProtectedResource(
+      configuration,
       tokens.access_token,
       new URL(this.env.SIM_SSO_USERINFO_URL!),
       'GET',
     );
-    if (!resposta.ok) throw new FalhaSso(`userinfo respondeu ${resposta.status}`);
-    return (await resposta.json()) as Record<string, unknown>;
+    if (!response.ok) throw new SsoFailure(`userinfo answered ${response.status}`);
+    return (await response.json()) as Record<string, unknown>;
   }
 }

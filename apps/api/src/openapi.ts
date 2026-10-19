@@ -5,15 +5,15 @@ import { cleanupOpenApiDoc } from 'nestjs-zod';
 export function buildOpenApiDocument(app: INestApplication): OpenAPIObject {
   const config = new DocumentBuilder()
     .setTitle('SIM — Sistema de Ideias e Melhorias')
-    .setDescription('API REST do SIM')
+    .setDescription('SIM REST API')
     .setOpenAPIVersion('3.1.0')
     .setVersion('0.0.0')
     .build();
-  // operationId `health_check` vira o hook `useHealthCheck` no cliente gerado pelo Orval.
+  // operationId `health_check` becomes the `useHealthCheck` hook in the Orval-generated client.
   const document = SwaggerModule.createDocument(app, config, {
     operationIdFactory: (controllerKey, methodKey) => {
-      const recurso = controllerKey.replace(/Controller$/, '');
-      return `${recurso.charAt(0).toLowerCase()}${recurso.slice(1)}_${methodKey}`;
+      const resource = controllerKey.replace(/Controller$/, '');
+      return `${resource.charAt(0).toLowerCase()}${resource.slice(1)}_${methodKey}`;
     },
   });
   return cleanupOpenApiDoc(document);

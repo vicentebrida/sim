@@ -4,7 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import type { Pool } from 'pg';
 import { AppModule } from './app.module';
-import { ContaDeEmergenciaService } from './colaboradores/conta-de-emergencia.service';
+import { EmergencyAccountService } from './collaborators/emergency-account.service';
 import { ENV } from './config/config.module';
 import type { Env } from './config/env';
 import { PG_POOL } from './database/database.module';
@@ -19,21 +19,21 @@ async function bootstrap() {
 
   if (env.SIM_MIGRATE_ON_START) {
     await runMigrations(app.get<Pool>(PG_POOL));
-    logger.log('Migrations aplicadas');
+    logger.log('Migrations applied');
   }
-  await app.get(ContaDeEmergenciaService).garantir();
+  await app.get(EmergencyAccountService).ensure();
 
   if (env.SIM_MODE === 'worker') {
-    // Jobs em segundo plano chegam no Marco 2 (ADR-0006); por ora o worker só mantém o processo vivo.
+    // Background jobs arrive in Milestone 2 (ADR-0006); for now the worker only keeps the process alive.
     await app.init();
-    logger.log('SIM iniciado em modo worker');
+    logger.log('SIM started in worker mode');
     return;
   }
 
   configureApp(app);
   SwaggerModule.setup(`${API_PREFIX}/docs`, app, () => buildOpenApiDocument(app));
   await app.listen(env.PORT);
-  logger.log(`SIM ouvindo na porta ${env.PORT} (modo ${env.SIM_MODE})`);
+  logger.log(`SIM listening on port ${env.PORT} (${env.SIM_MODE} mode)`);
 }
 
 void bootstrap();

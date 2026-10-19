@@ -1,19 +1,20 @@
 import { existsSync } from 'node:fs';
 import { DynamicModule, Module } from '@nestjs/common';
-import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { AuthModule } from './auth/auth.module';
-import { CamposPersonalizadosModule } from './campos-personalizados/campos-personalizados.module';
-import { CategoriasModule } from './categorias/categorias.module';
-import { ColaboradoresModule } from './colaboradores/colaboradores.module';
+import { CategoriesModule } from './categories/categories.module';
+import { CollaboratorsModule } from './collaborators/collaborators.module';
+import { CommentsModule } from './comments/comments.module';
+import { DomainErrorFilter } from './common/domain-error.filter';
 import { ConfigModule } from './config/config.module';
+import { CustomFieldsModule } from './custom-fields/custom-fields.module';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
-import { ComentariosModule } from './comentarios/comentarios.module';
-import { IdeiasModule } from './ideias/ideias.module';
+import { IdeasModule } from './ideas/ideas.module';
 
-// Em produção a mesma imagem serve a SPA; rotas que não são da API caem no index.html.
+// In production the same image serves the SPA; non-API routes fall back to index.html.
 function webModule(): DynamicModule[] {
   const rootPath = process.env.SIM_WEB_DIST;
   if (!rootPath || !existsSync(rootPath)) return [];
@@ -25,17 +26,18 @@ function webModule(): DynamicModule[] {
     ConfigModule,
     DatabaseModule,
     HealthModule,
-    ColaboradoresModule,
+    CollaboratorsModule,
     AuthModule,
-    CategoriasModule,
-    CamposPersonalizadosModule,
-    IdeiasModule,
-    ComentariosModule,
+    CategoriesModule,
+    CustomFieldsModule,
+    IdeasModule,
+    CommentsModule,
     ...webModule(),
   ],
   providers: [
     { provide: APP_PIPE, useClass: ZodValidationPipe },
     { provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor },
+    { provide: APP_FILTER, useClass: DomainErrorFilter },
   ],
 })
 export class AppModule {}

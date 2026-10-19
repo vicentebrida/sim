@@ -5,7 +5,7 @@ import type { Pool } from 'pg';
 
 export const MIGRATIONS_FOLDER = resolve(__dirname, '../../drizzle');
 
-// Chave arbitrária e fixa: impede que duas réplicas migrem ao mesmo tempo.
+// Fixed, arbitrary key: keeps two replicas from migrating at the same time.
 const MIGRATION_LOCK_KEY = 4_206_901;
 
 export async function runMigrations(pool: Pool): Promise<void> {
