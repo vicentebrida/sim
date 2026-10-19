@@ -1,6 +1,8 @@
 import type {
   CampoPersonalizadoDtoOutput,
   CategoriaDtoOutput,
+  ComentarioDtoOutput,
+  ComentarioDtoOutputRespostasItem,
   CurtidaDtoOutput,
   IdeiaDtoOutput,
 } from '@sim/api-client';
@@ -87,14 +89,50 @@ export function ideiaDeExemplo(parcial: Partial<IdeiaDtoOutput> = {}): IdeiaDtoO
   };
 }
 
+export const BRUNO = { id: '7a2d3b5f-1e8c-4a6f-8b62-4d3c2e1f0a9b', nome: 'Bruno Lima' };
+
+export function comentarioDeExemplo(
+  parcial: Partial<ComentarioDtoOutput> = {},
+): ComentarioDtoOutput {
+  return {
+    id: '99999999-9999-4999-8999-999999999999',
+    autor: BRUNO,
+    texto: 'Comentário de exemplo',
+    estado: 'publicado',
+    criadoEm: '2026-10-02T10:00:00.000Z',
+    editadoEm: null,
+    ocultacao: null,
+    permissoes: { podeResponder: true, podeEditar: false, podeRemover: false, podeOcultar: false },
+    respostas: [],
+    ...parcial,
+  };
+}
+
 /** API de Ideias simulada; devolve as requisições recebidas para os testes inspecionarem. */
 export function simularIdeias(
   opcoes: {
     ideia?: IdeiaDtoOutput;
     /** Quem curte nesta simulação (o Colaborador da sessão) e quem já tinha curtido. */
     curtidas?: { eu: CurtidaDtoOutput['colaborador']; outras?: CurtidaDtoOutput[] };
+    comentarios?: ComentarioDtoOutput[];
+    /** Quem comenta nesta simulação (o Colaborador da sessão). */
+    eu?: { id: string; nome: string };
+    mencionaveis?: { id: string; nome: string }[];
   } = {},
 ) {
+  let comentarios = opcoes.comentarios ?? [];
+  let sequencia = 0;
+  type Mudanca = (
+    comentario: ComentarioDtoOutputRespostasItem,
+  ) => Partial<ComentarioDtoOutputRespostasItem>;
+  // Vale para Comentários e Respostas.
+  const alterarComentario = (id: string, mudanca: Mudanca) => {
+    comentarios = comentarios.map((c) => ({
+      ...c,
+      ...(c.id === id ? mudanca(c) : {}),
+      respostas: c.respostas.map((r) => (r.id === id ? { ...r, ...mudanca(r) } : r)),
+    }));
+  };
   let ideia = opcoes.ideia ?? ideiaDeExemplo();
   let curtidas = opcoes.curtidas?.outras ?? [];
   const alterarCurtida = (curtiu: boolean) => {
@@ -141,6 +179,60 @@ export function simularIdeias(
     }),
     http.get('*/api/ideias/:numero', () => HttpResponse.json(ideia)),
     http.get('*/api/ideias/:numero/curtidas', () => HttpResponse.json(curtidas)),
+    http.get('*/api/ideias/:numero/comentarios', () => HttpResponse.json(comentarios)),
+    http.post('*/api/ideias/:numero/comentarios', async ({ request }) => {
+      await registrar(request);
+      const corpo = (await request.json()) as { texto: string; respostaAId?: string };
+      sequencia += 1;
+      const novo = comentarioDeExemplo({
+        id: `aaaaaaaa-aaaa-4aaa-8aaa-${String(sequencia).padStart(12, '0')}`,
+        autor: opcoes.eu ?? { id: ana.id, nome: ana.nome },
+        texto: corpo.texto,
+        criadoEm: `2026-10-05T10:00:0${sequencia}.000Z`,
+        permissoes: {
+          podeResponder: !corpo.respostaAId,
+          podeEditar: true,
+          podeRemover: true,
+          podeOcultar: false,
+        },
+      });
+      comentarios = corpo.respostaAId
+        ? comentarios.map((c) =>
+            c.id === corpo.respostaAId ? { ...c, respostas: [...c.respostas, novo] } : c,
+          )
+        : [...comentarios, novo];
+      return HttpResponse.json(novo, { status: 201 });
+    }),
+    http.post('*/api/comentarios/:id/ocultar', async ({ request, params }) => {
+      await registrar(request);
+      const { motivo } = (await request.json()) as { motivo: string };
+      alterarComentario(String(params.id), (c) => ({
+        estado: 'oculto',
+        ocultacao: { motivo, por: opcoes.eu ?? BRUNO, em: '2026-10-06T10:00:00.000Z' },
+        permissoes: { ...c.permissoes, podeOcultar: false, podeResponder: false },
+      }));
+      return HttpResponse.json(comentarios[0]);
+    }),
+    http.delete('*/api/comentarios/:id', async ({ request, params }) => {
+      await registrar(request);
+      alterarComentario(String(params.id), () => ({
+        estado: 'removido',
+        texto: null,
+        permissoes: {
+          podeResponder: false,
+          podeEditar: false,
+          podeRemover: false,
+          podeOcultar: false,
+        },
+      }));
+      return new HttpResponse(null, { status: 204 });
+    }),
+    http.get('*/api/colaboradores/mencionaveis', ({ request }) => {
+      const busca = new URL(request.url).searchParams.get('busca')?.toLowerCase() ?? '';
+      return HttpResponse.json(
+        (opcoes.mencionaveis ?? []).filter((p) => p.nome.toLowerCase().includes(busca)),
+      );
+    }),
     http.put('*/api/ideias/:numero/curtida', async ({ request }) => {
       await registrar(request);
       return alterarCurtida(true);

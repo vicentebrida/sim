@@ -1,9 +1,28 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ZodResponse } from 'nestjs-zod';
 import { SomenteAdministrador } from '../auth/decorators';
-import { ColaboradorDto, ContaLocalCriadaDto, NovaContaLocalDto } from './colaboradores.dto';
+import {
+  BuscaDeMencionaveisDto,
+  ColaboradorDto,
+  ContaLocalCriadaDto,
+  MencionavelDto,
+  NovaContaLocalDto,
+} from './colaboradores.dto';
 import { ColaboradoresService } from './colaboradores.service';
+
+/** Aberto a todos os Colaboradores: só nome e id, para sugerir Menções nos Comentários. */
+@ApiTags('colaboradores')
+@Controller('colaboradores/mencionaveis')
+export class MencionaveisController {
+  constructor(private readonly colaboradores: ColaboradoresService) {}
+
+  @Get()
+  @ZodResponse({ status: 200, type: [MencionavelDto] })
+  buscar(@Query() { busca }: BuscaDeMencionaveisDto) {
+    return this.colaboradores.mencionaveis(busca);
+  }
+}
 
 @ApiTags('colaboradores')
 @Controller('colaboradores')

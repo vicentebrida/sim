@@ -62,7 +62,8 @@ export type CodigoDeErro =
   | 'JUSTIFICATIVA_OBRIGATORIA'
   | 'IDEIA_ORIGINAL_INVALIDA'
   | 'CAMPOS_INVALIDOS'
-  | 'CURTIDA_INDISPONIVEL';
+  | 'CURTIDA_INDISPONIVEL'
+  | 'COMENTARIO_INDISPONIVEL';
 
 export class ErroDeDominio extends Error {
   constructor(
@@ -90,14 +91,15 @@ export interface Ator {
 const ehAutor = (ideia: IdeiaParaRegras, ator: Ator) => ideia.autorId === ator.id;
 
 /** Administrador sempre; Avaliador da Categoria, exceto nas próprias Ideias (conflito de interesse). */
-function podeAvaliar(ideia: IdeiaParaRegras, ator: Ator) {
+export function podeAvaliar(ideia: IdeiaParaRegras, ator: Ator) {
   return ator.administrador || (ator.avaliaCategoria && !ehAutor(ideia, ator));
 }
 
-function exigirJustificativa(justificativa: string | undefined) {
-  if (!justificativa?.trim()) {
-    throw new ErroDeDominio('JUSTIFICATIVA_OBRIGATORIA', 'Informe a justificativa');
-  }
+export function exigirJustificativa(
+  justificativa: string | undefined,
+  mensagem = 'Informe a justificativa',
+) {
+  if (!justificativa?.trim()) throw new ErroDeDominio('JUSTIFICATIVA_OBRIGATORIA', mensagem);
 }
 
 export function validarMudancaDeStatus(

@@ -143,7 +143,6 @@
     "camposInvalidos": "Please review the highlighted fields.",
     "duplicadaDe": "This idea duplicates",
     "verOriginal": "Idea #{{numero}}: {{titulo}}",
-    "historico": "History",
     "publicou": "{{nome}} published the idea",
     "mudouStatus": "{{nome}} changed it from {{de}} to {{para}}",
     "mudouCategoria": "{{nome}} moved it from {{de}} to {{para}}",
@@ -208,5 +207,30 @@
     "verQuem": "See who liked",
     "ocultarQuem": "Hide who liked",
     "ninguem": "No likes yet."
+  },
+  "comentarios": {
+    "titulo": "Discussion",
+    "novo": "Write a comment",
+    "comentar": "Comment",
+    "responder": "Reply",
+    "respondendoA": "Reply to {{nome}}",
+    "respostas": "Replies",
+    "editar": "Edit",
+    "salvar": "Save",
+    "cancelar": "Cancel",
+    "remover": "Remove",
+    "confirmarRemocao": "Confirm removal",
+    "ocultar": "Hide",
+    "confirmarOcultacao": "Hide comment",
+    "motivo": "Reason for hiding",
+    "motivoAjuda": "Everyone will see that the comment was hidden, by whom and why.",
+    "removido": "Comment removed.",
+    "oculto": "Comment hidden by {{nome}}: {{motivo}}",
+    "textoOcultoVisivel": "Only you and moderators can see this text.",
+    "editado": "edited",
+    "autorDaIdeia": "Author",
+    "de": "Comment by {{nome}}",
+    "ajudaMencao": "Use @ to mention someone; they will be notified.",
+    "sugestoes": "People to mention"
   }
 }

@@ -143,7 +143,6 @@
     "camposInvalidos": "Revise os campos destacados.",
     "duplicadaDe": "Esta ideia repete a",
     "verOriginal": "Ideia #{{numero}}: {{titulo}}",
-    "historico": "Histórico",
     "publicou": "{{nome}} publicou a ideia",
     "mudouStatus": "{{nome}} mudou de {{de}} para {{para}}",
     "mudouCategoria": "{{nome}} mudou a Categoria de {{de}} para {{para}}",
@@ -208,5 +207,30 @@
     "verQuem": "Ver quem curtiu",
     "ocultarQuem": "Ocultar quem curtiu",
     "ninguem": "Ninguém curtiu ainda."
+  },
+  "comentarios": {
+    "titulo": "Discussão",
+    "novo": "Escreva um comentário",
+    "comentar": "Comentar",
+    "responder": "Responder",
+    "respondendoA": "Responder a {{nome}}",
+    "respostas": "Respostas",
+    "editar": "Editar",
+    "salvar": "Salvar",
+    "cancelar": "Cancelar",
+    "remover": "Remover",
+    "confirmarRemocao": "Confirmar remoção",
+    "ocultar": "Ocultar",
+    "confirmarOcultacao": "Ocultar comentário",
+    "motivo": "Motivo da ocultação",
+    "motivoAjuda": "Todos verão que o comentário foi ocultado, por quem e por quê.",
+    "removido": "Comentário removido.",
+    "oculto": "Comentário oculto por {{nome}}: {{motivo}}",
+    "textoOcultoVisivel": "Só você e a moderação veem este texto.",
+    "editado": "editado",
+    "autorDaIdeia": "Autor",
+    "de": "Comentário de {{nome}}",
+    "ajudaMencao": "Use @ para mencionar alguém; a pessoa será notificada.",
+    "sugestoes": "Pessoas para mencionar"
   }
 }

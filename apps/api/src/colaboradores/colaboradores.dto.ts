@@ -13,6 +13,12 @@ export const ColaboradorSchema = z.object({
 
 export class ColaboradorDto extends createZodDto(ColaboradorSchema) {}
 
+export class BuscaDeMencionaveisDto extends createZodDto(
+  z.object({ busca: z.string().trim().max(120).default('') }),
+) {}
+
+export class MencionavelDto extends createZodDto(z.object({ id: z.uuid(), nome: z.string() })) {}
+
 export class NovaContaLocalDto extends createZodDto(
   z.object({
     nome: z.string().trim().min(1).max(120),

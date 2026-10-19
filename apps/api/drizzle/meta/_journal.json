@@ -43,6 +43,13 @@
       "when": 1792413129073,
       "tag": "0005_curtidas",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792414923753,
+      "tag": "0006_comentarios",
+      "breakpoints": true
     }
   ]
 }

@@ -16,6 +16,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { Pencil, Send, Trash2 } from 'lucide-react';
 import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Discussao } from '@/components/comentarios/discussao';
 import { Curtidas } from '@/components/curtidas';
 import { NativeSelect } from '@/components/native-select';
 import { StatusBadge } from '@/components/status-badge';
@@ -25,7 +26,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { formatarData, formatarDataHora } from '@/lib/datas';
+import { formatarData } from '@/lib/datas';
+import { mensagemDaApi } from '@/lib/erros';
 
 export const Route = createFileRoute('/_app/ideias/$numero/')({ component: IdeiaPage });
 
@@ -37,14 +39,6 @@ function useAtualizarIdeia(numero: number) {
       queryClient.invalidateQueries({ queryKey: getIdeiasListarQueryKey() }),
     ]);
   };
-}
-
-/** Mensagem da API (regras de negócio vêm em português) ou genérica. */
-function mensagemDaApi(erro: unknown, padrao: string) {
-  if (erro instanceof ApiError) {
-    return (erro.body as { message?: string } | undefined)?.message ?? padrao;
-  }
-  return erro ? padrao : undefined;
 }
 
 function IdeiaPage() {
@@ -108,7 +102,7 @@ function IdeiaPage() {
         <PainelDeAvaliacao ideia={ideia} />
       )}
 
-      <Historico ideia={ideia} />
+      <Discussao ideia={ideia} />
     </article>
   );
 }
@@ -347,45 +341,5 @@ function Recategorizar({ ideia }: { ideia: IdeiaDtoOutput }) {
         {t('ideias.recategorizar')}
       </Button>
     </form>
-  );
-}
-
-function Historico({ ideia }: { ideia: IdeiaDtoOutput }) {
-  const { t } = useTranslation();
-  if (!ideia.historico.length) return null;
-  return (
-    <section className="space-y-3">
-      <h2 className="text-lg font-semibold">{t('ideias.historico')}</h2>
-      <ol className="space-y-4 border-l pl-4">
-        {ideia.historico.map((evento) => {
-          const nome = evento.colaborador.nome;
-          const descricao =
-            evento.tipo === 'categoria'
-              ? t('ideias.mudouCategoria', { nome, de: evento.de, para: evento.para })
-              : evento.de
-                ? t('ideias.mudouStatus', {
-                    nome,
-                    de: t(`status.${evento.de}`),
-                    para: t(`status.${evento.para}`),
-                  })
-                : t('ideias.publicou', { nome });
-          return (
-            <li key={evento.id} className="space-y-1">
-              <p className="text-sm">
-                <span className="font-medium">{descricao}</span>{' '}
-                <time className="text-muted-foreground" dateTime={evento.em}>
-                  · {formatarDataHora(evento.em)}
-                </time>
-              </p>
-              {evento.justificativa && (
-                <p className="text-sm whitespace-pre-wrap text-muted-foreground">
-                  {evento.justificativa}
-                </p>
-              )}
-            </li>
-          );
-        })}
-      </ol>
-    </section>
   );
 }

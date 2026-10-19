@@ -81,7 +81,12 @@ export async function criarColaborador(
   admin: ReturnType<AppDeTeste['navegador']>,
   nome: string,
 ) {
-  const email = `${nome.toLowerCase()}@empresa.test`;
+  const usuario = nome
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/\s+/g, '.');
+  const email = `${usuario}@empresa.test`;
   const conta = await admin.post('/api/colaboradores').send({ nome, email }).expect(201);
   const navegador = sim.navegador();
   await navegador
