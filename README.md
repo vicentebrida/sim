@@ -21,7 +21,8 @@ Quando alguém começa a escrever uma Ideia que já existe, o SIM mostra as **Id
 - Identidade visual da empresa (nome, cor, logo, favicon e página de login)
 - Anexos (imagens e documentos) em Ideias e Comentários
 - Painel para Administradores, com exportação em CSV
-- Planejados: busca semântica opcional e personalização da aparência dos Status
+- Aparência dos Status personalizável (nome, cor e descrição)
+- Planejados: busca semântica opcional
 
 ## Documentação
 

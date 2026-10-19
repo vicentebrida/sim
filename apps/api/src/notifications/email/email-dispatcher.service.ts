@@ -7,6 +7,7 @@ import { DB, type Database } from '../../database/database.module';
 import { collaborators, ideas, notifications } from '../../database/schema';
 import { renderEmail } from './email-templates';
 import { BrandingService } from '../../branding/branding.service';
+import { StatusesService } from '../../statuses/statuses.service';
 import { Mailer } from './mailer';
 
 export const MAX_EMAIL_ATTEMPTS = 5;
@@ -26,6 +27,7 @@ export class EmailDispatcher {
     @Inject(ENV) private readonly env: Env,
     private readonly mailer: Mailer,
     private readonly branding: BrandingService,
+    private readonly statuses: StatusesService,
   ) {}
 
   /** Returns how many e-mails were sent. */
@@ -73,6 +75,11 @@ export class EmailDispatcher {
         const message = renderEmail({
           locale: this.env.SIM_LOCALE,
           brand: { name: brand.name, color: brand.primaryColor },
+          statusLabels: Object.fromEntries(
+            (await this.statuses.list()).flatMap(({ status, label }) =>
+              label ? [[status, label]] : [],
+            ),
+          ),
           type: notification.type,
           recipientName: recipient.name,
           actorName: row.actorName,

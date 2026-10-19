@@ -1,5 +1,7 @@
-import type { IdeaDtoOutputStatus } from '@sim/api-client';
 import { useTranslation } from 'react-i18next';
+import type { IdeaDtoOutputStatus } from '@sim/api-client';
+import { readableForeground } from '@/lib/branding';
+import { useStatusInfo } from '@/lib/use-statuses';
 import { cn } from '@/lib/utils';
 
 const COLORS: Record<IdeaDtoOutputStatus, string> = {
@@ -28,12 +30,18 @@ export function StalledBadge() {
 }
 
 export function StatusBadge({ status }: { status: IdeaDtoOutputStatus }) {
-  const { t } = useTranslation();
+  const info = useStatusInfo();
+  const color = info.color(status);
   return (
     <span
-      className={cn('inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium', COLORS[status])}
+      className={cn(
+        'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium',
+        !color && COLORS[status],
+      )}
+      style={color ? { background: color, color: readableForeground(color) } : undefined}
+      title={info.description(status)}
     >
-      {t(`status.${status}`)}
+      {info.label(status)}
     </span>
   );
 }

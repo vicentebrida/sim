@@ -16,6 +16,7 @@
   },
   "nav": {
     "ideas": "Ideas",
+    "statuses": "Statuses",
     "branding": "Branding",
     "dashboard": "Dashboard",
     "categories": "Categories",
@@ -83,6 +84,7 @@
       "ATTACHMENT_TOO_LARGE": "The file is larger than the allowed size.",
       "TOO_MANY_ATTACHMENTS": "The attachment limit was reached.",
       "IMAGE_NOT_ALLOWED": "Send a PNG, JPG, GIF, WebP, SVG or ICO image.",
+      "STATUS_NOT_OPTIONAL": "This Status cannot be turned off.",
       "FORBIDDEN": "You don't have permission for this action.",
       "INVALID_TRANSITION": "This status change isn't allowed from the current status.",
       "EDIT_LOCKED": "The idea is under review; add information in the comments.",
@@ -212,6 +214,21 @@
       "favicon": "Square PNG, SVG or ICO.",
       "loginImage": "Shown above the login form."
     }
+  },
+  "statuses": {
+    "title": "Status appearance",
+    "sub": "Rename, recolor and describe the Statuses. Their rules do not change; Approved and In progress can be turned off, and ideas skip to the next one.",
+    "off": "off",
+    "edit": "Edit",
+    "turnOff": "Turn off",
+    "turnOn": "Turn on",
+    "label": "Name",
+    "color": "Color",
+    "defaultColor": "Use the default color",
+    "description": "Description",
+    "descriptionHelp": "Shown as a hint when hovering the Status.",
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "status": {
     "draft": "Draft",

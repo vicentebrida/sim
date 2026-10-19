@@ -1760,6 +1760,70 @@
           "branding"
         ]
       }
+    },
+    "/api/statuses": {
+      "get": {
+        "operationId": "statuses_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StatusSettingDto_Output"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "statuses"
+        ]
+      }
+    },
+    "/api/statuses/{status}": {
+      "put": {
+        "operationId": "statuses_update",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusSettingUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusSettingDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "statuses"
+        ]
+      }
     }
   },
   "info": {
@@ -4139,6 +4203,98 @@
           "loginText": {
             "type": "string",
             "maxLength": 500
+          }
+        }
+      },
+      "StatusSettingDto_Output": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "open",
+              "under_review",
+              "approved",
+              "in_progress",
+              "done",
+              "declined",
+              "duplicate",
+              "archived"
+            ]
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "optional": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "status",
+          "label",
+          "color",
+          "description",
+          "enabled",
+          "optional"
+        ],
+        "additionalProperties": false
+      },
+      "StatusSettingUpdateDto": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "color": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 280
+          },
+          "enabled": {
+            "type": "boolean"
           }
         }
       }

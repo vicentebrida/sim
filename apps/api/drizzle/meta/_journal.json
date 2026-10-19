@@ -71,6 +71,13 @@
       "when": 1792441325063,
       "tag": "0009_branding",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792443392173,
+      "tag": "0010_status_settings",
+      "breakpoints": true
     }
   ]
 }

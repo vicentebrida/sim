@@ -6,6 +6,7 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { AttachmentsModule, AttachmentStoreModule } from './attachments/attachments.module';
 import { AuthModule } from './auth/auth.module';
 import { BrandingModule } from './branding/branding.module';
+import { StatusesModule } from './statuses/statuses.module';
 import { CategoriesModule } from './categories/categories.module';
 import { CollaboratorsModule } from './collaborators/collaborators.module';
 import { CommentsModule } from './comments/comments.module';
@@ -43,6 +44,7 @@ function webModule(): DynamicModule[] {
     AttachmentStoreModule,
     AttachmentsModule,
     BrandingModule,
+    StatusesModule,
     ...webModule(),
   ],
   providers: [

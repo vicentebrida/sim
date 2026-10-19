@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { formatDate } from '@/lib/dates';
+import { useStatusInfo } from '@/lib/use-statuses';
 
 const FILTERABLE_STATUSES = [
   'open',
@@ -43,6 +44,7 @@ const PAGE_SIZE = 20;
 
 function HomePage() {
   const { t } = useTranslation();
+  const statusInfo = useStatusInfo();
   const filters = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const page = filters.page ?? 1;
@@ -90,7 +92,7 @@ function HomePage() {
             <option value="">{t('ideas.filters.all')}</option>
             {FILTERABLE_STATUSES.map((status) => (
               <option key={status} value={status}>
-                {t(`status.${status}`)}
+                {statusInfo.label(status)}
               </option>
             ))}
           </NativeSelect>
