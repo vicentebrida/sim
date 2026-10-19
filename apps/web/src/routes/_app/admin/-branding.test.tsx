@@ -1,3 +1,4 @@
+import type { BrandingDtoOutput } from '@sim/api-client';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
@@ -8,7 +9,7 @@ import { renderApp } from '@/test/render';
 import { server } from '@/test/server';
 
 const admin = { ...ana, name: 'Admin', administrator: true };
-const EMPTY = {
+const EMPTY: BrandingDtoOutput = {
   name: 'SIM',
   primaryColor: null,
   loginTitle: '',
@@ -20,7 +21,7 @@ const EMPTY = {
 };
 
 /** In-memory branding API. */
-function simulateBranding(initial: Partial<typeof EMPTY> = {}) {
+function simulateBranding(initial: Partial<BrandingDtoOutput> = {}) {
   let branding = { ...EMPTY, ...initial };
   const patches: unknown[] = [];
   server.use(
