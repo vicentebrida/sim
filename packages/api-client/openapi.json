@@ -1394,6 +1394,48 @@
           "comments"
         ]
       }
+    },
+    "/api/dashboard": {
+      "get": {
+        "operationId": "dashboard_overview",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dashboard"
+        ]
+      }
+    },
+    "/api/dashboard/export": {
+      "get": {
+        "operationId": "dashboard_export",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Every published Idea, as CSV",
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dashboard"
+        ]
+      }
     }
   },
   "info": {
@@ -3312,6 +3354,197 @@
         "required": [
           "reason"
         ]
+      },
+      "DashboardDto_Output": {
+        "type": "object",
+        "properties": {
+          "byStatus": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "draft",
+                    "open",
+                    "under_review",
+                    "approved",
+                    "in_progress",
+                    "done",
+                    "declined",
+                    "duplicate",
+                    "archived"
+                  ]
+                },
+                "total": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "status",
+                "total"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "byCategory": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "total": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "undecided": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "total",
+                "undecided"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "firstDecision": {
+            "type": "object",
+            "properties": {
+              "decided": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "averageHours": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "decided",
+              "averageHours"
+            ],
+            "additionalProperties": false
+          },
+          "stalled": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "number": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "title": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "draft",
+                    "open",
+                    "under_review",
+                    "approved",
+                    "in_progress",
+                    "done",
+                    "declined",
+                    "duplicate",
+                    "archived"
+                  ]
+                },
+                "category": {
+                  "type": "string"
+                },
+                "days": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "number",
+                "title",
+                "status",
+                "category",
+                "days"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "mostLikedUndecided": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "number": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "title": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "draft",
+                    "open",
+                    "under_review",
+                    "approved",
+                    "in_progress",
+                    "done",
+                    "declined",
+                    "duplicate",
+                    "archived"
+                  ]
+                },
+                "category": {
+                  "type": "string"
+                },
+                "likes": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "number",
+                "title",
+                "status",
+                "category",
+                "likes"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "byStatus",
+          "byCategory",
+          "firstDecision",
+          "stalled",
+          "mostLikedUndecided"
+        ],
+        "additionalProperties": false
       }
     }
   }

@@ -16,6 +16,7 @@
   },
   "nav": {
     "ideas": "Ideias",
+    "dashboard": "Painel",
     "categories": "Categorias",
     "fields": "Campos",
     "collaborators": "Colaboradores",
@@ -143,6 +144,28 @@
   "stalled": {
     "badge": "Parada",
     "help": "Passou do prazo sem ação de um Avaliador. Só Avaliadores e Administradores veem esta marca."
+  },
+  "dashboard": {
+    "title": "Painel",
+    "subtitle": "Como andam as ideias da empresa.",
+    "export": "Exportar CSV",
+    "byStatus": "Ideias por status",
+    "byCategory": "Ideias por categoria",
+    "category": "Categoria",
+    "total": "Total",
+    "undecided": "Sem decisão",
+    "firstDecision": "Tempo até a primeira decisão",
+    "noDecisions": "Ainda sem decisões",
+    "days": "{{value}} dias",
+    "hours": "{{value}} h",
+    "decided_one": "{{count}} ideia decidida (aprovada, em execução, concluída, recusada ou duplicada)",
+    "decided_other": "{{count}} ideias decididas (aprovadas, em execução, concluídas, recusadas ou duplicadas)",
+    "stalled": "Ideias paradas",
+    "noStalled": "Nenhuma ideia parada.",
+    "stalledDays_one": "{{count}} dia parada",
+    "stalledDays_other": "{{count}} dias parada",
+    "mostLiked": "Mais curtidas ainda sem decisão",
+    "noneUndecided": "Nenhuma ideia aguardando decisão."
   },
   "status": {
     "draft": "Rascunho",
