@@ -158,7 +158,13 @@
     "aplicar": "Apply",
     "recategorizar": "Change category",
     "novaCategoria": "New category",
-    "naoEncontrada": "Idea not found."
+    "naoEncontrada": "Idea not found.",
+    "ordem": {
+      "label": "Sort by",
+      "em_alta": "Trending",
+      "mais_curtidas": "Most liked",
+      "mais_recentes": "Newest"
+    }
   },
   "campos": {
     "title": "Form fields",
@@ -189,5 +195,18 @@
       "numero": "Number",
       "sim_nao": "Yes or no"
     }
+  },
+  "curtidas": {
+    "total_one": "{{count}} like",
+    "total_other": "{{count}} likes",
+    "curtir": "Like",
+    "curtida": "Liked",
+    "curtirAjuda": "Liking shows you also want this idea to happen.",
+    "proprioAutor": "You can't like your own idea.",
+    "congeladas": "Likes are frozen in this status.",
+    "voceCurtiu": "You liked this",
+    "verQuem": "See who liked",
+    "ocultarQuem": "Hide who liked",
+    "ninguem": "No likes yet."
   }
 }

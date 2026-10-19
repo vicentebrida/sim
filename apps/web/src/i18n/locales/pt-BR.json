@@ -158,7 +158,13 @@
     "aplicar": "Aplicar",
     "recategorizar": "Mudar Categoria",
     "novaCategoria": "Nova Categoria",
-    "naoEncontrada": "Ideia não encontrada."
+    "naoEncontrada": "Ideia não encontrada.",
+    "ordem": {
+      "label": "Ordenar por",
+      "em_alta": "Em alta",
+      "mais_curtidas": "Mais curtidas",
+      "mais_recentes": "Mais recentes"
+    }
   },
   "campos": {
     "title": "Campos do formulário",
@@ -189,5 +195,18 @@
       "numero": "Número",
       "sim_nao": "Sim ou não"
     }
+  },
+  "curtidas": {
+    "total_one": "{{count}} curtida",
+    "total_other": "{{count}} curtidas",
+    "curtir": "Curtir",
+    "curtida": "Curtida",
+    "curtirAjuda": "Curtir mostra que você também quer que esta ideia aconteça.",
+    "proprioAutor": "Você não pode curtir a própria ideia.",
+    "congeladas": "As curtidas estão congeladas neste status.",
+    "voceCurtiu": "Você curtiu",
+    "verQuem": "Ver quem curtiu",
+    "ocultarQuem": "Ocultar quem curtiu",
+    "ninguem": "Ninguém curtiu ainda."
   }
 }

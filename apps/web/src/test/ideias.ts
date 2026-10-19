@@ -1,6 +1,7 @@
 import type {
   CampoPersonalizadoDtoOutput,
   CategoriaDtoOutput,
+  CurtidaDtoOutput,
   IdeiaDtoOutput,
 } from '@sim/api-client';
 import { http, HttpResponse } from 'msw';
@@ -48,6 +49,7 @@ export function ideiaDeExemplo(parcial: Partial<IdeiaDtoOutput> = {}): IdeiaDtoO
     status: 'aberta',
     categoria: { id: TI.id, nome: TI.nome },
     autor: { id: ana.id, nome: ana.nome },
+    curtidas: { total: 0, curtiu: false },
     criadaEm: '2026-10-01T12:00:00.000Z',
     publicadaEm: '2026-10-01T12:00:00.000Z',
     editadaEm: null,
@@ -76,6 +78,7 @@ export function ideiaDeExemplo(parcial: Partial<IdeiaDtoOutput> = {}): IdeiaDtoO
       podeEditar: false,
       podeExcluir: false,
       podePublicar: false,
+      podeCurtir: false,
       podeAvaliar: false,
       podeRecategorizar: false,
       transicoes: [],
@@ -85,8 +88,23 @@ export function ideiaDeExemplo(parcial: Partial<IdeiaDtoOutput> = {}): IdeiaDtoO
 }
 
 /** API de Ideias simulada; devolve as requisições recebidas para os testes inspecionarem. */
-export function simularIdeias(opcoes: { ideia?: IdeiaDtoOutput } = {}) {
+export function simularIdeias(
+  opcoes: {
+    ideia?: IdeiaDtoOutput;
+    /** Quem curte nesta simulação (o Colaborador da sessão) e quem já tinha curtido. */
+    curtidas?: { eu: CurtidaDtoOutput['colaborador']; outras?: CurtidaDtoOutput[] };
+  } = {},
+) {
   let ideia = opcoes.ideia ?? ideiaDeExemplo();
+  let curtidas = opcoes.curtidas?.outras ?? [];
+  const alterarCurtida = (curtiu: boolean) => {
+    const eu = opcoes.curtidas?.eu;
+    if (!eu) throw new Error('Informe `curtidas.eu` para simular Curtidas');
+    curtidas = curtidas.filter((c) => c.colaborador.id !== eu.id);
+    if (curtiu) curtidas = [{ colaborador: eu, em: '2026-10-03T10:00:00.000Z' }, ...curtidas];
+    ideia = { ...ideia, curtidas: { total: curtidas.length, curtiu } };
+    return HttpResponse.json(ideia.curtidas);
+  };
   const recebidas: { metodo: string; url: URL; corpo?: unknown }[] = [];
   const registrar = async (request: Request) => {
     const corpo =
@@ -122,6 +140,15 @@ export function simularIdeias(opcoes: { ideia?: IdeiaDtoOutput } = {}) {
       return HttpResponse.json(ideia, { status: 201 });
     }),
     http.get('*/api/ideias/:numero', () => HttpResponse.json(ideia)),
+    http.get('*/api/ideias/:numero/curtidas', () => HttpResponse.json(curtidas)),
+    http.put('*/api/ideias/:numero/curtida', async ({ request }) => {
+      await registrar(request);
+      return alterarCurtida(true);
+    }),
+    http.delete('*/api/ideias/:numero/curtida', async ({ request }) => {
+      await registrar(request);
+      return alterarCurtida(false);
+    }),
     http.post('*/api/ideias/:numero/status', async ({ request }) => {
       await registrar(request);
       const corpo = (await request.json()) as {

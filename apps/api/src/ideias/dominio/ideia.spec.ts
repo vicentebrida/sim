@@ -4,6 +4,8 @@ import {
   ErroDeDominio,
   type IdeiaParaRegras,
   permissoes,
+  STATUS,
+  validarCurtida,
   validarExclusao,
   validarMudancaDeStatus,
   validarRecategorizacao,
@@ -198,6 +200,39 @@ describe('exclusão pelo Autor', () => {
   });
 });
 
+describe('Curtidas', () => {
+  it('colegas, Avaliadores e Administradores curtem Ideias em andamento', () => {
+    for (const status of ['aberta', 'em_analise', 'aprovada', 'em_execucao'] as const) {
+      for (const ator of [colega, avaliador, administrador]) {
+        expect(codigoDoErro(() => validarCurtida(ideia(status), ator))).toBeUndefined();
+      }
+    }
+  });
+
+  it('o Autor não curte a própria Ideia', () => {
+    expect(codigoDoErro(() => validarCurtida(ideia('aberta'), autor))).toBe('SEM_PERMISSAO');
+  });
+
+  it('nos demais Status as Curtidas ficam congeladas', () => {
+    const congelados = STATUS.filter(
+      (status) => !['aberta', 'em_analise', 'aprovada', 'em_execucao'].includes(status),
+    );
+    expect(congelados).toEqual(['rascunho', 'concluida', 'recusada', 'duplicada', 'arquivada']);
+    for (const status of congelados) {
+      expect(codigoDoErro(() => validarCurtida(ideia(status), colega))).toBe(
+        'CURTIDA_INDISPONIVEL',
+      );
+    }
+  });
+
+  it('a tela só oferece curtir quando é possível', () => {
+    const contexto = { temInteracaoDeOutros: false };
+    expect(permissoes(ideia('aberta'), colega, contexto).podeCurtir).toBe(true);
+    expect(permissoes(ideia('aberta'), autor, contexto).podeCurtir).toBe(false);
+    expect(permissoes(ideia('concluida'), colega, contexto).podeCurtir).toBe(false);
+  });
+});
+
 describe('permissões calculadas para a tela', () => {
   it('Autor de uma Ideia Aberta pode editar e excluir, mas não avaliar', () => {
     expect(permissoes(ideia('aberta'), autor, { temInteracaoDeOutros: false })).toEqual({
@@ -205,6 +240,7 @@ describe('permissões calculadas para a tela', () => {
       podeEditar: true,
       podeExcluir: true,
       podePublicar: false,
+      podeCurtir: false,
       podeAvaliar: false,
       podeRecategorizar: false,
       transicoes: [],

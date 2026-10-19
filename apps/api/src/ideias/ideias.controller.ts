@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ApiNoContentResponse, ApiTags } from '@nestjs/swagger';
@@ -15,6 +16,8 @@ import { ZodResponse } from 'nestjs-zod';
 import { ColaboradorAtual } from '../auth/decorators';
 import type { Colaborador } from '../database/schema';
 import {
+  CurtidaDto,
+  CurtidasDto,
   EdicaoDeIdeiaDto,
   IdeiaDto,
   ListarIdeiasQueryDto,
@@ -98,5 +101,32 @@ export class IdeiasController {
     @Param('numero', ParseIntPipe) numero: number,
   ) {
     return this.ideias.excluir(colaborador, numero);
+  }
+
+  @Get(':numero/curtidas')
+  @ZodResponse({ status: 200, type: [CurtidaDto] })
+  listarCurtidas(
+    @ColaboradorAtual() colaborador: Colaborador,
+    @Param('numero', ParseIntPipe) numero: number,
+  ) {
+    return this.ideias.listarCurtidas(colaborador, numero);
+  }
+
+  @Put(':numero/curtida')
+  @ZodResponse({ status: 200, type: CurtidasDto })
+  curtir(
+    @ColaboradorAtual() colaborador: Colaborador,
+    @Param('numero', ParseIntPipe) numero: number,
+  ) {
+    return this.ideias.curtir(colaborador, numero);
+  }
+
+  @Delete(':numero/curtida')
+  @ZodResponse({ status: 200, type: CurtidasDto })
+  descurtir(
+    @ColaboradorAtual() colaborador: Colaborador,
+    @Param('numero', ParseIntPipe) numero: number,
+  ) {
+    return this.ideias.descurtir(colaborador, numero);
   }
 }

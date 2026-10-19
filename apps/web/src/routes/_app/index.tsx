@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { Lightbulb } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
+import { ContadorDeCurtidas } from '@/components/curtidas';
 import { NativeSelect } from '@/components/native-select';
 import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
@@ -21,7 +22,11 @@ const STATUS_FILTRAVEIS = [
   'arquivada',
 ] as const;
 
+const ORDENS = ['em_alta', 'mais_curtidas', 'mais_recentes'] as const;
+
 const filtrosSchema = z.object({
+  // Ausente na URL é "Em alta", a ordenação padrão.
+  ordem: z.enum(ORDENS).optional().catch(undefined),
   status: z.enum(STATUS_FILTRAVEIS).optional().catch(undefined),
   categoriaId: z.string().optional().catch(undefined),
   minhas: z.boolean().optional().catch(undefined),
@@ -45,6 +50,7 @@ function HomePage() {
     status: filtros.status,
     categoriaId: filtros.categoriaId,
     autor: filtros.minhas ? 'eu' : undefined,
+    ordem: filtros.ordem,
     pagina,
     porPagina: POR_PAGINA,
   });
@@ -102,6 +108,23 @@ function HomePage() {
             ))}
           </NativeSelect>
         </div>
+        <div className="grid min-w-44 gap-1">
+          <Label htmlFor="filtro-ordem">{t('ideias.ordem.label')}</Label>
+          <NativeSelect
+            id="filtro-ordem"
+            value={filtros.ordem ?? 'em_alta'}
+            onChange={(evento) => {
+              const ordem = evento.target.value as (typeof ORDENS)[number];
+              filtrar({ ordem: ordem === 'em_alta' ? undefined : ordem });
+            }}
+          >
+            {ORDENS.map((ordem) => (
+              <option key={ordem} value={ordem}>
+                {t(`ideias.ordem.${ordem}`)}
+              </option>
+            ))}
+          </NativeSelect>
+        </div>
         <label className="flex h-9 items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -135,12 +158,15 @@ function HomePage() {
                 <span className="text-sm text-muted-foreground">· {ideia.categoria.nome}</span>
               </div>
               <h2 className="mt-2 font-medium">{ideia.titulo}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {t('ideias.por', { nome: ideia.autor.nome })} ·{' '}
-                {ideia.publicadaEm
-                  ? t('ideias.publicadaEm', { data: formatarData(ideia.publicadaEm) })
-                  : t('ideias.criadaEm', { data: formatarData(ideia.criadaEm) })}
-              </p>
+              <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+                <p className="text-sm text-muted-foreground">
+                  {t('ideias.por', { nome: ideia.autor.nome })} ·{' '}
+                  {ideia.publicadaEm
+                    ? t('ideias.publicadaEm', { data: formatarData(ideia.publicadaEm) })
+                    : t('ideias.criadaEm', { data: formatarData(ideia.criadaEm) })}
+                </p>
+                {ideia.status !== 'rascunho' && <ContadorDeCurtidas {...ideia.curtidas} />}
+              </div>
             </Link>
           </li>
         ))}

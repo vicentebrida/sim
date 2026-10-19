@@ -73,8 +73,9 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 ### 3.5 Curtidas e listagem
 
 - Uma Curtida por Colaborador por Ideia, e pode ser desfeita. O Autor não curte a própria Ideia. A Curtida é sempre identificada.
-- Só dá pra curtir em _Aberta_, _Em análise_, _Aprovada_ e _Em execução_. Nos demais Status as Curtidas ficam congeladas.
+- Só dá pra curtir em _Aberta_, _Em análise_, _Aprovada_ e _Em execução_. Nos demais Status as Curtidas ficam congeladas: não dá pra curtir nem desfazer.
 - Ordenações: **Em alta** (padrão, com Curtidas e Comentários recentes perdendo peso com o tempo), **Mais curtidas** e **Mais recentes**.
+  - Em alta: a publicação e cada Curtida (e, depois, cada Comentário) valem 1 e perdem metade do peso a cada 7 dias; a Ideia soma esses pesos. Assim uma Ideia nova aparece bem, e uma antiga volta a subir quando recebe apoio.
 - Filtros por Status, Categoria e Autor, e "minhas Ideias / que sigo".
 
 ### 3.6 Comentários

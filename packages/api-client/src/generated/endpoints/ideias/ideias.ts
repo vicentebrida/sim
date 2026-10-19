@@ -25,6 +25,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  CurtidaDtoOutput,
+  CurtidasDtoOutput,
   EdicaoDeIdeiaDto,
   IdeiaDtoOutput,
   IdeiasListarParams,
@@ -808,4 +810,268 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getIdeiasRecategorizarMutationOptions(options), queryClient);
+    }
+    export type ideiasListarCurtidasResponse200 = {
+  data: CurtidaDtoOutput[]
+  status: 200
+}
+
+export type ideiasListarCurtidasResponseSuccess = (ideiasListarCurtidasResponse200) & {
+  headers: Headers;
+};
+;
+
+export type ideiasListarCurtidasResponse = (ideiasListarCurtidasResponseSuccess)
+
+export const getIdeiasListarCurtidasUrl = (numero: number,) => {
+
+
+
+
+  return `/api/ideias/${numero}/curtidas`
+}
+
+export const ideiasListarCurtidas = async (numero: number, options?: Parameters<typeof simFetch>[1]): Promise<ideiasListarCurtidasResponse> => {
+
+  return simFetch<ideiasListarCurtidasResponse>(getIdeiasListarCurtidasUrl(numero),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getIdeiasListarCurtidasQueryKey = (numero: number,) => {
+    return [
+    `/api/ideias/${numero}/curtidas`
+    ] as const;
+    }
+
+
+export const getIdeiasListarCurtidasQueryOptions = <TData = Awaited<ReturnType<typeof ideiasListarCurtidas>>, TError = ErrorType<unknown>>(numero: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideiasListarCurtidas>>, TError, TData>>, request?: SecondParameter<typeof simFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIdeiasListarCurtidasQueryKey(numero);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof ideiasListarCurtidas>>> = ({ signal }) => ideiasListarCurtidas(numero, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: numero !== null && numero !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof ideiasListarCurtidas>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type IdeiasListarCurtidasQueryResult = NonNullable<Awaited<ReturnType<typeof ideiasListarCurtidas>>>
+export type IdeiasListarCurtidasQueryError = ErrorType<unknown>
+
+
+export function useIdeiasListarCurtidas<TData = Awaited<ReturnType<typeof ideiasListarCurtidas>>, TError = ErrorType<unknown>>(
+ numero: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideiasListarCurtidas>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof ideiasListarCurtidas>>,
+          TError,
+          Awaited<ReturnType<typeof ideiasListarCurtidas>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIdeiasListarCurtidas<TData = Awaited<ReturnType<typeof ideiasListarCurtidas>>, TError = ErrorType<unknown>>(
+ numero: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideiasListarCurtidas>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof ideiasListarCurtidas>>,
+          TError,
+          Awaited<ReturnType<typeof ideiasListarCurtidas>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIdeiasListarCurtidas<TData = Awaited<ReturnType<typeof ideiasListarCurtidas>>, TError = ErrorType<unknown>>(
+ numero: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideiasListarCurtidas>>, TError, TData>>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useIdeiasListarCurtidas<TData = Awaited<ReturnType<typeof ideiasListarCurtidas>>, TError = ErrorType<unknown>>(
+ numero: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ideiasListarCurtidas>>, TError, TData>>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIdeiasListarCurtidasQueryOptions(numero,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export type ideiasCurtirResponse200 = {
+  data: CurtidasDtoOutput
+  status: 200
+}
+
+export type ideiasCurtirResponseSuccess = (ideiasCurtirResponse200) & {
+  headers: Headers;
+};
+;
+
+export type ideiasCurtirResponse = (ideiasCurtirResponseSuccess)
+
+export const getIdeiasCurtirUrl = (numero: number,) => {
+
+
+
+
+  return `/api/ideias/${numero}/curtida`
+}
+
+export const ideiasCurtir = async (numero: number, options?: Parameters<typeof simFetch>[1]): Promise<ideiasCurtirResponse> => {
+
+  return simFetch<ideiasCurtirResponse>(getIdeiasCurtirUrl(numero),
+  {
+    ...options,
+    method: 'PUT'
+
+
+  }
+);}
+
+
+
+
+
+export const getIdeiasCurtirMutationKey = () => ['ideiasCurtir'] as const;
+
+export const getIdeiasCurtirMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ideiasCurtir>>, TError,IdeiasCurtirMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof ideiasCurtir>>, TError,IdeiasCurtirMutationVariables, TContext> => {
+
+const mutationKey = getIdeiasCurtirMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof ideiasCurtir>>, IdeiasCurtirMutationVariables> = (props) => {
+          const {numero} = props ?? {};
+
+          return  ideiasCurtir(numero,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type IdeiasCurtirMutationResult = NonNullable<Awaited<ReturnType<typeof ideiasCurtir>>>
+
+    export type IdeiasCurtirMutationError = ErrorType<unknown>
+    export type IdeiasCurtirMutationVariables = {numero: number}
+
+    export const useIdeiasCurtir = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ideiasCurtir>>, TError,IdeiasCurtirMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof ideiasCurtir>>,
+        TError,
+        IdeiasCurtirMutationVariables,
+        TContext
+      > => {
+      return useMutation(getIdeiasCurtirMutationOptions(options), queryClient);
+    }
+    export type ideiasDescurtirResponse200 = {
+  data: CurtidasDtoOutput
+  status: 200
+}
+
+export type ideiasDescurtirResponseSuccess = (ideiasDescurtirResponse200) & {
+  headers: Headers;
+};
+;
+
+export type ideiasDescurtirResponse = (ideiasDescurtirResponseSuccess)
+
+export const getIdeiasDescurtirUrl = (numero: number,) => {
+
+
+
+
+  return `/api/ideias/${numero}/curtida`
+}
+
+export const ideiasDescurtir = async (numero: number, options?: Parameters<typeof simFetch>[1]): Promise<ideiasDescurtirResponse> => {
+
+  return simFetch<ideiasDescurtirResponse>(getIdeiasDescurtirUrl(numero),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getIdeiasDescurtirMutationKey = () => ['ideiasDescurtir'] as const;
+
+export const getIdeiasDescurtirMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ideiasDescurtir>>, TError,IdeiasDescurtirMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof ideiasDescurtir>>, TError,IdeiasDescurtirMutationVariables, TContext> => {
+
+const mutationKey = getIdeiasDescurtirMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof ideiasDescurtir>>, IdeiasDescurtirMutationVariables> = (props) => {
+          const {numero} = props ?? {};
+
+          return  ideiasDescurtir(numero,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type IdeiasDescurtirMutationResult = NonNullable<Awaited<ReturnType<typeof ideiasDescurtir>>>
+
+    export type IdeiasDescurtirMutationError = ErrorType<unknown>
+    export type IdeiasDescurtirMutationVariables = {numero: number}
+
+    export const useIdeiasDescurtir = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ideiasDescurtir>>, TError,IdeiasDescurtirMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof ideiasDescurtir>>,
+        TError,
+        IdeiasDescurtirMutationVariables,
+        TContext
+      > => {
+      return useMutation(getIdeiasDescurtirMutationOptions(options), queryClient);
     }

@@ -8,6 +8,7 @@ import {
   type Colaborador,
   categorias,
   colaboradores,
+  curtidas,
   historicoDeIdeias,
   type Ideia,
   ideias,
@@ -15,9 +16,12 @@ import {
 import { normalizarValores, type Valores } from './dominio/campos';
 import {
   type Ator,
+  MEIA_VIDA_EM_ALTA_DIAS,
+  type Ordem,
   podeVer,
   permissoes,
   type Status,
+  validarCurtida,
   validarEdicao,
   validarExclusao,
   validarMudancaDeStatus,
@@ -27,17 +31,37 @@ import {
 
 type Transacao = Parameters<Parameters<Database['transaction']>[0]>[0];
 
-// Curtidas e Comentários ainda não existem; quando existirem, a exclusão pelo Autor passa a
-// depender de não haver interação de outras pessoas (PRD §3.2).
-const SEM_INTERACAO = { temInteracaoDeOutros: false };
-
 export interface FiltroDeIdeias {
   status?: Status[];
   categoriaId?: string;
   autor?: 'eu';
+  ordem: Ordem;
   pagina: number;
   porPagina: number;
 }
+
+const totalDeCurtidas = sql<number>`(select count(*) from ${curtidas} where ${curtidas.ideiaId} = ${ideias.id})::int`;
+
+const curtiu = (colaborador: Colaborador) =>
+  sql<boolean>`exists (select 1 from ${curtidas} where ${curtidas.ideiaId} = ${ideias.id} and ${curtidas.colaboradorId} = ${colaborador.id})`;
+
+/** Peso de um acontecimento ocorrido em `momento`: 1 agora, metade a cada meia-vida. */
+const peso = (momento: SQL) =>
+  sql`exp(-ln(2) * least(extract(epoch from (now() - ${momento})) / ${MEIA_VIDA_EM_ALTA_DIAS * 86_400}, 1000))`;
+
+// Comentários recentes também vão entrar nesta soma quando existirem (PRD §3.5).
+const pontuacaoEmAlta = sql`(${peso(sql`coalesce(${ideias.publicadaEm}, ${ideias.criadaEm})`)} + coalesce((select sum(${peso(sql`${curtidas.em}`)}) from ${curtidas} where ${curtidas.ideiaId} = ${ideias.id}), 0))`;
+
+const maisRecentes = [
+  desc(sql`coalesce(${ideias.publicadaEm}, ${ideias.criadaEm})`),
+  desc(ideias.numero),
+];
+
+const ORDENACAO: Record<Ordem, SQL[]> = {
+  em_alta: [desc(pontuacaoEmAlta), ...maisRecentes],
+  mais_curtidas: [desc(totalDeCurtidas), ...maisRecentes],
+  mais_recentes: maisRecentes,
+};
 
 const iso = (data: Date | null) => data?.toISOString() ?? null;
 
@@ -71,25 +95,24 @@ export class IdeiasService {
           ideia: ideias,
           categoria: { id: categorias.id, nome: categorias.nome },
           autor: { id: autor.id, nome: autor.nome },
+          curtidas: { total: totalDeCurtidas, curtiu: curtiu(colaborador) },
         })
         .from(ideias)
         .innerJoin(categorias, eq(ideias.categoriaId, categorias.id))
         .innerJoin(autor, eq(ideias.autorId, autor.id))
         .where(where)
-        .orderBy(
-          desc(sql`coalesce(${ideias.publicadaEm}, ${ideias.criadaEm})`),
-          desc(ideias.numero),
-        )
+        .orderBy(...ORDENACAO[filtro.ordem])
         .limit(filtro.porPagina)
         .offset((filtro.pagina - 1) * filtro.porPagina),
       this.db.select({ total: count() }).from(ideias).where(where),
     ]);
 
     return {
-      itens: linhas.map(({ ideia, categoria, autor }) => ({
+      itens: linhas.map(({ ideia, categoria, autor, curtidas }) => ({
         ...this.resumo(ideia),
         categoria,
         autor,
+        curtidas,
       })),
       total: contagem[0]?.total ?? 0,
       pagina: filtro.pagina,
@@ -103,32 +126,35 @@ export class IdeiasService {
     if (!podeVer(ideia, ator)) throw new NotFoundException('Ideia não encontrada');
 
     const quemMudou = alias(colaboradores, 'quem_mudou');
-    const [[categoria], [autor], campos, historico, original] = await Promise.all([
-      this.db
-        .select({ id: categorias.id, nome: categorias.nome })
-        .from(categorias)
-        .where(eq(categorias.id, ideia.categoriaId)),
-      this.db
-        .select({ id: colaboradores.id, nome: colaboradores.nome })
-        .from(colaboradores)
-        .where(eq(colaboradores.id, ideia.autorId)),
-      this.campos.listar({ incluirInativos: true }),
-      this.db
-        .select({
-          evento: historicoDeIdeias,
-          colaborador: { id: quemMudou.id, nome: quemMudou.nome },
-        })
-        .from(historicoDeIdeias)
-        .innerJoin(quemMudou, eq(historicoDeIdeias.colaboradorId, quemMudou.id))
-        .where(eq(historicoDeIdeias.ideiaId, ideia.id))
-        .orderBy(asc(historicoDeIdeias.em)),
-      ideia.ideiaOriginalId
-        ? this.db
-            .select({ numero: ideias.numero, titulo: ideias.titulo })
-            .from(ideias)
-            .where(eq(ideias.id, ideia.ideiaOriginalId))
-        : Promise.resolve([]),
-    ]);
+    const [[categoria], [autor], campos, historico, original, estadoDasCurtidas, interacao] =
+      await Promise.all([
+        this.db
+          .select({ id: categorias.id, nome: categorias.nome })
+          .from(categorias)
+          .where(eq(categorias.id, ideia.categoriaId)),
+        this.db
+          .select({ id: colaboradores.id, nome: colaboradores.nome })
+          .from(colaboradores)
+          .where(eq(colaboradores.id, ideia.autorId)),
+        this.campos.listar({ incluirInativos: true }),
+        this.db
+          .select({
+            evento: historicoDeIdeias,
+            colaborador: { id: quemMudou.id, nome: quemMudou.nome },
+          })
+          .from(historicoDeIdeias)
+          .innerJoin(quemMudou, eq(historicoDeIdeias.colaboradorId, quemMudou.id))
+          .where(eq(historicoDeIdeias.ideiaId, ideia.id))
+          .orderBy(asc(historicoDeIdeias.em)),
+        ideia.ideiaOriginalId
+          ? this.db
+              .select({ numero: ideias.numero, titulo: ideias.titulo })
+              .from(ideias)
+              .where(eq(ideias.id, ideia.ideiaOriginalId))
+          : Promise.resolve([]),
+        this.estadoDasCurtidas(ideia, colaborador),
+        this.interacaoDeOutros(ideia),
+      ]);
 
     // Eventos de Categoria guardam ids; para exibir, troca pelos nomes.
     const idsDeCategoria = historico
@@ -147,7 +173,7 @@ export class IdeiasService {
     );
     const nomeDaCategoria = (id: string | null) => (id ? (nomesDeCategoria.get(id) ?? id) : null);
 
-    const { podeVer: _, ...acoes } = permissoes(ideia, ator, SEM_INTERACAO);
+    const { podeVer: _, ...acoes } = permissoes(ideia, ator, interacao);
     return {
       ...this.resumo(ideia),
       editadaEm: iso(ideia.editadaEm),
@@ -162,6 +188,7 @@ export class IdeiasService {
           tipo: campo.tipo,
           valor: ideia.valores[campo.id]!,
         })),
+      curtidas: estadoDasCurtidas,
       ideiaOriginal: original[0] ?? null,
       historico: historico.map(({ evento, colaborador: quem }) => ({
         id: evento.id,
@@ -286,6 +313,7 @@ export class IdeiasService {
           statusAlteradoEm: new Date(),
         })
         .where(eq(ideias.id, ideia.id));
+      if (ideiaOriginal) await this.migrarCurtidas(tx, ideia, ideiaOriginal);
       await tx.insert(historicoDeIdeias).values({
         ideiaId: ideia.id,
         tipo: 'status',
@@ -333,8 +361,45 @@ export class IdeiasService {
 
   async excluir(colaborador: Colaborador, numero: number) {
     const ideia = await this.buscar(numero);
-    validarExclusao(ideia, await this.ator(colaborador, ideia.categoriaId), SEM_INTERACAO);
+    validarExclusao(
+      ideia,
+      await this.ator(colaborador, ideia.categoriaId),
+      await this.interacaoDeOutros(ideia),
+    );
     await this.db.delete(ideias).where(eq(ideias.id, ideia.id));
+  }
+
+  // ---------- Curtidas ----------
+
+  async curtir(colaborador: Colaborador, numero: number) {
+    const ideia = await this.buscarVisivel(colaborador, numero);
+    validarCurtida(ideia, await this.ator(colaborador, ideia.categoriaId));
+    await this.db
+      .insert(curtidas)
+      .values({ ideiaId: ideia.id, colaboradorId: colaborador.id })
+      .onConflictDoNothing();
+    return this.estadoDasCurtidas(ideia, colaborador);
+  }
+
+  async descurtir(colaborador: Colaborador, numero: number) {
+    const ideia = await this.buscarVisivel(colaborador, numero);
+    validarCurtida(ideia, await this.ator(colaborador, ideia.categoriaId));
+    await this.db
+      .delete(curtidas)
+      .where(and(eq(curtidas.ideiaId, ideia.id), eq(curtidas.colaboradorId, colaborador.id)));
+    return this.estadoDasCurtidas(ideia, colaborador);
+  }
+
+  /** Quem curtiu, da Curtida mais recente para a mais antiga (a Curtida é sempre identificada). */
+  async listarCurtidas(colaborador: Colaborador, numero: number) {
+    const ideia = await this.buscarVisivel(colaborador, numero);
+    const linhas = await this.db
+      .select({ colaborador: { id: colaboradores.id, nome: colaboradores.nome }, em: curtidas.em })
+      .from(curtidas)
+      .innerJoin(colaboradores, eq(curtidas.colaboradorId, colaboradores.id))
+      .where(eq(curtidas.ideiaId, ideia.id))
+      .orderBy(desc(curtidas.em));
+    return linhas.map(({ colaborador: quem, em }) => ({ colaborador: quem, em: em.toISOString() }));
   }
 
   // ---------- apoio ----------
@@ -354,6 +419,45 @@ export class IdeiasService {
     const [ideia] = await this.db.select().from(ideias).where(eq(ideias.numero, numero));
     if (!ideia) throw new NotFoundException('Ideia não encontrada');
     return ideia;
+  }
+
+  private async buscarVisivel(colaborador: Colaborador, numero: number) {
+    const ideia = await this.buscar(numero);
+    if (!podeVer(ideia, await this.ator(colaborador, ideia.categoriaId))) {
+      throw new NotFoundException('Ideia não encontrada');
+    }
+    return ideia;
+  }
+
+  private async estadoDasCurtidas(ideia: Ideia, colaborador: Colaborador) {
+    const [estado] = await this.db
+      .select({ total: totalDeCurtidas, curtiu: curtiu(colaborador) })
+      .from(ideias)
+      .where(eq(ideias.id, ideia.id));
+    return estado ?? { total: 0, curtiu: false };
+  }
+
+  /** Curtidas de outras pessoas impedem o Autor de excluir a Ideia (o Autor não curte a própria). */
+  private async interacaoDeOutros(ideia: Ideia) {
+    const [curtida] = await this.db
+      .select({ ideiaId: curtidas.ideiaId })
+      .from(curtidas)
+      .where(eq(curtidas.ideiaId, ideia.id))
+      .limit(1);
+    return { temInteracaoDeOutros: Boolean(curtida) };
+  }
+
+  /**
+   * Curtidas da Duplicada passam para a Ideia Original, sem contar em dobro quem já curtiu as duas
+   * e sem dar ao Autor da Original uma Curtida na própria Ideia.
+   */
+  private async migrarCurtidas(tx: Transacao, duplicada: Ideia, original: Ideia) {
+    await tx.execute(sql`
+      insert into ${curtidas} (ideia_id, colaborador_id, em)
+      select ${original.id}, colaborador_id, em from ${curtidas}
+      where ideia_id = ${duplicada.id} and colaborador_id <> ${original.autorId}
+      on conflict do nothing`);
+    await tx.delete(curtidas).where(eq(curtidas.ideiaId, duplicada.id));
   }
 
   private async ator(colaborador: Colaborador, categoriaId: string): Promise<Ator> {

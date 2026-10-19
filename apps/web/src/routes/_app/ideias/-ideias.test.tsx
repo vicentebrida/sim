@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { ana, simularAuth } from '@/test/api';
@@ -61,6 +61,7 @@ describe('página da Ideia', () => {
           podeEditar: false,
           podeExcluir: false,
           podePublicar: false,
+          podeCurtir: false,
           podeAvaliar: true,
           podeRecategorizar: false,
           transicoes: ['em_analise', 'duplicada', 'arquivada'],
@@ -113,6 +114,70 @@ describe('página da Ideia', () => {
   });
 });
 
+describe('Curtidas', () => {
+  const bruno = { ...ana, id: '7a2d3b5f-1e8c-4a6f-8b62-4d3c2e1f0a9b', nome: 'Bruno Lima' };
+  const carla = { id: '8b3e4c6a-2f9d-4b7a-9c73-5e4d3f2a1b0c', nome: 'Carla Dias' };
+
+  it('colega curte, vê o contador subir e desfaz', async () => {
+    simularAuth({ sessao: bruno });
+    const { recebidas } = simularIdeias({
+      ideia: ideiaDeExemplo({
+        curtidas: { total: 1, curtiu: false },
+        permissoes: { ...ideiaDeExemplo().permissoes, podeCurtir: true },
+      }),
+      curtidas: { eu: bruno, outras: [{ colaborador: carla, em: '2026-10-02T10:00:00.000Z' }] },
+    });
+    renderApp('/ideias/7');
+    const usuario = userEvent.setup();
+
+    const curtir = await screen.findByRole('button', { name: 'Curtir' });
+    expect(curtir).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByText('1 curtida')).toBeInTheDocument();
+
+    await usuario.click(curtir);
+    expect(await screen.findByRole('button', { name: 'Curtida' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(screen.getByText('2 curtidas')).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole('button', { name: 'Ver quem curtiu' }));
+    const quem = await screen.findByRole('list', { name: 'Ver quem curtiu' });
+    expect(
+      within(quem)
+        .getAllByRole('listitem')
+        .map((item) => item.textContent),
+    ).toEqual(['Bruno Lima', 'Carla Dias']);
+
+    await usuario.click(screen.getByRole('button', { name: 'Curtida' }));
+    expect(await screen.findByRole('button', { name: 'Curtir' })).toBeInTheDocument();
+    expect(recebidas.map((r) => r.metodo)).toEqual(['PUT', 'DELETE']);
+  });
+
+  it('a Autora vê as Curtidas, mas não pode curtir a própria Ideia', async () => {
+    simularAuth({ sessao: ana });
+    simularIdeias({ ideia: ideiaDeExemplo({ curtidas: { total: 3, curtiu: false } }) });
+    renderApp('/ideias/7');
+
+    expect(await screen.findByText('Você não pode curtir a própria ideia.')).toBeInTheDocument();
+    expect(screen.getByText('3 curtidas')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Curtir' })).not.toBeInTheDocument();
+  });
+
+  it('em Ideia Concluída as Curtidas aparecem congeladas', async () => {
+    simularAuth({ sessao: bruno });
+    simularIdeias({
+      ideia: ideiaDeExemplo({ status: 'concluida', curtidas: { total: 5, curtiu: true } }),
+    });
+    renderApp('/ideias/7');
+
+    expect(
+      await screen.findByText('As curtidas estão congeladas neste status.'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('5 curtidas')).toBeInTheDocument();
+  });
+});
+
 describe('lista de Ideias', () => {
   it('mostra as Ideias e guarda o filtro de Status na URL', async () => {
     simularAuth({ sessao: ana });
@@ -130,6 +195,26 @@ describe('lista de Ideias', () => {
     );
     await waitFor(() =>
       expect(recebidas.some((r) => r.url.searchParams.get('status') === 'concluida')).toBe(true),
+    );
+  });
+
+  it('ordena por Em alta por padrão e guarda outra ordenação na URL', async () => {
+    simularAuth({ sessao: ana });
+    const { recebidas } = simularIdeias({
+      ideia: ideiaDeExemplo({ curtidas: { total: 4, curtiu: false } }),
+    });
+    const { router } = renderApp('/');
+    const usuario = userEvent.setup();
+
+    expect(await screen.findByText('4 curtidas')).toBeInTheDocument();
+    expect(screen.getByLabelText('Ordenar por')).toHaveValue('em_alta');
+
+    await usuario.selectOptions(screen.getByLabelText('Ordenar por'), 'mais_curtidas');
+    await waitFor(() =>
+      expect(router.state.location.search).toMatchObject({ ordem: 'mais_curtidas' }),
+    );
+    await waitFor(() =>
+      expect(recebidas.some((r) => r.url.searchParams.get('ordem') === 'mais_curtidas')).toBe(true),
     );
   });
 });

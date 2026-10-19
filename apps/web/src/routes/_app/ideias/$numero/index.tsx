@@ -16,6 +16,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { Pencil, Send, Trash2 } from 'lucide-react';
 import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Curtidas } from '@/components/curtidas';
 import { NativeSelect } from '@/components/native-select';
 import { StatusBadge } from '@/components/status-badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -100,6 +101,8 @@ function IdeiaPage() {
           </section>
         ))}
       </div>
+
+      {ideia.status !== 'rascunho' && <Curtidas ideia={ideia} />}
 
       {(ideia.permissoes.transicoes.length > 0 || ideia.permissoes.podeRecategorizar) && (
         <PainelDeAvaliacao ideia={ideia} />

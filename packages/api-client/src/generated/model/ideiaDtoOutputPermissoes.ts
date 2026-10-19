@@ -11,6 +11,7 @@ export type IdeiaDtoOutputPermissoes = {
   podeEditar: boolean;
   podeExcluir: boolean;
   podePublicar: boolean;
+  podeCurtir: boolean;
   podeAvaliar: boolean;
   podeRecategorizar: boolean;
   transicoes: IdeiaDtoOutputPermissoesTransicoesItem[];
