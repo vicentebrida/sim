@@ -17,6 +17,7 @@
   "nav": {
     "ideas": "Ideas",
     "statuses": "Statuses",
+    "audit": "Audit",
     "branding": "Branding",
     "dashboard": "Dashboard",
     "categories": "Categories",
@@ -60,7 +61,15 @@
     "temporaryPassword": "Temporary password (shown only now; they will change it on first sign-in):",
     "copy": "Copy",
     "copied": "Copied",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "anonymize": "Anonymize",
+    "anonymizeTitle": "Anonymize {{name}}?",
+    "anonymizeWarning": "This permanently erases the name, e-mail, photo and SSO data. Ideas and comments stay, signed \"Former collaborator\". It cannot be undone.",
+    "anonymizeConfirm": "Anonymize for good",
+    "cancel": "Cancel",
     "columns": {
+      "actions": "Actions",
       "name": "Name",
       "email": "Email",
       "role": "Role",
@@ -71,6 +80,7 @@
       "collaborator": "Member"
     },
     "state": {
+      "anonymized": "Anonymized",
       "active": "Active",
       "inactive": "Inactive"
     }
@@ -86,6 +96,10 @@
       "TOO_MANY_ATTACHMENTS": "The attachment limit was reached.",
       "IMAGE_NOT_ALLOWED": "Send a PNG, JPG, GIF, WebP, SVG or ICO image.",
       "STATUS_NOT_OPTIONAL": "This Status cannot be turned off.",
+      "CANNOT_DEACTIVATE_SELF": "You cannot deactivate yourself.",
+      "LAST_ADMINISTRATOR": "At least one active administrator must remain.",
+      "NOT_INACTIVE": "Deactivate the person before anonymizing.",
+      "ALREADY_ANONYMIZED": "This person was already anonymized.",
       "FORBIDDEN": "You don't have permission for this action.",
       "INVALID_TRANSITION": "This status change isn't allowed from the current status.",
       "EDIT_LOCKED": "The idea is under review; add information in the comments.",
@@ -230,6 +244,25 @@
     "descriptionHelp": "Shown as a hint when hovering the Status.",
     "save": "Save",
     "cancel": "Cancel"
+  },
+  "audit": {
+    "title": "Audit log",
+    "subtitle": "Record of sensitive actions by administrators and the system. It cannot be changed.",
+    "when": "When",
+    "who": "Who",
+    "what": "What",
+    "target": "Target",
+    "system": "System",
+    "empty": "Nothing recorded yet.",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{page}} of {{pages}}",
+    "actions": {
+      "collaborator.deactivated": "Deactivated a person",
+      "collaborator.reactivated": "Reactivated a person",
+      "collaborator.auto_deactivated": "Deactivated a person for inactivity",
+      "collaborator.anonymized": "Anonymized a person"
+    }
   },
   "status": {
     "draft": "Draft",

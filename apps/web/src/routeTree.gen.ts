@@ -14,6 +14,7 @@ import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppAdminRouteRouteImport } from './routes/_app/admin/route'
+import { Route as AppAdminAuditRouteImport } from './routes/_app/admin/audit'
 import { Route as AppAdminBrandingRouteImport } from './routes/_app/admin/branding'
 import { Route as AppAdminCategoriesRouteImport } from './routes/_app/admin/categories'
 import { Route as AppAdminCollaboratorsRouteImport } from './routes/_app/admin/collaborators'
@@ -47,6 +48,11 @@ const AppAdminRouteRoute = AppAdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => AppRoute,
+} as any)
+const AppAdminAuditRoute = AppAdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AppAdminRouteRoute,
 } as any)
 const AppAdminBrandingRoute = AppAdminBrandingRouteImport.update({
   id: '/branding',
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
   '/admin': typeof AppAdminRouteRouteWithChildren
+  '/admin/audit': typeof AppAdminAuditRoute
   '/admin/branding': typeof AppAdminBrandingRoute
   '/admin/categories': typeof AppAdminCategoriesRoute
   '/admin/collaborators': typeof AppAdminCollaboratorsRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/admin': typeof AppAdminRouteRouteWithChildren
   '/': typeof AppIndexRoute
+  '/admin/audit': typeof AppAdminAuditRoute
   '/admin/branding': typeof AppAdminBrandingRoute
   '/admin/categories': typeof AppAdminCategoriesRoute
   '/admin/collaborators': typeof AppAdminCollaboratorsRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_app/admin': typeof AppAdminRouteRouteWithChildren
   '/_app/': typeof AppIndexRoute
+  '/_app/admin/audit': typeof AppAdminAuditRoute
   '/_app/admin/branding': typeof AppAdminBrandingRoute
   '/_app/admin/categories': typeof AppAdminCategoriesRoute
   '/_app/admin/collaborators': typeof AppAdminCollaboratorsRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/change-password'
     | '/login'
     | '/admin'
+    | '/admin/audit'
     | '/admin/branding'
     | '/admin/categories'
     | '/admin/collaborators'
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/admin'
     | '/'
+    | '/admin/audit'
     | '/admin/branding'
     | '/admin/categories'
     | '/admin/collaborators'
@@ -179,6 +190,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_app/admin'
     | '/_app/'
+    | '/_app/admin/audit'
     | '/_app/admin/branding'
     | '/_app/admin/categories'
     | '/_app/admin/collaborators'
@@ -232,6 +244,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin'
       preLoaderRoute: typeof AppAdminRouteRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/_app/admin/audit': {
+      id: '/_app/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AppAdminAuditRouteImport
+      parentRoute: typeof AppAdminRouteRoute
     }
     '/_app/admin/branding': {
       id: '/_app/admin/branding'
@@ -300,6 +319,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppAdminRouteRouteChildren {
+  AppAdminAuditRoute: typeof AppAdminAuditRoute
   AppAdminBrandingRoute: typeof AppAdminBrandingRoute
   AppAdminCategoriesRoute: typeof AppAdminCategoriesRoute
   AppAdminCollaboratorsRoute: typeof AppAdminCollaboratorsRoute
@@ -309,6 +329,7 @@ interface AppAdminRouteRouteChildren {
 }
 
 const AppAdminRouteRouteChildren: AppAdminRouteRouteChildren = {
+  AppAdminAuditRoute: AppAdminAuditRoute,
   AppAdminBrandingRoute: AppAdminBrandingRoute,
   AppAdminCategoriesRoute: AppAdminCategoriesRoute,
   AppAdminCollaboratorsRoute: AppAdminCollaboratorsRoute,

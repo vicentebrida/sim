@@ -88,10 +88,18 @@ export async function signInAsAdministrator(sim: TestApp) {
 }
 
 /** Creates a local account through the Administrator and returns a browser with a final password. */
-export async function createCollaborator(sim: TestApp, admin: Browser, name: string) {
+export async function createCollaborator(
+  sim: TestApp,
+  admin: Browser,
+  name: string,
+  options: { administrator?: boolean } = {},
+) {
   const user = name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, '.');
   const email = `${user}@company.test`;
-  const account = await admin.post('/api/collaborators').send({ name, email }).expect(201);
+  const account = await admin
+    .post('/api/collaborators')
+    .send({ name, email, ...options })
+    .expect(201);
   const browser = sim.browser();
   await browser
     .post('/api/auth/login')

@@ -9,12 +9,14 @@ import { type Job, Queue, Worker } from 'bullmq';
 import IORedis from 'ioredis';
 import { ENV } from '../config/config.module';
 import type { Env } from '../config/env';
+import { CollaboratorsService } from '../collaborators/collaborators.service';
 import { StalledIdeasService } from '../ideas/stalled-ideas.service';
 import { EmailDispatcher } from '../notifications/email/email-dispatcher.service';
 
 const QUEUE = 'sim-jobs';
 const EMAILS = 'dispatch-emails';
 const STALLED = 'check-stalled-ideas';
+const INACTIVITY = 'deactivate-inactive-collaborators';
 
 /**
  * Background jobs through BullMQ (ADR-0006): sending e-mail every 15 s and looking for Stalled
@@ -32,6 +34,7 @@ export class JobsWorker implements OnApplicationBootstrap, OnApplicationShutdown
     @Inject(ENV) private readonly env: Env,
     private readonly dispatcher: EmailDispatcher,
     private readonly stalled: StalledIdeasService,
+    private readonly collaborators: CollaboratorsService,
   ) {}
 
   async onApplicationBootstrap() {
@@ -48,6 +51,13 @@ export class JobsWorker implements OnApplicationBootstrap, OnApplicationShutdown
     this.queue.on('error', (error) => this.logger.warn(`Queue: ${error.message}`));
     if (SMTP_URL) await this.queue.upsertJobScheduler(EMAILS, { every: 15_000 }, { name: EMAILS });
     await this.queue.upsertJobScheduler(STALLED, { every: 3_600_000 }, { name: STALLED });
+    if (this.env.SIM_INACTIVITY_DAYS) {
+      await this.queue.upsertJobScheduler(
+        INACTIVITY,
+        { every: 6 * 3_600_000 },
+        { name: INACTIVITY },
+      );
+    }
     this.worker = new Worker(QUEUE, (job) => this.run(job), { connection: connect() });
     this.worker.on('error', (error) => this.logger.warn(`Worker: ${error.message}`));
     this.logger.log('Background jobs scheduled');
@@ -56,6 +66,9 @@ export class JobsWorker implements OnApplicationBootstrap, OnApplicationShutdown
   private async run(job: Job) {
     if (job.name === EMAILS) return this.dispatcher.dispatchPending();
     if (job.name === STALLED) return this.stalled.check();
+    if (job.name === INACTIVITY && this.env.SIM_INACTIVITY_DAYS) {
+      return this.collaborators.deactivateInactive(this.env.SIM_INACTIVITY_DAYS);
+    }
     this.logger.warn(`Unknown job ${job.name}`);
   }
 

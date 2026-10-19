@@ -69,7 +69,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CollaboratorDto_Output"
+                    "$ref": "#/components/schemas/ManagedCollaboratorDto_Output"
                   }
                 }
               }
@@ -100,6 +100,76 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LocalAccountCreatedDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collaborators"
+        ]
+      }
+    },
+    "/api/collaborators/{id}": {
+      "patch": {
+        "operationId": "collaborators_setActive",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CollaboratorActivationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedCollaboratorDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collaborators"
+        ]
+      }
+    },
+    "/api/collaborators/{id}/anonymize": {
+      "post": {
+        "operationId": "collaborators_anonymize",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagedCollaboratorDto_Output"
                 }
               }
             }
@@ -1824,6 +1894,50 @@
           "statuses"
         ]
       }
+    },
+    "/api/audit": {
+      "get": {
+        "operationId": "audit_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 30,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditPageDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "audit"
+        ]
+      }
     }
   },
   "info": {
@@ -1878,7 +1992,7 @@
         ],
         "additionalProperties": false
       },
-      "CollaboratorDto_Output": {
+      "ManagedCollaboratorDto_Output": {
         "type": "object",
         "properties": {
           "id": {
@@ -1919,6 +2033,9 @@
           },
           "active": {
             "type": "boolean"
+          },
+          "anonymized": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -1928,7 +2045,8 @@
           "department",
           "pictureUrl",
           "administrator",
-          "active"
+          "active",
+          "anonymized"
         ],
         "additionalProperties": false
       },
@@ -1991,6 +2109,9 @@
               },
               "active": {
                 "type": "boolean"
+              },
+              "anonymized": {
+                "type": "boolean"
               }
             },
             "required": [
@@ -2000,7 +2121,8 @@
               "department",
               "pictureUrl",
               "administrator",
-              "active"
+              "active",
+              "anonymized"
             ],
             "additionalProperties": false
           },
@@ -2013,6 +2135,17 @@
           "temporaryPassword"
         ],
         "additionalProperties": false
+      },
+      "CollaboratorActivationDto": {
+        "type": "object",
+        "properties": {
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "active"
+        ]
       },
       "AccessConfigurationDto_Output": {
         "type": "object",
@@ -4297,6 +4430,102 @@
             "type": "boolean"
           }
         }
+      },
+      "AuditPageDto_Output": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "action": {
+                  "type": "string"
+                },
+                "targetType": {
+                  "type": "string"
+                },
+                "targetId": {
+                  "type": "string"
+                },
+                "details": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {}
+                },
+                "actor": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                }
+              },
+              "required": [
+                "id",
+                "action",
+                "targetType",
+                "targetId",
+                "details",
+                "actor",
+                "createdAt"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "total": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "page": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
       }
     }
   }

@@ -4,6 +4,7 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { AttachmentsModule, AttachmentStoreModule } from './attachments/attachments.module';
+import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { BrandingModule } from './branding/branding.module';
 import { StatusesModule } from './statuses/statuses.module';
@@ -45,6 +46,7 @@ function webModule(): DynamicModule[] {
     AttachmentsModule,
     BrandingModule,
     StatusesModule,
+    AuditModule,
     ...webModule(),
   ],
   providers: [

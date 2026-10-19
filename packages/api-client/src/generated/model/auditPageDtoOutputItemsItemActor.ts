@@ -6,14 +6,8 @@
  * OpenAPI spec version: 0.0.0
  */
 
-export interface CollaboratorDtoOutput {
+export type AuditPageDtoOutputItemsItemActor = {
   /** @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$ */
   id: string;
   name: string;
-  /** @pattern ^(?:[A-Za-z0-9_'+\-]+\.)*[A-Za-z0-9_'+\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$ */
-  email: string;
-  department: string | null;
-  pictureUrl: string | null;
-  administrator: boolean;
-  active: boolean;
-}
+} | null;

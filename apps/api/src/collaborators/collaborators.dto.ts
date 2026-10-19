@@ -11,7 +11,15 @@ export const CollaboratorSchema = z.object({
   active: z.boolean(),
 });
 
+// What the Administrator sees in the list.
+const ManagedCollaboratorSchema = CollaboratorSchema.extend({
+  // Personal data erased for good.
+  anonymized: z.boolean(),
+});
+
 export class CollaboratorDto extends createZodDto(CollaboratorSchema) {}
+
+export class ManagedCollaboratorDto extends createZodDto(ManagedCollaboratorSchema) {}
 
 export class MentionableSearchDto extends createZodDto(
   z.object({ search: z.string().trim().max(120).default('') }),
@@ -29,8 +37,10 @@ export class NewLocalAccountDto extends createZodDto(
 
 export class LocalAccountCreatedDto extends createZodDto(
   z.object({
-    collaborator: CollaboratorSchema,
+    collaborator: ManagedCollaboratorSchema,
     // Shown once to the Administrator; the Collaborator changes it on first login.
     temporaryPassword: z.string(),
   }),
 ) {}
+
+export class CollaboratorActivationDto extends createZodDto(z.object({ active: z.boolean() })) {}

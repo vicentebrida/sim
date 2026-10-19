@@ -5,6 +5,13 @@
 const MARKUP =
   /@\[([^\]\n]{1,120})\]\(([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\)/gi;
 
+/** Changes the name shown in the Mentions of one person (used when erasing their identity). */
+export function renameMention(text: string, id: string, name: string) {
+  return text.replace(MARKUP, (markup, _old: string, found: string) =>
+    found.toLowerCase() === id.toLowerCase() ? `@[${name}](${found.toLowerCase()})` : markup,
+  );
+}
+
 export function mentionedIds(text: string): string[] {
   return [...new Set([...text.matchAll(MARKUP)].map((markup) => markup[2]!.toLowerCase()))];
 }

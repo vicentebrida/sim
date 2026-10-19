@@ -25,8 +25,9 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  CollaboratorDtoOutput,
+  CollaboratorActivationDto,
   LocalAccountCreatedDtoOutput,
+  ManagedCollaboratorDtoOutput,
   MentionableDtoOutput,
   MentionableSearchParams,
   NewLocalAccountDto
@@ -169,7 +170,7 @@ export function useMentionableSearch<TData = Awaited<ReturnType<typeof mentionab
 
 
 export type collaboratorsListResponse200 = {
-  data: CollaboratorDtoOutput[]
+  data: ManagedCollaboratorDtoOutput[]
   status: 200
 }
 
@@ -366,4 +367,177 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getCollaboratorsCreateLocalAccountMutationOptions(options), queryClient);
+    }
+    export type collaboratorsSetActiveResponse200 = {
+  data: ManagedCollaboratorDtoOutput
+  status: 200
+}
+
+export type collaboratorsSetActiveResponseSuccess = (collaboratorsSetActiveResponse200) & {
+  headers: Headers;
+};
+;
+
+export type collaboratorsSetActiveResponse = (collaboratorsSetActiveResponseSuccess)
+
+export const getCollaboratorsSetActiveUrl = (id: string,) => {
+
+
+
+
+  return `/api/collaborators/${id}`
+}
+
+export const collaboratorsSetActive = async (id: string,
+    collaboratorActivationDto: CollaboratorActivationDto, options?: Parameters<typeof simFetch>[1]): Promise<collaboratorsSetActiveResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return simFetch<collaboratorsSetActiveResponse>(getCollaboratorsSetActiveUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(collaboratorActivationDto)
+  }
+);}
+
+
+
+
+
+export const getCollaboratorsSetActiveMutationKey = () => ['collaboratorsSetActive'] as const;
+
+export const getCollaboratorsSetActiveMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof collaboratorsSetActive>>, TError,CollaboratorsSetActiveMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof collaboratorsSetActive>>, TError,CollaboratorsSetActiveMutationVariables, TContext> => {
+
+const mutationKey = getCollaboratorsSetActiveMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof collaboratorsSetActive>>, CollaboratorsSetActiveMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  collaboratorsSetActive(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CollaboratorsSetActiveMutationResult = NonNullable<Awaited<ReturnType<typeof collaboratorsSetActive>>>
+    export type CollaboratorsSetActiveMutationBody = BodyType<CollaboratorActivationDto>
+    export type CollaboratorsSetActiveMutationError = ErrorType<unknown>
+    export type CollaboratorsSetActiveMutationVariables = {id: string;data: BodyType<CollaboratorActivationDto>}
+
+    export const useCollaboratorsSetActive = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof collaboratorsSetActive>>, TError,CollaboratorsSetActiveMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof collaboratorsSetActive>>,
+        TError,
+        CollaboratorsSetActiveMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCollaboratorsSetActiveMutationOptions(options), queryClient);
+    }
+    export type collaboratorsAnonymizeResponse200 = {
+  data: ManagedCollaboratorDtoOutput
+  status: 200
+}
+
+export type collaboratorsAnonymizeResponseSuccess = (collaboratorsAnonymizeResponse200) & {
+  headers: Headers;
+};
+;
+
+export type collaboratorsAnonymizeResponse = (collaboratorsAnonymizeResponseSuccess)
+
+export const getCollaboratorsAnonymizeUrl = (id: string,) => {
+
+
+
+
+  return `/api/collaborators/${id}/anonymize`
+}
+
+export const collaboratorsAnonymize = async (id: string, options?: Parameters<typeof simFetch>[1]): Promise<collaboratorsAnonymizeResponse> => {
+
+  return simFetch<collaboratorsAnonymizeResponse>(getCollaboratorsAnonymizeUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getCollaboratorsAnonymizeMutationKey = () => ['collaboratorsAnonymize'] as const;
+
+export const getCollaboratorsAnonymizeMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof collaboratorsAnonymize>>, TError,CollaboratorsAnonymizeMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof collaboratorsAnonymize>>, TError,CollaboratorsAnonymizeMutationVariables, TContext> => {
+
+const mutationKey = getCollaboratorsAnonymizeMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof collaboratorsAnonymize>>, CollaboratorsAnonymizeMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  collaboratorsAnonymize(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CollaboratorsAnonymizeMutationResult = NonNullable<Awaited<ReturnType<typeof collaboratorsAnonymize>>>
+
+    export type CollaboratorsAnonymizeMutationError = ErrorType<unknown>
+    export type CollaboratorsAnonymizeMutationVariables = {id: string}
+
+    export const useCollaboratorsAnonymize = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof collaboratorsAnonymize>>, TError,CollaboratorsAnonymizeMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof collaboratorsAnonymize>>,
+        TError,
+        CollaboratorsAnonymizeMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCollaboratorsAnonymizeMutationOptions(options), queryClient);
     }
