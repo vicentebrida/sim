@@ -1,0 +1,8 @@
+pnpm-lock.yaml
+dist/
+coverage/
+.turbo/
+packages/api-client/src/generated/
+packages/api-client/openapi.json
+apps/web/src/routeTree.gen.ts
+apps/api/drizzle/meta/

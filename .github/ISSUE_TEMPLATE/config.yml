@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Vulnerabilidade de segurança
+    url: https://github.com/vicentebrida/sim/security/advisories/new
+    about: Relate vulnerabilidades em privado, nunca em uma issue pública.

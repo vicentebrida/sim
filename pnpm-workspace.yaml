@@ -1,0 +1,11 @@
+packages:
+  - apps/*
+  - packages/*
+
+# typescript-eslint e @nestjs/swagger ainda não suportam TypeScript 7.
+overrides:
+  typescript: ~6.0.3
+# nestjs-zod repassa `type: ["string", "null"]` (campos anuláveis no Zod 4.6) ao Swagger, que o lê
+# como array; o patch reescreve como `anyOf`. Remover quando corrigido upstream.
+patchedDependencies:
+  nestjs-zod@5.5.0: patches/nestjs-zod@5.5.0.patch

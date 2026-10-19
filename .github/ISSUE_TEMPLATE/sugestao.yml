@@ -1,0 +1,19 @@
+name: Sugestão
+description: Proponha um recurso ou melhoria para o SIM
+labels: [enhancement]
+body:
+  - type: textarea
+    attributes:
+      label: Problema
+      description: Que dificuldade você ou sua organização enfrenta hoje?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposta
+      description: Como o SIM poderia resolver isso? Use os termos do [glossário](https://github.com/vicentebrida/sim/blob/main/CONTEXT.md) quando possível.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Alternativas consideradas
