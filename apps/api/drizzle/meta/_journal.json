@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1792379240391,
+      "tag": "0000_extensoes",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792379945587,
+      "tag": "0001_colaboradores_e_sessoes",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792381508841,
+      "tag": "0002_categorias_e_avaliadores",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792381963539,
+      "tag": "0003_ideias",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792381964060,
+      "tag": "0004_campos_padrao",
+      "breakpoints": true
+    }
+  ]
+}
