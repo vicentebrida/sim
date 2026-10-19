@@ -135,12 +135,13 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 
 ### 3.11 Ciclo de vida do Colaborador e LGPD
 
-- **Colaborador Inativo:** marcado manualmente ou automaticamente após X dias sem login (opcional).
+- **Colaborador Inativo:** marcado manualmente (tela Pessoas) ou automaticamente após `SIM_INACTIVITY_DAYS` dias sem login (opcional; Administradores e a conta de emergência ficam de fora). Um Administrador não desativa a si mesmo. Reativar devolve o acesso, mas não as designações de Avaliador.
   - Não entra no sistema e não recebe Notificações.
   - O conteúdo dele permanece com o nome visível.
   - Perde as designações de Avaliador.
 - **Anonimização:** irreversível e auditada.
-  - O nome vira "Ex-colaborador", e e-mail, foto e dados do SSO são apagados.
+  - Só vale para quem já está inativo. O nome vira "Ex-colaborador" ("Former collaborator" em inglês, conforme `SIM_LOCALE`), e e-mail, senha, foto e dados do SSO são apagados; o nome também sai das Menções nos Comentários. Textos digitados à mão com o nome não são reescritos.
+  - **Auditoria:** a tela **Auditoria** (Administradores) lista desativações, reativações, inativações automáticas e anonimizações. O registro é só de inclusão: um gatilho do banco recusa alterar ou apagar linhas.
   - O conteúdo permanece.
 
 ### 3.12 Personalização (Administrador)

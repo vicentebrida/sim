@@ -88,6 +88,8 @@ const baseSchema = z
       .optional(),
     SIM_EMERGENCY_PASSWORD: z.string().min(MIN_PASSWORD_LENGTH).optional(),
     SIM_WEB_DIST: z.string().optional(),
+    // Collaborators (other than Administrators) without login for this many days are deactivated.
+    SIM_INACTIVITY_DAYS: z.coerce.number().int().positive().optional(),
     // Attachments are stored on disk (mount a volume here).
     SIM_DATA_DIR: z.string().default('./data'),
     SIM_ATTACHMENT_MAX_MB: z.coerce.number().positive().default(10),

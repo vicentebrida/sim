@@ -17,6 +17,7 @@
   "nav": {
     "ideas": "Ideias",
     "statuses": "Status",
+    "audit": "Auditoria",
     "branding": "Identidade",
     "dashboard": "Painel",
     "categories": "Categorias",
@@ -60,7 +61,15 @@
     "temporaryPassword": "Senha temporária (exibida só agora; a pessoa vai trocá-la no primeiro acesso):",
     "copy": "Copiar",
     "copied": "Copiado",
+    "deactivate": "Desativar",
+    "reactivate": "Reativar",
+    "anonymize": "Anonimizar",
+    "anonymizeTitle": "Anonimizar {{name}}?",
+    "anonymizeWarning": "Isso apaga para sempre o nome, o e-mail, a foto e os dados do SSO. As ideias e os comentários ficam, assinados como \"Ex-colaborador\". Não dá para desfazer.",
+    "anonymizeConfirm": "Anonimizar para sempre",
+    "cancel": "Cancelar",
     "columns": {
+      "actions": "Ações",
       "name": "Nome",
       "email": "E-mail",
       "role": "Papel",
@@ -71,6 +80,7 @@
       "collaborator": "Colaborador"
     },
     "state": {
+      "anonymized": "Anonimizado",
       "active": "Ativo",
       "inactive": "Inativo"
     }
@@ -86,6 +96,10 @@
       "TOO_MANY_ATTACHMENTS": "O limite de anexos foi atingido.",
       "IMAGE_NOT_ALLOWED": "Envie uma imagem PNG, JPG, GIF, WebP, SVG ou ICO.",
       "STATUS_NOT_OPTIONAL": "Este Status não pode ser desligado.",
+      "CANNOT_DEACTIVATE_SELF": "Você não pode desativar a si mesmo.",
+      "LAST_ADMINISTRATOR": "Precisa sobrar pelo menos um administrador ativo.",
+      "NOT_INACTIVE": "Desative a pessoa antes de anonimizar.",
+      "ALREADY_ANONYMIZED": "Esta pessoa já foi anonimizada.",
       "FORBIDDEN": "Você não tem permissão para esta ação.",
       "INVALID_TRANSITION": "Esta mudança de status não é permitida a partir do status atual.",
       "EDIT_LOCKED": "A ideia já está em avaliação; acrescente informações nos comentários.",
@@ -230,6 +244,25 @@
     "descriptionHelp": "Aparece como dica ao passar o mouse sobre o Status.",
     "save": "Salvar",
     "cancel": "Cancelar"
+  },
+  "audit": {
+    "title": "Auditoria",
+    "subtitle": "Registro das ações sensíveis de Administradores e do sistema. Não pode ser alterado.",
+    "when": "Quando",
+    "who": "Quem",
+    "what": "O quê",
+    "target": "Alvo",
+    "system": "Sistema",
+    "empty": "Nada registrado ainda.",
+    "previous": "Anterior",
+    "next": "Próxima",
+    "page": "Página {{page}} de {{pages}}",
+    "actions": {
+      "collaborator.deactivated": "Desativou um colaborador",
+      "collaborator.reactivated": "Reativou um colaborador",
+      "collaborator.auto_deactivated": "Desativou um colaborador por inatividade",
+      "collaborator.anonymized": "Anonimizou um colaborador"
+    }
   },
   "status": {
     "draft": "Rascunho",

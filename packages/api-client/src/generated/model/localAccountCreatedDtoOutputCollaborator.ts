@@ -18,4 +18,5 @@ export type LocalAccountCreatedDtoOutputCollaborator = {
   pictureUrl: string | null;
   administrator: boolean;
   active: boolean;
+  anonymized: boolean;
 };

@@ -2,8 +2,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   getCollaboratorsListQueryKey,
   type LocalAccountCreatedDtoOutput,
+  useCollaboratorsAnonymize,
   useCollaboratorsCreateLocalAccount,
   useCollaboratorsList,
+  useCollaboratorsSetActive,
 } from '@sim/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
@@ -58,6 +60,9 @@ function CollaboratorsPage() {
                 <TableHead>{t('collaborators.columns.email')}</TableHead>
                 <TableHead>{t('collaborators.columns.role')}</TableHead>
                 <TableHead>{t('collaborators.columns.state')}</TableHead>
+                <TableHead>
+                  <span className="sr-only">{t('collaborators.columns.actions')}</span>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -72,10 +77,15 @@ function CollaboratorsPage() {
                   </TableCell>
                   <TableCell>
                     <Badge variant={collaborator.active ? 'secondary' : 'outline'}>
-                      {collaborator.active
-                        ? t('collaborators.state.active')
-                        : t('collaborators.state.inactive')}
+                      {collaborator.anonymized
+                        ? t('collaborators.state.anonymized')
+                        : collaborator.active
+                          ? t('collaborators.state.active')
+                          : t('collaborators.state.inactive')}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <LifeCycleActions collaborator={collaborator} />
                   </TableCell>
                 </TableRow>
               ))}
@@ -183,5 +193,75 @@ function TemporaryPassword({ account }: { account: LocalAccountCreatedDtoOutput 
         </div>
       </AlertDescription>
     </Alert>
+  );
+}
+
+function LifeCycleActions({
+  collaborator,
+}: {
+  collaborator: { id: string; name: string; active: boolean; anonymized: boolean };
+}) {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const [confirming, setConfirming] = useState(false);
+  const reload = () => queryClient.invalidateQueries({ queryKey: getCollaboratorsListQueryKey() });
+  const setActive = useCollaboratorsSetActive({ mutation: { onSuccess: reload } });
+  const anonymize = useCollaboratorsAnonymize({
+    mutation: {
+      onSuccess: async () => {
+        setConfirming(false);
+        await reload();
+      },
+    },
+  });
+  const failure = apiErrorMessage(setActive.error ?? anonymize.error, t);
+  if (collaborator.anonymized) return null;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap justify-end gap-1">
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={setActive.isPending}
+          onClick={() =>
+            setActive.mutate({ id: collaborator.id, data: { active: !collaborator.active } })
+          }
+        >
+          {collaborator.active ? t('collaborators.deactivate') : t('collaborators.reactivate')}
+        </Button>
+        {!collaborator.active && !confirming && (
+          <Button size="sm" variant="ghost" onClick={() => setConfirming(true)}>
+            {t('collaborators.anonymize')}
+          </Button>
+        )}
+      </div>
+      {confirming && (
+        <Alert variant="destructive">
+          <AlertTitle>{t('collaborators.anonymizeTitle', { name: collaborator.name })}</AlertTitle>
+          <AlertDescription className="space-y-2">
+            <p>{t('collaborators.anonymizeWarning')}</p>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="destructive"
+                disabled={anonymize.isPending}
+                onClick={() => anonymize.mutate({ id: collaborator.id })}
+              >
+                {t('collaborators.anonymizeConfirm')}
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => setConfirming(false)}>
+                {t('collaborators.cancel')}
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+      {failure && (
+        <p role="alert" className="text-sm text-destructive">
+          {failure}
+        </p>
+      )}
+    </div>
   );
 }

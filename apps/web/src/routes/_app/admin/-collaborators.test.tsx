@@ -14,7 +14,19 @@ const admin = {
 };
 
 function simulateCollaborators() {
-  const list = [{ ...admin, active: true }];
+  const list = [
+    { ...admin, active: true, anonymized: false },
+    {
+      ...ana,
+      id: '9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d',
+      name: 'Carla Dias',
+      email: 'carla@company.test',
+      administrator: false,
+      active: true,
+      anonymized: false,
+    },
+  ];
+  const calls: string[] = [];
   server.use(
     http.get('*/api/collaborators', () => HttpResponse.json(list)),
     http.post('*/api/collaborators', async ({ request }) => {
@@ -33,11 +45,26 @@ function simulateCollaborators() {
         email: data.email,
         administrator: data.administrator,
         active: true,
+        anonymized: false,
       };
       list.push(collaborator);
       return HttpResponse.json({ collaborator, temporaryPassword: 'Tmp-xyz-123' }, { status: 201 });
     }),
+    http.patch('*/api/collaborators/:id', async ({ params, request }) => {
+      const { active } = (await request.json()) as { active: boolean };
+      const person = list.find((c) => c.id === params.id)!;
+      person.active = active;
+      calls.push(`${active ? 'reactivate' : 'deactivate'} ${person.name}`);
+      return HttpResponse.json(person);
+    }),
+    http.post('*/api/collaborators/:id/anonymize', ({ params }) => {
+      const person = list.find((c) => c.id === params.id)!;
+      Object.assign(person, { name: 'Ex-colaborador', anonymized: true });
+      calls.push('anonymize');
+      return HttpResponse.json(person);
+    }),
   );
+  return { calls };
 }
 
 describe('Collaborators management', () => {
@@ -70,5 +97,35 @@ describe('Collaborators management', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Já existe um Colaborador com este e-mail.',
     );
+  });
+
+  it('deactivates, reactivates and anonymizes after a warning', async () => {
+    simulateAuth({ session: admin });
+    const { calls } = simulateCollaborators();
+    renderApp('/admin/collaborators');
+    const user = userEvent.setup();
+
+    const row = (await screen.findByText('Carla Dias')).closest('tr')!;
+    expect(within(row).queryByRole('button', { name: 'Anonimizar' })).not.toBeInTheDocument();
+
+    await user.click(within(row).getByRole('button', { name: 'Desativar' }));
+    expect(await within(row).findByText('Inativo')).toBeInTheDocument();
+    await user.click(within(row).getByRole('button', { name: 'Reativar' }));
+    expect(await within(row).findByText('Ativo')).toBeInTheDocument();
+    await user.click(within(row).getByRole('button', { name: 'Desativar' }));
+    await user.click(await within(row).findByRole('button', { name: 'Anonimizar' }));
+
+    expect(within(row).getByText(/Isso apaga para sempre/)).toBeInTheDocument();
+    expect(calls).not.toContain('anonymize'); // asked first
+    await user.click(within(row).getByRole('button', { name: 'Anonimizar para sempre' }));
+
+    const after = (await screen.findByText('Ex-colaborador')).closest('tr')!;
+    expect(within(after).getByText('Anonimizado')).toBeInTheDocument();
+    expect(calls).toEqual([
+      'deactivate Carla Dias',
+      'reactivate Carla Dias',
+      'deactivate Carla Dias',
+      'anonymize',
+    ]);
   });
 });

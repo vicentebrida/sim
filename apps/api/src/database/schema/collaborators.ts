@@ -16,6 +16,8 @@ export const collaborators = pgTable('collaborators', {
   notifyNewComments: boolean().notNull().default(true),
   // Preference: also receive Notifications by e-mail.
   notifyByEmail: boolean().notNull().default(true),
+  // Set when the personal data was erased (irreversible).
+  anonymizedAt: timestamp({ withTimezone: true }),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   lastLoginAt: timestamp({ withTimezone: true }),
 });
