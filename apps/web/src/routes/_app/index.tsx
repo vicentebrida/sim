@@ -28,6 +28,7 @@ const filtersSchema = z.object({
   status: z.enum(FILTERABLE_STATUSES).optional().catch(undefined),
   categoryId: z.string().optional().catch(undefined),
   mine: z.boolean().optional().catch(undefined),
+  following: z.boolean().optional().catch(undefined),
   // Missing from the URL means "trending", the default order.
   sort: z.enum(SORT_ORDERS).optional().catch(undefined),
   page: z.number().int().min(1).optional().catch(undefined),
@@ -50,6 +51,7 @@ function HomePage() {
     status: filters.status,
     categoryId: filters.categoryId,
     author: filters.mine ? 'me' : undefined,
+    following: filters.following ? 'true' : undefined,
     sort: filters.sort,
     page,
     pageSize: PAGE_SIZE,
@@ -133,6 +135,15 @@ function HomePage() {
             onChange={(event) => filter({ mine: event.target.checked || undefined })}
           />
           {t('ideas.filters.mine')}
+        </label>
+        <label className="flex h-9 items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            className="size-4"
+            checked={Boolean(filters.following)}
+            onChange={(event) => filter({ following: event.target.checked || undefined })}
+          />
+          {t('ideas.filters.following')}
         </label>
       </div>
 

@@ -12,6 +12,8 @@ export const collaborators = pgTable('collaborators', {
   pictureUrl: text(),
   administrator: boolean().notNull().default(false),
   active: boolean().notNull().default(true),
+  // Preference: Notification of new Comments on followed Ideas.
+  notifyNewComments: boolean().notNull().default(true),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   lastLoginAt: timestamp({ withTimezone: true }),
 });

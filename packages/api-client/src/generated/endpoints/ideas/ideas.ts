@@ -25,6 +25,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  FollowingDtoOutput,
   IdeaDtoOutput,
   IdeaPageDtoOutput,
   IdeaUpdateDto,
@@ -1074,4 +1075,162 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getIdeasUnlikeMutationOptions(options), queryClient);
+    }
+    export type ideasFollowResponse200 = {
+  data: FollowingDtoOutput
+  status: 200
+}
+
+export type ideasFollowResponseSuccess = (ideasFollowResponse200) & {
+  headers: Headers;
+};
+;
+
+export type ideasFollowResponse = (ideasFollowResponseSuccess)
+
+export const getIdeasFollowUrl = (number: number,) => {
+
+
+
+
+  return `/api/ideas/${number}/follow`
+}
+
+export const ideasFollow = async (number: number, options?: Parameters<typeof simFetch>[1]): Promise<ideasFollowResponse> => {
+
+  return simFetch<ideasFollowResponse>(getIdeasFollowUrl(number),
+  {
+    ...options,
+    method: 'PUT'
+
+
+  }
+);}
+
+
+
+
+
+export const getIdeasFollowMutationKey = () => ['ideasFollow'] as const;
+
+export const getIdeasFollowMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ideasFollow>>, TError,IdeasFollowMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof ideasFollow>>, TError,IdeasFollowMutationVariables, TContext> => {
+
+const mutationKey = getIdeasFollowMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof ideasFollow>>, IdeasFollowMutationVariables> = (props) => {
+          const {number} = props ?? {};
+
+          return  ideasFollow(number,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type IdeasFollowMutationResult = NonNullable<Awaited<ReturnType<typeof ideasFollow>>>
+
+    export type IdeasFollowMutationError = ErrorType<unknown>
+    export type IdeasFollowMutationVariables = {number: number}
+
+    export const useIdeasFollow = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ideasFollow>>, TError,IdeasFollowMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof ideasFollow>>,
+        TError,
+        IdeasFollowMutationVariables,
+        TContext
+      > => {
+      return useMutation(getIdeasFollowMutationOptions(options), queryClient);
+    }
+    export type ideasUnfollowResponse200 = {
+  data: FollowingDtoOutput
+  status: 200
+}
+
+export type ideasUnfollowResponseSuccess = (ideasUnfollowResponse200) & {
+  headers: Headers;
+};
+;
+
+export type ideasUnfollowResponse = (ideasUnfollowResponseSuccess)
+
+export const getIdeasUnfollowUrl = (number: number,) => {
+
+
+
+
+  return `/api/ideas/${number}/follow`
+}
+
+export const ideasUnfollow = async (number: number, options?: Parameters<typeof simFetch>[1]): Promise<ideasUnfollowResponse> => {
+
+  return simFetch<ideasUnfollowResponse>(getIdeasUnfollowUrl(number),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getIdeasUnfollowMutationKey = () => ['ideasUnfollow'] as const;
+
+export const getIdeasUnfollowMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ideasUnfollow>>, TError,IdeasUnfollowMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof ideasUnfollow>>, TError,IdeasUnfollowMutationVariables, TContext> => {
+
+const mutationKey = getIdeasUnfollowMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof ideasUnfollow>>, IdeasUnfollowMutationVariables> = (props) => {
+          const {number} = props ?? {};
+
+          return  ideasUnfollow(number,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type IdeasUnfollowMutationResult = NonNullable<Awaited<ReturnType<typeof ideasUnfollow>>>
+
+    export type IdeasUnfollowMutationError = ErrorType<unknown>
+    export type IdeasUnfollowMutationVariables = {number: number}
+
+    export const useIdeasUnfollow = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ideasUnfollow>>, TError,IdeasUnfollowMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof ideasUnfollow>>,
+        TError,
+        IdeasUnfollowMutationVariables,
+        TContext
+      > => {
+      return useMutation(getIdeasUnfollowMutationOptions(options), queryClient);
     }

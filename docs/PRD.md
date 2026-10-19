@@ -109,7 +109,10 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 | Ideia Duplicada         | Seguidores da Duplicada                 |
 | Ideia Parada            | Avaliadores e depois Administradores    |
 
-- Canais: sininho no sistema (polling) e e-mail (na hora, resumo diário ou desligado, escolhido pelo Colaborador).
+- Canais: sininho no sistema (polling) e e-mail (na hora, resumo diário ou desligado, escolhido pelo Colaborador). O sininho entra no Marco 1; e-mail e Ideia Parada, no Marco 2, junto com as tarefas em segundo plano.
+- Cada Comentário gera no máximo uma Notificação por pessoa, a mais específica: Menção, depois Resposta, depois novo Comentário. Ninguém é notificado do que ele mesmo fez.
+- Nova Ideia numa Categoria sem Avaliadores notifica os Administradores, que avaliam essas Ideias. Recategorizar conta como nova Ideia para os Avaliadores da Categoria de destino.
+- Deixar de seguir vale até a próxima interação: comentar ou curtir de novo volta a seguir.
 
 ### 3.9 Ideia Parada e painel
 

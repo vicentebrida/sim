@@ -15,6 +15,7 @@ status?: string;
  */
 categoryId?: string;
 author?: IdeasListAuthor;
+following?: string;
 sort?: IdeasListSort;
 /**
  * @minimum 1

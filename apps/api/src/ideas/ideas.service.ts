@@ -3,12 +3,14 @@ import { and, asc, count, desc, eq, inArray, isNull, ne, or, type SQL, sql } fro
 import { alias } from 'drizzle-orm/pg-core';
 import { DomainError } from '../common/domain-error';
 import { CustomFieldsService } from '../custom-fields/custom-fields.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { DB, type Database, type Transaction } from '../database/database.module';
 import {
   categories,
   type Collaborator,
   collaborators,
   comments,
+  followers,
   type Idea,
   ideaHistory,
   ideas,
@@ -35,6 +37,7 @@ export interface IdeaFilter {
   status?: Status[];
   categoryId?: string;
   author?: 'me';
+  following?: boolean;
   sort: SortOrder;
   page: number;
   pageSize: number;
@@ -69,6 +72,7 @@ export class IdeasService {
   constructor(
     @Inject(DB) private readonly db: Database,
     private readonly fields: CustomFieldsService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   // ---------- reading ----------
@@ -85,6 +89,9 @@ export class IdeasService {
           : and(ne(ideas.status, 'archived'), ne(ideas.status, 'draft')),
       filter.categoryId ? eq(ideas.categoryId, filter.categoryId) : undefined,
       filter.author === 'me' ? eq(ideas.authorId, collaborator.id) : undefined,
+      filter.following
+        ? sql`exists (select 1 from ${followers} where ${followers.ideaId} = ${ideas.id} and ${followers.collaboratorId} = ${collaborator.id})`
+        : undefined,
     );
 
     const [rows, [counted]] = await Promise.all([
@@ -122,7 +129,7 @@ export class IdeasService {
     const { idea, actor } = await this.access(collaborator, { number });
 
     const changedBy = alias(collaborators, 'changed_by');
-    const [[category], [author], fields, history, original, likeState, interaction] =
+    const [[category], [author], fields, history, original, likeState, interaction, following] =
       await Promise.all([
         this.db
           .select({ id: categories.id, name: categories.name })
@@ -150,6 +157,7 @@ export class IdeasService {
           : Promise.resolve([]),
         this.likeState(idea, collaborator),
         this.interactionFromOthers(idea),
+        this.notifications.isFollowing(idea.id, collaborator.id),
       ]);
 
     // Category events store ids; show their names instead.
@@ -177,6 +185,7 @@ export class IdeasService {
       category: category!,
       author: author!,
       likes: likeState,
+      following,
       values: idea.values,
       answers: fields
         .filter((field) => field.id in idea.values)
@@ -229,6 +238,8 @@ export class IdeasService {
           publishedAt: data.publish ? now : null,
         })
         .returning();
+      // The Author follows their own Idea from the start, Drafts included.
+      await this.notifications.follow(tx, idea!.id, collaborator.id);
       if (data.publish) await this.recordPublication(tx, idea!, collaborator);
       return idea!.number;
     });
@@ -311,6 +322,12 @@ export class IdeasService {
         })
         .where(eq(ideas.id, idea.id));
       if (originalIdea) await this.moveLikes(tx, idea, originalIdea);
+      await this.notifications.onStatusChanged(
+        tx,
+        idea,
+        { from: idea.status, to: data.to, original: originalIdea },
+        collaborator.id,
+      );
       await tx.insert(ideaHistory).values({
         ideaId: idea.id,
         type: 'status',
@@ -345,6 +362,7 @@ export class IdeasService {
         justification: data.justification,
         collaboratorId: collaborator.id,
       });
+      await this.notifications.onArrivedInCategory(tx, idea, data.categoryId, collaborator.id);
     });
     return this.detail(collaborator, number);
   }
@@ -360,10 +378,13 @@ export class IdeasService {
   async like(collaborator: Collaborator, number: number) {
     const { idea, actor } = await this.access(collaborator, { number });
     assertCanLike(idea, actor);
-    await this.db
-      .insert(likes)
-      .values({ ideaId: idea.id, collaboratorId: collaborator.id })
-      .onConflictDoNothing();
+    await this.db.transaction(async (tx) => {
+      await tx
+        .insert(likes)
+        .values({ ideaId: idea.id, collaboratorId: collaborator.id })
+        .onConflictDoNothing();
+      await this.notifications.follow(tx, idea.id, collaborator.id);
+    });
     return this.likeState(idea, collaborator);
   }
 
@@ -392,6 +413,20 @@ export class IdeasService {
       collaborator: row.collaborator,
       createdAt: row.createdAt.toISOString(),
     }));
+  }
+
+  // ---------- following ----------
+
+  async follow(collaborator: Collaborator, number: number) {
+    const { idea } = await this.access(collaborator, { number });
+    await this.notifications.follow(this.db, idea.id, collaborator.id);
+    return { following: true };
+  }
+
+  async unfollow(collaborator: Collaborator, number: number) {
+    const { idea } = await this.access(collaborator, { number });
+    await this.notifications.unfollow(idea.id, collaborator.id);
+    return { following: false };
   }
 
   // ---------- support ----------
@@ -499,6 +534,7 @@ export class IdeasService {
     }
   }
 
+  /** Publishing records the History and tells the Category Reviewers about the new Idea. */
   private async recordPublication(tx: Transaction, idea: Idea, author: Collaborator) {
     await tx.insert(ideaHistory).values({
       ideaId: idea.id,
@@ -507,5 +543,6 @@ export class IdeasService {
       toValue: 'open',
       collaboratorId: author.id,
     });
+    await this.notifications.onArrivedInCategory(tx, idea, idea.categoryId, author.id);
   }
 }

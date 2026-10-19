@@ -32,6 +32,7 @@ export interface IdeaDtoOutput {
   createdAt: string;
   publishedAt: string | null;
   editedAt: string | null;
+  following: boolean;
   values: IdeaDtoOutputValues;
   answers: IdeaDtoOutputAnswersItem[];
   originalIdea: IdeaDtoOutputOriginalIdea;

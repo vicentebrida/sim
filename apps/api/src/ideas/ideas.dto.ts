@@ -52,6 +52,8 @@ export class ListIdeasQueryDto extends createZodDto(
     categoryId: z.uuid().optional(),
     // "me" lists the current Collaborator's Ideas, Drafts included.
     author: z.enum(['me']).optional(),
+    // Only Ideas the current Collaborator follows.
+    following: z.stringbool().optional(),
     // "trending" weighs recent Likes and Comments; "most_liked" counts all Likes.
     sort: z.enum(SORT_ORDERS).default('trending'),
     page: z.coerce.number().int().min(1).default(1),
@@ -66,6 +68,8 @@ const LikesSchema = z.object({
 });
 
 export class LikesDto extends createZodDto(LikesSchema) {}
+
+export class FollowingDto extends createZodDto(z.object({ following: z.boolean() })) {}
 
 export class LikeDto extends createZodDto(
   z.object({ collaborator: Reference, createdAt: z.iso.datetime() }),
@@ -95,6 +99,8 @@ export class IdeaPageDto extends createZodDto(
 export class IdeaDto extends createZodDto(
   IdeaSummarySchema.extend({
     editedAt: z.iso.datetime().nullable(),
+    // The current Collaborator follows this Idea.
+    following: z.boolean(),
     values: ValuesSchema,
     // Values ready for display, in field order (includes deactivated fields).
     answers: z.array(

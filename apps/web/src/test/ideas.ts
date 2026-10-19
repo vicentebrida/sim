@@ -54,6 +54,7 @@ export function sampleIdea(partial: Partial<IdeaDtoOutput> = {}): IdeaDtoOutput 
     category: { id: TI.id, name: TI.name },
     author: { id: ana.id, name: ana.name },
     likes: { total: 0, liked: false },
+    following: false,
     createdAt: '2026-10-01T12:00:00.000Z',
     publishedAt: '2026-10-01T12:00:00.000Z',
     editedAt: null,
@@ -193,6 +194,16 @@ export function simulateIdeas(
         permissions: { ...idea.permissions, transitions: [] },
       };
       return HttpResponse.json(idea);
+    }),
+    http.put('*/api/ideas/:number/follow', async ({ request }) => {
+      await record(request);
+      idea = { ...idea, following: true };
+      return HttpResponse.json({ following: true });
+    }),
+    http.delete('*/api/ideas/:number/follow', async ({ request }) => {
+      await record(request);
+      idea = { ...idea, following: false };
+      return HttpResponse.json({ following: false });
     }),
     http.get('*/api/ideas/:number/likes', () => HttpResponse.json(likes)),
     http.put('*/api/ideas/:number/like', async ({ request }) => {
