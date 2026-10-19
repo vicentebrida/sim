@@ -449,5 +449,12 @@
     "revealConfirm": "Revelar e registrar",
     "cancel": "Cancelar",
     "revealed": "Autor: {{name}}"
+  },
+  "versions": {
+    "title": "Versões anteriores",
+    "show": "Ver versões anteriores",
+    "hide": "Esconder versões anteriores",
+    "version": "Versão {{number}}",
+    "period": "de {{from}} até {{to}}"
   }
 }

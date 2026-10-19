@@ -45,7 +45,7 @@ O maior risco de um sistema de ideias é o Colaborador sugerir e ninguém respon
 - **Edição:**
   - O Autor edita livremente em _Rascunho_ e _Aberta_.
   - A partir de _Em análise_, o texto fica travado para o Autor, e informações novas entram como Comentário.
-  - Edições após a publicação guardam a versão anterior e marcam a Ideia como "editada".
+  - Edições após a publicação guardam a versão anterior e marcam a Ideia como "editada". Quem vê a Ideia consulta as versões anteriores (texto, Categoria e respostas, com o período em que valeram); só edições que mudam o conteúdo geram versão. Anexos não entram nas versões.
 - **Exclusão pelo Autor:** sempre em _Rascunho_. Em _Aberta_, só se não houver Curtidas nem Comentários de outras pessoas. Nos outros casos não pode excluir.
 
 ### 3.3 Ciclo de vida ([ADR-0004](./adr/0004-status-com-semantica-fixa.md))

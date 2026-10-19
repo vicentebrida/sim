@@ -166,4 +166,23 @@ export class IdeaDto extends createZodDto(
   }),
 ) {}
 
+export class IdeaVersionDto extends createZodDto(
+  z.object({
+    // 1 is the text as first published.
+    version: z.number().int(),
+    title: z.string(),
+    category: Reference,
+    answers: z.array(
+      z.object({
+        fieldId: z.uuid(),
+        label: z.string(),
+        type: z.enum(FIELD_TYPES),
+        value: ValueSchema,
+      }),
+    ),
+    validFrom: z.iso.datetime(),
+    replacedAt: z.iso.datetime(),
+  }),
+) {}
+
 export class AuthorDto extends createZodDto(Reference) {}
