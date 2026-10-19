@@ -7,15 +7,17 @@ Sistema open source e self-hosted onde os colaboradores de uma empresa propõem 
 
 Quando alguém começa a escrever uma Ideia que já existe, o SIM mostra as **Ideias Semelhantes** e direciona a pessoa para apoiar e complementar a original, em vez de abrir uma repetida.
 
-> **Versão 0.2.0**: e-mail, Anexos, Ideias Paradas, Painel e identidade visual (Marco 2, sem a busca semântica com IA). Veja o [CHANGELOG](./CHANGELOG.md), o [PRD](./docs/PRD.md) e o que vem a seguir nos Marcos 2 e 3.
+> **Versão 0.3.0**: Marcos 1 a 3, com e-mail, Anexos, Ideias Paradas, Painel, identidade visual, governança e Auditoria (a busca semântica com IA ainda não chegou). Veja o [CHANGELOG](./CHANGELOG.md), o [PRD](./docs/PRD.md) e o que vem a seguir nos Marcos 2 e 3.
 
 ## Principais recursos
 
 - Login local ou pelo **SSO da empresa** (OIDC ou OAuth2 genérico)
 - Ciclo de vida com Status (Aberta → Em análise → Aprovada → Em execução → Concluída), com Histórico e justificativas
-- **Detecção de Ideias Semelhantes** enquanto se escreve (busca textual). A busca semântica opcional com IA chega no Marco 2
+- **Detecção de Ideias Semelhantes** enquanto se escreve (busca textual). A busca semântica opcional com IA ainda está planejada
 - Curtidas, Comentários com Menções, Seguir e Notificações no sininho e por e-mail (opcional, via SMTP)
-- Categorias com Avaliadores e Campos Personalizados configuráveis
+- Categorias com Avaliadores e Campos Personalizados configuráveis, inclusive por Categoria
+- Versões de edição, Autoria Oculta (opcional), Colaborador Inativo, Anonimização e Auditoria
+- Acesso e Administradores por grupo do SSO
 - Interface em pt-BR e en
 - Ideias Paradas com aviso aos Avaliadores e escalonamento aos Administradores
 - Identidade visual da empresa (nome, cor, logo, favicon e página de login)
