@@ -66,6 +66,10 @@ function sentence(context: EmailContext): string {
         return `${actor} replied to your Comment on Idea ${idea}.`;
       case 'mention':
         return `${actor} mentioned you in Idea ${idea}.`;
+      case 'stalled':
+        return `Idea ${idea} has been ${statusName(locale, data.status)} for too long and is waiting for a Reviewer.`;
+      case 'stalled_escalated':
+        return `Idea ${idea} is still ${statusName(locale, data.status)} after its Reviewers were told. It needs an Administrator.`;
     }
   }
   switch (type) {
@@ -83,6 +87,10 @@ function sentence(context: EmailContext): string {
       return `${actor} respondeu ao seu Comentário na Ideia ${idea}.`;
     case 'mention':
       return `${actor} mencionou você na Ideia ${idea}.`;
+    case 'stalled':
+      return `A Ideia ${idea} está há tempo demais como ${statusName(locale, data.status)} e aguarda um Avaliador.`;
+    case 'stalled_escalated':
+      return `A Ideia ${idea} continua como ${statusName(locale, data.status)} mesmo após o aviso aos Avaliadores. Ela precisa de um Administrador.`;
   }
 }
 

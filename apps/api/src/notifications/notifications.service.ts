@@ -20,7 +20,8 @@ interface NewNotification {
   recipientId: string;
   type: NotificationType;
   ideaId: string;
-  actorId: string;
+  /** Missing for system notices, such as Stalled Ideas. */
+  actorId?: string;
   commentId?: string;
   data?: Record<string, unknown>;
 }
@@ -63,6 +64,53 @@ export class NotificationsService {
    * without Reviewers are handled by the Administrators, so they are notified instead.
    */
   async onArrivedInCategory(executor: Executor, idea: Idea, categoryId: string, actorId: string) {
+    const recipients = recipientsExcept(
+      actorId,
+      await this.reviewersOrAdministrators(executor, idea, categoryId),
+    );
+    await this.record(
+      executor,
+      recipients.map((recipientId) => ({
+        recipientId,
+        type: 'new_idea',
+        ideaId: idea.id,
+        actorId,
+      })),
+    );
+  }
+
+  /**
+   * A Stalled Idea first tells its Reviewers; if still stalled later, it escalates to the
+   * Administrators. System notices: no actor.
+   */
+  async onStalled(executor: Executor, idea: Idea, stage: 'notify_reviewers' | 'escalate') {
+    const recipients =
+      stage === 'escalate'
+        ? (
+            await executor
+              .select({ id: collaborators.id })
+              .from(collaborators)
+              .where(and(eq(collaborators.administrator, true), eq(collaborators.active, true)))
+          )
+            .map(({ id }) => id)
+            .filter((id) => id !== idea.authorId)
+        : await this.reviewersOrAdministrators(executor, idea, idea.categoryId);
+    await this.record(
+      executor,
+      recipients.map((recipientId) => ({
+        recipientId,
+        type: stage === 'escalate' ? 'stalled_escalated' : 'stalled',
+        ideaId: idea.id,
+        data: { status: idea.status },
+      })),
+    );
+  }
+
+  /**
+   * Reviewers of the Category; Categories without Reviewers are handled by the Administrators.
+   * The Author does not review their own Idea, so they are never in the list.
+   */
+  private async reviewersOrAdministrators(executor: Executor, idea: Idea, categoryId: string) {
     const categoryReviewers = await executor
       .select({ id: reviewers.collaboratorId })
       .from(reviewers)
@@ -74,20 +122,7 @@ export class NotificationsService {
           .select({ id: collaborators.id })
           .from(collaborators)
           .where(and(eq(collaborators.administrator, true), eq(collaborators.active, true)));
-    // The Author does not review their own Idea, so they are not told about it as a Reviewer.
-    const recipients = recipientsExcept(
-      actorId,
-      candidates.map(({ id }) => id).filter((id) => id !== idea.authorId),
-    );
-    await this.record(
-      executor,
-      recipients.map((recipientId) => ({
-        recipientId,
-        type: 'new_idea',
-        ideaId: idea.id,
-        actorId,
-      })),
-    );
+    return candidates.map(({ id }) => id).filter((id) => id !== idea.authorId);
   }
 
   /**

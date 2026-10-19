@@ -31,7 +31,17 @@ const PARAMS = { includeInactive: 'true' };
 const categorySchema = z.object({
   name: z.string().trim().min(1, { error: 'errors.required' }).max(60),
   description: z.string().trim().max(280),
+  // Days as text from the input; empty means the installation default.
+  stalledOpenDays: z
+    .string()
+    .trim()
+    .regex(/^\d{0,3}$/),
+  stalledReviewDays: z
+    .string()
+    .trim()
+    .regex(/^\d{0,3}$/),
 });
+const days = (text: string) => (text ? Number(text) : null);
 type CategoryData = z.infer<typeof categorySchema>;
 
 function useReloadCategories() {
@@ -68,9 +78,11 @@ function CategoriesPage() {
 function CategoryFields({
   form,
   prefix,
+  withDeadlines = false,
 }: {
   form: ReturnType<typeof useForm<CategoryData>>;
   prefix: string;
+  withDeadlines?: boolean;
 }) {
   const { t } = useTranslation();
   const nameError = form.formState.errors.name?.message;
@@ -87,6 +99,28 @@ function CategoryFields({
         <Textarea id={`${prefix}-description`} rows={2} {...form.register('description')} />
         <p className="text-sm text-muted-foreground">{t('categories.descriptionHelp')}</p>
       </div>
+      {withDeadlines && (
+        <fieldset className="grid gap-2">
+          <legend className="text-sm font-medium">{t('categories.stalledDeadlines')}</legend>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <FormField
+              id={`${prefix}-stalled-open`}
+              label={t('categories.stalledOpen')}
+              inputMode="numeric"
+              placeholder={t('categories.stalledDefault')}
+              {...form.register('stalledOpenDays')}
+            />
+            <FormField
+              id={`${prefix}-stalled-review`}
+              label={t('categories.stalledReview')}
+              inputMode="numeric"
+              placeholder={t('categories.stalledDefault')}
+              {...form.register('stalledReviewDays')}
+            />
+          </div>
+          <p className="text-sm text-muted-foreground">{t('categories.stalledDeadlinesHelp')}</p>
+        </fieldset>
+      )}
     </>
   );
 }
@@ -96,7 +130,7 @@ function NewCategory() {
   const reload = useReloadCategories();
   const form = useForm<CategoryData>({
     resolver: zodResolver(categorySchema),
-    defaultValues: { name: '', description: '' },
+    defaultValues: { name: '', description: '', stalledOpenDays: '', stalledReviewDays: '' },
   });
   const create = useCategoriesCreate({
     mutation: {
@@ -119,7 +153,9 @@ function NewCategory() {
         <form
           className="grid gap-4"
           noValidate
-          onSubmit={form.handleSubmit((data) => create.mutate({ data }))}
+          onSubmit={form.handleSubmit(({ name, description }) =>
+            create.mutate({ data: { name, description } }),
+          )}
         >
           <CategoryFields form={form} prefix="new" />
           {failure && (
@@ -207,7 +243,12 @@ function EditCategory({ category, onClose }: { category: CategoryDtoOutput; onCl
   const reload = useReloadCategories();
   const form = useForm<CategoryData>({
     resolver: zodResolver(categorySchema),
-    defaultValues: { name: category.name, description: category.description },
+    defaultValues: {
+      name: category.name,
+      description: category.description,
+      stalledOpenDays: category.stalledOpenDays?.toString() ?? '',
+      stalledReviewDays: category.stalledReviewDays?.toString() ?? '',
+    },
   });
   const update = useCategoriesUpdate({
     mutation: {
@@ -223,9 +264,18 @@ function EditCategory({ category, onClose }: { category: CategoryDtoOutput; onCl
     <form
       className="grid gap-4"
       noValidate
-      onSubmit={form.handleSubmit((data) => update.mutate({ id: category.id, data }))}
+      onSubmit={form.handleSubmit(({ stalledOpenDays, stalledReviewDays, ...data }) =>
+        update.mutate({
+          id: category.id,
+          data: {
+            ...data,
+            stalledOpenDays: days(stalledOpenDays),
+            stalledReviewDays: days(stalledReviewDays),
+          },
+        }),
+      )}
     >
-      <CategoryFields form={form} prefix={category.id} />
+      <CategoryFields form={form} prefix={category.id} withDeadlines />
       {failure && (
         <p role="alert" className="text-sm text-destructive">
           {failure}

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { LikeCount } from '@/components/likes';
 import { NativeSelect } from '@/components/native-select';
-import { StatusBadge } from '@/components/status-badge';
+import { StalledBadge, StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -165,6 +165,7 @@ function HomePage() {
             >
               <div className="flex flex-wrap items-center gap-2">
                 <StatusBadge status={idea.status} />
+                {idea.stalled && <StalledBadge />}
                 <span className="text-sm text-muted-foreground">#{idea.number}</span>
                 <span className="text-sm text-muted-foreground">· {idea.category.name}</span>
               </div>

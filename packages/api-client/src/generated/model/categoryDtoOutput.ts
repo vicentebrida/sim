@@ -13,5 +13,7 @@ export interface CategoryDtoOutput {
   name: string;
   description: string;
   active: boolean;
+  stalledOpenDays: number | null;
+  stalledReviewDays: number | null;
   reviewers: CategoryDtoOutputReviewersItem[];
 }

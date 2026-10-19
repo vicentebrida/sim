@@ -133,7 +133,16 @@
     "reviewers": "Reviewers",
     "noReviewers": "No reviewers: administrators review ideas in this category.",
     "searchCollaborator": "Search people",
+    "stalledDeadlines": "Stalled idea deadlines (days)",
+    "stalledDeadlinesHelp": "Days without reviewer action before the idea counts as stalled. Empty uses the installation default.",
+    "stalledOpen": "Open",
+    "stalledReview": "Under review",
+    "stalledDefault": "Installation default",
     "none": "No categories yet."
+  },
+  "stalled": {
+    "badge": "Stalled",
+    "help": "Past its deadline with no reviewer action. Only reviewers and administrators see this mark."
   },
   "status": {
     "draft": "Draft",
@@ -282,6 +291,8 @@
       "comment": "{{actor}} commented on idea #{{number}}",
       "reply": "{{actor}} replied to your comment on idea #{{number}}",
       "mention": "{{actor}} mentioned you on idea #{{number}}",
+      "stalled": "Idea #{{number}} is stalled ({{status}}) and waiting for review",
+      "stalled_escalated": "Idea #{{number}} is still stalled ({{status}}) and needs an administrator",
       "new_idea": "New idea to review: #{{number}}"
     }
   },

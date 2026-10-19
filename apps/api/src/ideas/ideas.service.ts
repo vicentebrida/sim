@@ -4,6 +4,8 @@ import { alias } from 'drizzle-orm/pg-core';
 import { DomainError } from '../common/domain-error';
 import { CustomFieldsService } from '../custom-fields/custom-fields.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { isStalledSql } from './domain/stalled';
+import { StalledIdeasService } from './stalled-ideas.service';
 import { DB, type Database, type Transaction } from '../database/database.module';
 import {
   categories,
@@ -75,7 +77,16 @@ export class IdeasService {
     @Inject(DB) private readonly db: Database,
     private readonly fields: CustomFieldsService,
     private readonly notifications: NotificationsService,
+    private readonly stalledIdeas: StalledIdeasService,
   ) {}
+
+  /** The Stalled mark is only for Administrators and the Reviewers of the Category (not the Author). */
+  private stalledFlag(collaborator: Collaborator) {
+    const sees = collaborator.administrator
+      ? sql`true`
+      : sql`(${ideas.authorId} <> ${collaborator.id} and exists (select 1 from ${reviewers} where ${reviewers.categoryId} = ${ideas.categoryId} and ${reviewers.collaboratorId} = ${collaborator.id}))`;
+    return sql<boolean>`(${isStalledSql(this.stalledIdeas.deadlines())} and ${sees})`;
+  }
 
   // ---------- reading ----------
 
@@ -103,6 +114,7 @@ export class IdeasService {
           category: { id: categories.id, name: categories.name },
           author: { id: author.id, name: author.name },
           likes: { total: likeCount, liked: likedBy(collaborator) },
+          stalled: this.stalledFlag(collaborator),
         })
         .from(ideas)
         .innerJoin(categories, eq(ideas.categoryId, categories.id))
@@ -120,6 +132,7 @@ export class IdeasService {
         category: row.category,
         author: row.author,
         likes: row.likes,
+        stalled: row.stalled,
       })),
       total: counted?.total ?? 0,
       page: filter.page,
@@ -131,36 +144,50 @@ export class IdeasService {
     const { idea, actor } = await this.access(collaborator, { number });
 
     const changedBy = alias(collaborators, 'changed_by');
-    const [[category], [author], fields, history, original, likeState, interaction, following] =
-      await Promise.all([
-        this.db
-          .select({ id: categories.id, name: categories.name })
-          .from(categories)
-          .where(eq(categories.id, idea.categoryId)),
-        this.db
-          .select({ id: collaborators.id, name: collaborators.name })
-          .from(collaborators)
-          .where(eq(collaborators.id, idea.authorId)),
-        this.fields.list({ includeInactive: true }),
-        this.db
-          .select({
-            event: ideaHistory,
-            collaborator: { id: changedBy.id, name: changedBy.name },
-          })
-          .from(ideaHistory)
-          .innerJoin(changedBy, eq(ideaHistory.collaboratorId, changedBy.id))
-          .where(eq(ideaHistory.ideaId, idea.id))
-          .orderBy(asc(ideaHistory.createdAt)),
-        idea.originalIdeaId
-          ? this.db
-              .select({ number: ideas.number, title: ideas.title })
-              .from(ideas)
-              .where(eq(ideas.id, idea.originalIdeaId))
-          : Promise.resolve([]),
-        this.likeState(idea, collaborator),
-        this.interactionFromOthers(idea),
-        this.notifications.isFollowing(idea.id, collaborator.id),
-      ]);
+    const [
+      [category],
+      [author],
+      fields,
+      history,
+      original,
+      likeState,
+      interaction,
+      following,
+      [stalledRow],
+    ] = await Promise.all([
+      this.db
+        .select({ id: categories.id, name: categories.name })
+        .from(categories)
+        .where(eq(categories.id, idea.categoryId)),
+      this.db
+        .select({ id: collaborators.id, name: collaborators.name })
+        .from(collaborators)
+        .where(eq(collaborators.id, idea.authorId)),
+      this.fields.list({ includeInactive: true }),
+      this.db
+        .select({
+          event: ideaHistory,
+          collaborator: { id: changedBy.id, name: changedBy.name },
+        })
+        .from(ideaHistory)
+        .innerJoin(changedBy, eq(ideaHistory.collaboratorId, changedBy.id))
+        .where(eq(ideaHistory.ideaId, idea.id))
+        .orderBy(asc(ideaHistory.createdAt)),
+      idea.originalIdeaId
+        ? this.db
+            .select({ number: ideas.number, title: ideas.title })
+            .from(ideas)
+            .where(eq(ideas.id, idea.originalIdeaId))
+        : Promise.resolve([]),
+      this.likeState(idea, collaborator),
+      this.interactionFromOthers(idea),
+      this.notifications.isFollowing(idea.id, collaborator.id),
+      this.db
+        .select({ stalled: this.stalledFlag(collaborator) })
+        .from(ideas)
+        .innerJoin(categories, eq(ideas.categoryId, categories.id))
+        .where(eq(ideas.id, idea.id)),
+    ]);
 
     // Category events store ids; show their names instead.
     const categoryIds = history
@@ -188,6 +215,7 @@ export class IdeasService {
       author: author!,
       likes: likeState,
       following,
+      stalled: stalledRow?.stalled ?? false,
       values: idea.values,
       answers: fields
         .filter((field) => field.id in idea.values)

@@ -10,6 +10,8 @@ export const NOTIFICATION_TYPES = [
   'reply',
   'mention',
   'new_idea',
+  'stalled',
+  'stalled_escalated',
 ] as const;
 
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];

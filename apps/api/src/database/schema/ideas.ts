@@ -56,6 +56,9 @@ export const ideas = pgTable(
     // Last edit by the Author after publishing (the Idea shows as "edited").
     editedAt: timestamp({ withTimezone: true }),
     statusChangedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    // Stalled Idea notices. Valid only if later than `statusChangedAt`: a Status change starts over.
+    stalledNotifiedAt: timestamp({ withTimezone: true }),
+    stalledEscalatedAt: timestamp({ withTimezone: true }),
     // Values of the Custom Fields used for detection, kept up to date by IdeasService.
     detectionText: text().notNull().default(''),
     // Title weighs more than the other fields when ranking Similar Ideas.

@@ -69,7 +69,16 @@ export class CategoriesService {
     }
   }
 
-  async update(id: string, data: { name?: string; description?: string; active?: boolean }) {
+  async update(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+      active?: boolean;
+      stalledOpenDays?: number | null;
+      stalledReviewDays?: number | null;
+    },
+  ) {
     try {
       const [updated] = await this.db
         .update(categories)
