@@ -31,6 +31,16 @@ export interface FieldDefinition {
   required: boolean;
   options: string[];
   active: boolean;
+  /** Categories the field applies to; empty means all of them. */
+  categoryIds: string[];
+}
+
+/** The fields an Idea of this Category fills in (deactivated ones only keep what they have). */
+export function fieldsFor(fields: FieldDefinition[], categoryId: string): FieldDefinition[] {
+  return fields.filter(
+    (field) =>
+      !field.active || field.categoryIds.length === 0 || field.categoryIds.includes(categoryId),
+  );
 }
 
 export const TEXT_LIMIT: Partial<Record<FieldType, number>> = {

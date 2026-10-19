@@ -1,0 +1,1 @@
+ALTER TABLE "custom_fields" ADD COLUMN "category_ids" jsonb DEFAULT '[]'::jsonb NOT NULL;

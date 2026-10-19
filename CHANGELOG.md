@@ -2,6 +2,7 @@
 
 ## Não lançado (Marco 3)
 
+- **Campos Personalizados por Categoria**: cada campo vale para todas as Categorias ou só para algumas; o formulário mostra e exige só os da Categoria escolhida.
 - **Versões de edição**: o que a Ideia dizia antes de cada edição feita depois de publicada fica guardado, e quem vê a Ideia consulta as versões anteriores.
 - **Autoria Oculta** (opcional, desligada por padrão): o Autor se mostra como "Colaborador anônimo"; só Administradores podem revelar, e cada revelação vai para a Auditoria.
 - **Colaborador Inativo e Anonimização**, com a **Auditoria** das ações sensíveis (registro só de inclusão). Inativação automática opcional por `SIM_INACTIVITY_DAYS`.

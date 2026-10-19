@@ -38,7 +38,7 @@ O maior risco de um sistema de ideias é o Colaborador sugerir e ninguém respon
 - **Campos Personalizados:** a instalação já vem com _Situação atual_, _Proposta_ e _Benefício esperado_ (texto longo).
   - Tipos: texto curto, texto longo (Markdown), seleção única, seleção múltipla, número e sim/não.
   - Cada campo tem rótulo, texto de ajuda, obrigatoriedade, ordem e a opção "entra na detecção de semelhantes" (só para campos de texto).
-  - Abrangência: todas as Categorias ou só algumas escolhidas.
+  - Abrangência: todas as Categorias ou só algumas escolhidas. Num formulário só aparecem (e só são exigidos) os campos da Categoria escolhida; mandar valor de campo de outra Categoria é recusado. Trocar a Categoria da Ideia descarta as respostas dos campos que deixam de valer (a versão anterior as guarda) e exige os obrigatórios da nova. Recategorizar por Avaliador não exige nada. Excluir uma Categoria desativa os campos que valiam só para ela.
   - Um campo já preenchido em alguma Ideia só pode ser desativado, nunca excluído.
   - Um campo novo e obrigatório não vale para Ideias antigas.
   - Uma mudança de rótulo aparece também nas Ideias antigas.

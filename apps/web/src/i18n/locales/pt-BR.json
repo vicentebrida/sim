@@ -360,7 +360,11 @@
       "multiple_choice": "Seleção múltipla",
       "number": "Número",
       "yes_no": "Sim ou não"
-    }
+    },
+    "scope": "Onde aparece",
+    "scopeAll": "Todas as categorias",
+    "scopeSome": "Só em algumas categorias",
+    "onlyIn": "Só em: {{names}}"
   },
   "likes": {
     "total_one": "{{count}} curtida",

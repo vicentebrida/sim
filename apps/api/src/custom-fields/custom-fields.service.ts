@@ -1,8 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { asc, eq, max, sql } from 'drizzle-orm';
+import { asc, eq, inArray, max, sql } from 'drizzle-orm';
 import { DomainError } from '../common/domain-error';
 import { DB, type Database } from '../database/database.module';
-import { type CustomField, customFields, ideas } from '../database/schema';
+import { categories, type CustomField, customFields, ideas } from '../database/schema';
 import { refreshDetectionText } from '../ideas/detection-text';
 import type { FieldType } from '../ideas/domain/fields';
 
@@ -40,6 +40,17 @@ export class CustomFieldsService {
       .orderBy(asc(customFields.position), asc(customFields.createdAt));
   }
 
+  private async assertCategoriesExist(ids: string[] | undefined) {
+    if (!ids?.length) return;
+    const found = await this.db
+      .select({ id: categories.id })
+      .from(categories)
+      .where(inArray(categories.id, ids));
+    if (found.length !== ids.length) {
+      throw new DomainError('CATEGORY_UNAVAILABLE', 'Category does not exist');
+    }
+  }
+
   private async find(id: string) {
     const [field] = await this.db.select().from(customFields).where(eq(customFields.id, id));
     if (!field) throw new NotFoundException('Custom Field not found');
@@ -48,6 +59,7 @@ export class CustomFieldsService {
 
   async create(data: Omit<CustomField, 'id' | 'position' | 'active' | 'createdAt'>) {
     assertValidConfiguration(data);
+    await this.assertCategoriesExist(data.categoryIds);
     const [{ last }] = (await this.db
       .select({ last: max(customFields.position) })
       .from(customFields)) as [{ last: number | null }];
@@ -61,11 +73,15 @@ export class CustomFieldsService {
   async update(
     id: string,
     data: Partial<
-      Pick<CustomField, 'label' | 'help' | 'required' | 'options' | 'useForDetection' | 'active'>
+      Pick<
+        CustomField,
+        'label' | 'help' | 'required' | 'options' | 'useForDetection' | 'active' | 'categoryIds'
+      >
     >,
   ) {
     const current = await this.find(id);
     assertValidConfiguration({ ...current, ...data });
+    await this.assertCategoriesExist(data.categoryIds);
     const affectsDetection =
       (data.useForDetection !== undefined && data.useForDetection !== current.useForDetection) ||
       (data.active !== undefined && data.active !== current.active);

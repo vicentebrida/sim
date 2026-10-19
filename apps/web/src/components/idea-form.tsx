@@ -51,8 +51,11 @@ function isEmpty(value: FieldValue | undefined) {
 }
 
 /** Drops empty values before sending (the API drops them too). */
-function clean(values: Record<string, FieldValue>) {
-  return Object.fromEntries(Object.entries(values).filter(([, value]) => !isEmpty(value)));
+function clean(values: Record<string, FieldValue>, shown: { id: string }[]) {
+  const ids = new Set(shown.map((field) => field.id));
+  return Object.fromEntries(
+    Object.entries(values).filter(([id, value]) => ids.has(id) && !isEmpty(value)),
+  );
 }
 
 export function IdeaForm({
@@ -79,7 +82,7 @@ export function IdeaForm({
   // Offered when the installation allows it, or to let the Author undo it.
   const canHide = settings?.data.hiddenAuthorshipEnabled || initial?.hiddenAuthorship;
   const categories = categoriesResponse?.data ?? [];
-  const fields = fieldsResponse?.data ?? [];
+  const allFields = fieldsResponse?.data ?? [];
   const [running, setRunning] = useState<string>();
   const [generalError, setGeneralError] = useState<string>();
   const [files, setFiles] = useState<File[]>([]);
@@ -93,6 +96,10 @@ export function IdeaForm({
   const title = useWatch({ control: form.control, name: 'title' });
   const values = useWatch({ control: form.control, name: 'values' });
   const chosenCategory = categories.find((c) => c.id === categoryId);
+  // Fields of other Categories are not shown, and their answers are not sent.
+  const fields = allFields.filter(
+    (field) => field.categoryIds.length === 0 || field.categoryIds.includes(categoryId),
+  );
 
   function validate(data: IdeaData, enforceRequired: boolean) {
     let valid = true;
@@ -118,7 +125,7 @@ export function IdeaForm({
     setRunning(action.label);
     try {
       await action.run(
-        { ...data, title: data.title.trim(), values: clean(data.values ?? {}) },
+        { ...data, title: data.title.trim(), values: clean(data.values ?? {}, fields) },
         files,
       );
     } catch (error) {
