@@ -145,7 +145,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 ### 3.12 Personalização (Administrador)
 
 - Categorias (com descrição) e Avaliadores, Campos Personalizados, aparência dos Status, prazos de Ideia Parada, Autoria Oculta e login local.
-- **Identidade visual:** nome da instalação, logo clara e escura, favicon, cor primária, texto e imagem da página de login, e-mails com a marca.
+- **Identidade visual:** nome da instalação, logo clara e escura, favicon, cor primária, texto e imagem da página de login, e-mails com a marca. Fica na tela **Identidade** (Administradores). A leitura é pública, porque a página de login já usa a identidade. Imagens de até 2 MB (PNG, JPG, GIF, WebP, SVG e ICO, conferidos pelo conteúdo), servidas com política que impede execução. Nos e-mails entram o nome e a cor do botão; a logo nos e-mails fica para depois. A cor principal vale para os dois temas; o texto sobre ela é escolhido pelo contraste.
 - **i18n:** pt-BR e en.
 - Integrações (SSO, SMTP, IA, armazenamento) aparecem na tela só para leitura, com botões "testar conexão" ([ADR-0007](./adr/0007-integracoes-configuradas-por-ambiente.md)).
 

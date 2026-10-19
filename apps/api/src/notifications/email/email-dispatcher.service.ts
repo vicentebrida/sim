@@ -6,6 +6,7 @@ import type { Env } from '../../config/env';
 import { DB, type Database } from '../../database/database.module';
 import { collaborators, ideas, notifications } from '../../database/schema';
 import { renderEmail } from './email-templates';
+import { BrandingService } from '../../branding/branding.service';
 import { Mailer } from './mailer';
 
 export const MAX_EMAIL_ATTEMPTS = 5;
@@ -24,6 +25,7 @@ export class EmailDispatcher {
     @Inject(DB) private readonly db: Database,
     @Inject(ENV) private readonly env: Env,
     private readonly mailer: Mailer,
+    private readonly branding: BrandingService,
   ) {}
 
   /** Returns how many e-mails were sent. */
@@ -67,8 +69,10 @@ export class EmailDispatcher {
       }
 
       try {
+        const brand = await this.branding.get();
         const message = renderEmail({
           locale: this.env.SIM_LOCALE,
+          brand: { name: brand.name, color: brand.primaryColor },
           type: notification.type,
           recipientName: recipient.name,
           actorName: row.actorName,

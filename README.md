@@ -18,9 +18,10 @@ Quando alguém começa a escrever uma Ideia que já existe, o SIM mostra as **Id
 - Categorias com Avaliadores e Campos Personalizados configuráveis
 - Interface em pt-BR e en
 - Ideias Paradas com aviso aos Avaliadores e escalonamento aos Administradores
+- Identidade visual da empresa (nome, cor, logo, favicon e página de login)
 - Anexos (imagens e documentos) em Ideias e Comentários
 - Painel para Administradores, com exportação em CSV
-- Planejados: busca semântica opcional e identidade visual da empresa
+- Planejados: busca semântica opcional e personalização da aparência dos Status
 
 ## Documentação
 

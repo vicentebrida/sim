@@ -16,6 +16,7 @@
   },
   "nav": {
     "ideas": "Ideias",
+    "branding": "Identidade",
     "dashboard": "Painel",
     "categories": "Categorias",
     "fields": "Campos",
@@ -81,6 +82,7 @@
       "ATTACHMENT_TYPE_NOT_ALLOWED": "Este tipo de arquivo não é aceito.",
       "ATTACHMENT_TOO_LARGE": "O arquivo é maior que o limite permitido.",
       "TOO_MANY_ATTACHMENTS": "O limite de anexos foi atingido.",
+      "IMAGE_NOT_ALLOWED": "Envie uma imagem PNG, JPG, GIF, WebP, SVG ou ICO.",
       "FORBIDDEN": "Você não tem permissão para esta ação.",
       "INVALID_TRANSITION": "Esta mudança de status não é permitida a partir do status atual.",
       "EDIT_LOCKED": "A ideia já está em avaliação; acrescente informações nos comentários.",
@@ -181,6 +183,35 @@
     "notAllowed": "O arquivo \"{{name}}\" não é de um tipo aceito.",
     "tooLarge": "O arquivo \"{{name}}\" passa de {{size}}.",
     "failed": "Salvo, mas alguns anexos não foram enviados. Tente de novo ao editar."
+  },
+  "branding": {
+    "title": "Identidade visual",
+    "sub": "Nome, cor e imagens da sua empresa no SIM, na tela de login e nos e-mails.",
+    "texts": "Nome, cor e textos",
+    "name": "Nome da instalação",
+    "color": "Cor principal",
+    "preview": "Assim fica o botão",
+    "defaultColor": "Usar a cor padrão",
+    "loginTitle": "Título da página de login",
+    "loginText": "Texto da página de login",
+    "save": "Salvar",
+    "saved": "Identidade salva.",
+    "images": "Imagens",
+    "none": "Nenhuma",
+    "upload": "Enviar imagem",
+    "remove": "Remover",
+    "kinds": {
+      "logoLight": "Logo (fundo claro)",
+      "logoDark": "Logo (fundo escuro)",
+      "favicon": "Ícone da aba (favicon)",
+      "loginImage": "Imagem da página de login"
+    },
+    "kindHelp": {
+      "logoLight": "Aparece no topo do SIM. Sem logo, aparece o nome.",
+      "logoDark": "Usada no tema escuro. Sem ela, vale a logo clara.",
+      "favicon": "PNG, SVG ou ICO quadrado.",
+      "loginImage": "Aparece acima do formulário de login."
+    }
   },
   "status": {
     "draft": "Rascunho",

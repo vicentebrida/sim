@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from '@tanstack/react-router';
 import { LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { BrandMark } from '@/components/brand';
 import { ApiStatus } from '@/components/api-status';
 import { NotificationBell } from '@/components/notifications';
 import { Button } from '@/components/ui/button';
@@ -41,11 +42,8 @@ function AppLayout() {
     <div className="min-h-svh">
       <header className="border-b">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-6 px-4">
-          <Link to="/" className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-primary">{t('app.name')}</span>
-            <span className="hidden text-sm text-muted-foreground md:inline">
-              {t('app.fullName')}
-            </span>
+          <Link to="/" className="flex items-center">
+            <BrandMark />
           </Link>
           <nav className="flex gap-4 text-sm">
             <Link to="/" className={NAV_LINK}>
@@ -61,6 +59,9 @@ function AppLayout() {
                 </Link>
                 <Link to="/admin/custom-fields" className={NAV_LINK}>
                   {t('nav.fields')}
+                </Link>
+                <Link to="/admin/branding" className={NAV_LINK}>
+                  {t('nav.branding')}
                 </Link>
                 <Link to="/admin/collaborators" className={NAV_LINK}>
                   {t('nav.collaborators')}

@@ -5,6 +5,8 @@ export type Locale = 'pt-BR' | 'en';
 
 export interface EmailContext {
   locale: Locale;
+  /** Installation name and primary color (visual identity). */
+  brand?: { name: string; color: string | null };
   type: NotificationType;
   recipientName: string;
   actorName: string | null;
@@ -94,6 +96,15 @@ function sentence(context: EmailContext): string {
   }
 }
 
+/** A button in the brand color, with readable text on it. */
+function buttonStyle(color: string | null) {
+  const base = 'display:inline-block;padding:8px 16px;border-radius:6px;text-decoration:none;';
+  if (!color || !/^#[0-9a-f]{6}$/i.test(color)) return `${base}background:#4f46e5;color:#ffffff`;
+  const [r, g, b] = [1, 3, 5].map((i) => Number.parseInt(color.slice(i, i + 2), 16));
+  const light = (0.299 * r! + 0.587 * g! + 0.114 * b!) / 255 > 0.6;
+  return `${base}background:${color};color:${light ? '#111111' : '#ffffff'}`;
+}
+
 const escapeHtml = (text: string) => text.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
 /**
@@ -108,11 +119,11 @@ export function renderEmail(context: EmailContext) {
     ? 'You can turn off e-mail Notifications in the SIM, under Notifications.'
     : 'Você pode desligar os e-mails no SIM, em Notificações.';
   return {
-    subject: `[SIM] ${what}`.replace(/\s+/g, ' ').slice(0, 200),
+    subject: `[${context.brand?.name ?? 'SIM'}] ${what}`.replace(/\s+/g, ' ').slice(0, 200),
     text: `${greeting}\n\n${what}\n\n${open}: ${context.url}\n\n--\n${footer}\n`,
     html:
       `<p>${escapeHtml(greeting)}</p><p>${escapeHtml(what)}</p>` +
-      `<p><a href="${escapeHtml(context.url)}">${open}</a></p>` +
+      `<p><a href="${escapeHtml(context.url)}" style="${buttonStyle(context.brand?.color ?? null)}">${open}</a></p>` +
       `<p style="color:#666;font-size:12px">${escapeHtml(footer)}</p>`,
   };
 }

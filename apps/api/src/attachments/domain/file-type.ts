@@ -85,3 +85,19 @@ export function cleanFilename(filename: string): string {
   const cleaned = base.replace(/[\u0000-\u001f\u007f"]/g, '').trim();
   return (cleaned || 'file').slice(0, 200);
 }
+
+/**
+ * Images for the installation identity (admin only), by content. Unlike Attachments this accepts
+ * SVG and ICO; they are served with a sandboxing policy and only shown through `<img>`.
+ */
+export function detectBrandingImage(data: Buffer): string | null {
+  if (data.length === 0) return null;
+  for (const extension of ['png', 'jpg', 'gif', 'webp']) {
+    const type = TYPES[extension]!;
+    if (type.matches(data)) return type.contentType;
+  }
+  if (startsWith(data, [0x00, 0x00, 0x01, 0x00])) return 'image/x-icon';
+  const head = data.subarray(0, 1024).toString('utf8');
+  if (/^\s*(<\?xml[^>]*>\s*)?(<!--[\s\S]*?-->\s*)*<svg[\s>]/i.test(head)) return 'image/svg+xml';
+  return null;
+}

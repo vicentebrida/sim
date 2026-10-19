@@ -5,6 +5,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { AttachmentsModule, AttachmentStoreModule } from './attachments/attachments.module';
 import { AuthModule } from './auth/auth.module';
+import { BrandingModule } from './branding/branding.module';
 import { CategoriesModule } from './categories/categories.module';
 import { CollaboratorsModule } from './collaborators/collaborators.module';
 import { CommentsModule } from './comments/comments.module';
@@ -41,6 +42,7 @@ function webModule(): DynamicModule[] {
     DashboardModule,
     AttachmentStoreModule,
     AttachmentsModule,
+    BrandingModule,
     ...webModule(),
   ],
   providers: [
