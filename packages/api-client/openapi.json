@@ -3908,8 +3908,13 @@
           "newComments": {
             "type": "boolean"
           },
-          "byEmail": {
-            "type": "boolean"
+          "email": {
+            "type": "string",
+            "enum": [
+              "instant",
+              "daily",
+              "off"
+            ]
           },
           "emailAvailable": {
             "type": "boolean"
@@ -3917,7 +3922,7 @@
         },
         "required": [
           "newComments",
-          "byEmail",
+          "email",
           "emailAvailable"
         ],
         "additionalProperties": false
@@ -3928,8 +3933,13 @@
           "newComments": {
             "type": "boolean"
           },
-          "byEmail": {
-            "type": "boolean"
+          "email": {
+            "type": "string",
+            "enum": [
+              "instant",
+              "daily",
+              "off"
+            ]
           }
         }
       },

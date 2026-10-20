@@ -15,7 +15,8 @@ import { collaborators } from './collaborators';
 import { comments } from './comments';
 import { ideas } from './ideas';
 
-export type EmailStatus = 'none' | 'pending' | 'sent' | 'failed';
+/** `digest` waits for the daily summary e-mail; `pending` for the instant one. */
+export type EmailStatus = 'none' | 'pending' | 'digest' | 'sent' | 'failed';
 
 /** Who Follows each Idea and gets Notifications about it. */
 export const followers = pgTable(
@@ -75,7 +76,7 @@ export const notifications = pgTable(
       .where(sql`${table.emailStatus} = 'pending'`),
     check(
       'notifications_valid_email_status',
-      sql`${table.emailStatus} in ('none','pending','sent','failed')`,
+      sql`${table.emailStatus} in ('none','pending','digest','sent','failed')`,
     ),
     check(
       'notifications_valid_type',

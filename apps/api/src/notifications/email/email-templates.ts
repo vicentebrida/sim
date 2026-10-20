@@ -129,3 +129,38 @@ export function renderEmail(context: EmailContext) {
       `<p style="color:#666;font-size:12px">${escapeHtml(footer)}</p>`,
   };
 }
+
+/**
+ * The daily summary: one line per Notification, each with a link. Like the single e-mails, it
+ * carries no Comment text.
+ */
+export function renderDigest(context: EmailContext & { items: EmailContext[] }) {
+  const en = context.locale === 'en';
+  const name = context.brand?.name ?? 'SIM';
+  const count = context.items.length;
+  const greeting = en ? `Hi ${context.recipientName},` : `Olá, ${context.recipientName},`;
+  const intro = en
+    ? `Here is what happened in the ${name} since the last summary:`
+    : `Veja o que aconteceu no ${name} desde o último resumo:`;
+  const open = en ? 'Open' : 'Abrir';
+  const footer = en
+    ? 'You can change how you get e-mails in the SIM, under Notifications.'
+    : 'Você pode mudar como recebe os e-mails no SIM, em Notificações.';
+  const lines = context.items.map((item) => ({ what: sentence(item), url: item.url }));
+  return {
+    subject: (en
+      ? `[${name}] Daily summary: ${count} ${count === 1 ? 'update' : 'updates'}`
+      : `[${name}] Resumo do dia: ${count} ${count === 1 ? 'novidade' : 'novidades'}`
+    ).slice(0, 200),
+    text: `${greeting}\n\n${intro}\n\n${lines.map((line) => `- ${line.what}\n  ${open}: ${line.url}`).join('\n')}\n\n--\n${footer}\n`,
+    html:
+      `<p>${escapeHtml(greeting)}</p><p>${escapeHtml(intro)}</p><ul>` +
+      lines
+        .map(
+          (line) =>
+            `<li>${escapeHtml(line.what)} <a href="${escapeHtml(line.url)}">${open}</a></li>`,
+        )
+        .join('') +
+      `</ul><p style="color:#666;font-size:12px">${escapeHtml(footer)}</p>`,
+  };
+}

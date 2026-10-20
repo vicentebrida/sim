@@ -113,7 +113,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 | Ideia Duplicada         | Seguidores da Duplicada                 |
 | Ideia Parada            | Avaliadores e depois Administradores    |
 
-- Canais: sininho no sistema (polling) e e-mail (na hora ou desligado, escolhido pelo Colaborador; o resumo diário vem depois). O sininho entrou no Marco 1; o e-mail na hora, no Marco 2, com SMTP e Redis configurados — sem `SMTP_URL` o SIM não envia e-mail. O e-mail diz o que aconteceu e traz o link da Ideia, nunca o texto do Comentário. Ideia Parada fica para uma etapa seguinte do Marco 2.
+- Canais: sininho no sistema (polling) e e-mail (na hora, num resumo diário ou desligado, escolhido pelo Colaborador; o resumo sai uma vez por dia em `SIM_DIGEST_HOUR`/`SIM_TIMEZONE`, e quem muda de ideia antes do envio não perde nada). O sininho entrou no Marco 1; o e-mail na hora, no Marco 2, com SMTP e Redis configurados — sem `SMTP_URL` o SIM não envia e-mail. O e-mail diz o que aconteceu e traz o link da Ideia, nunca o texto do Comentário. Ideia Parada fica para uma etapa seguinte do Marco 2.
 - Cada Comentário gera no máximo uma Notificação por pessoa, a mais específica: Menção, depois Resposta, depois novo Comentário. Ninguém é notificado do que ele mesmo fez.
 - Nova Ideia numa Categoria sem Avaliadores notifica os Administradores, que avaliam essas Ideias. Recategorizar conta como nova Ideia para os Avaliadores da Categoria de destino.
 - Deixar de seguir vale até a próxima interação: comentar ou curtir de novo volta a seguir.

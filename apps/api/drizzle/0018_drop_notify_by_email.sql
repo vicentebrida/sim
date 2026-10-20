@@ -1,0 +1,2 @@
+ALTER TABLE "collaborators" DROP COLUMN "notify_by_email";--> statement-breakpoint
+ALTER TABLE "collaborators" ADD CONSTRAINT "collaborators_valid_email_mode" CHECK ("collaborators"."email_mode" in ('instant','daily','off'));

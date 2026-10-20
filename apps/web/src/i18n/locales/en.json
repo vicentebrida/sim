@@ -414,7 +414,7 @@
     "empty": "No notifications yet.",
     "unread": "Unread",
     "newCommentsPreference": "Tell me about new comments on ideas I follow",
-    "emailPreference": "Also send me these notifications by e-mail",
+    "emailPreference": "Notification e-mails",
     "types": {
       "status": "{{actor}} moved idea #{{number}} to {{to}}",
       "duplicate": "{{actor}} marked idea #{{number}} as a duplicate of #{{original}}",
@@ -424,6 +424,11 @@
       "stalled": "Idea #{{number}} is stalled ({{status}}) and waiting for review",
       "stalled_escalated": "Idea #{{number}} is still stalled ({{status}}) and needs an administrator",
       "new_idea": "New idea to review: #{{number}}"
+    },
+    "emailModes": {
+      "instant": "As they happen",
+      "daily": "One summary a day",
+      "off": "None"
     }
   },
   "follow": {

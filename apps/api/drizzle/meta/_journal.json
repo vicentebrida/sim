@@ -120,6 +120,20 @@
       "when": 1792462357875,
       "tag": "0016_semantic_search",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1792464238369,
+      "tag": "0017_email_digest",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1792464251307,
+      "tag": "0018_drop_notify_by_email",
+      "breakpoints": true
     }
   ]
 }

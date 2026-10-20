@@ -5,8 +5,9 @@
  * SIM REST API
  * OpenAPI spec version: 0.0.0
  */
+import type { UpdateNotificationPreferencesDtoEmail } from './updateNotificationPreferencesDtoEmail.ts';
 
 export interface UpdateNotificationPreferencesDto {
   newComments?: boolean;
-  byEmail?: boolean;
+  email?: UpdateNotificationPreferencesDtoEmail;
 }

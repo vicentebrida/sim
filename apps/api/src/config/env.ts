@@ -111,6 +111,19 @@ const baseSchema = z
     REDIS_URL: z.url().optional(),
     // e.g. smtp://user:password@smtp.example.com:587 (smtps:// for implicit TLS).
     SMTP_URL: z.url().optional(),
+    // The daily summary e-mail goes out at this hour (0-23) in this IANA time zone.
+    SIM_DIGEST_HOUR: z.coerce.number().int().min(0).max(23).default(8),
+    SIM_TIMEZONE: z
+      .string()
+      .default('UTC')
+      .refine((zone) => {
+        try {
+          new Intl.DateTimeFormat('en', { timeZone: zone });
+          return true;
+        } catch {
+          return false;
+        }
+      }, 'not a valid IANA time zone'),
     SIM_MAIL_FROM: z.string().default('SIM <sim@localhost>'),
     // Express `trust proxy` value: true, number of proxies or a list of IPs/subnets.
     SIM_TRUST_PROXY: z

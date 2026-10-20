@@ -108,9 +108,9 @@ describe('E-mail Notifications', () => {
   it('respects the preference to not receive e-mail', async () => {
     const preferences = await bruno
       .put('/api/notifications/preferences')
-      .send({ byEmail: false })
+      .send({ email: 'off' })
       .expect(200);
-    expect(preferences.body).toEqual({ newComments: true, byEmail: false, emailAvailable: true });
+    expect(preferences.body).toEqual({ newComments: true, email: 'off', emailAvailable: true });
 
     await newIdea();
     expect(await dispatch()).toBe(0);
@@ -120,7 +120,86 @@ describe('E-mail Notifications', () => {
       (await bruno.get('/api/notifications/unread-count').expect(200)).body.unread,
     ).toBeGreaterThan(0);
 
-    await bruno.put('/api/notifications/preferences').send({ byEmail: true }).expect(200);
+    await bruno.put('/api/notifications/preferences').send({ email: 'instant' }).expect(200);
+  });
+
+  describe('daily summary', () => {
+    const setMode = (who: Browser, email: string) =>
+      who.put('/api/notifications/preferences').send({ email }).expect(200);
+
+    it('holds the news and sends one e-mail with all of it', async () => {
+      await setMode(bruno, 'daily');
+      try {
+        await newIdea('Primeira novidade');
+        await newIdea('Segunda novidade');
+        expect(await dispatch()).toBe(0); // nothing goes out as it happens
+        expect(mailer.sent).toEqual([]);
+
+        expect(await dispatcher.dispatchDigests()).toBe(1);
+        expect(mailer.sent).toHaveLength(1);
+        const [digest] = mailer.sent;
+        expect(digest!.subject).toMatch(/Resumo do dia: 2 novidades/);
+        expect(digest!.text).toContain('Primeira novidade');
+        expect(digest!.text).toContain('Segunda novidade');
+        expect(digest!.text).toContain('http://localhost:3000/ideas/');
+
+        expect(await dispatcher.dispatchDigests()).toBe(0); // nothing left
+      } finally {
+        await setMode(bruno, 'instant');
+      }
+    });
+
+    it('does not mix people: each one gets their own summary', async () => {
+      await setMode(bruno, 'daily');
+      await setMode(ana, 'daily');
+      try {
+        const number = await newIdea('Para o Bruno');
+        await bruno.put(`/api/ideas/${number}/follow`).expect(200);
+        await bruno
+          .post(`/api/ideas/${number}/status`)
+          .send({ to: 'under_review', justification: 'Analisando' })
+          .expect(200);
+        expect(await dispatcher.dispatchDigests()).toBe(2); // Bruno (new Idea) and Ana (status)
+        expect(mailer.sent.map((m) => m.to).sort()).toEqual([
+          'ana@company.test',
+          'bruno@company.test',
+        ]);
+      } finally {
+        await setMode(bruno, 'instant');
+        await setMode(ana, 'instant');
+      }
+    });
+
+    it('follows a change of mind: back to instant it goes out right away, off it is dropped', async () => {
+      await setMode(bruno, 'daily');
+      await newIdea('Muda de ideia');
+      await setMode(bruno, 'instant');
+      expect(await dispatcher.dispatchDigests()).toBe(0);
+      expect(await dispatch()).toBe(1); // the digest row went back to the instant queue
+      mailer.sent = [];
+
+      await setMode(bruno, 'daily');
+      await newIdea('Desiste');
+      await setMode(bruno, 'off');
+      expect(await dispatcher.dispatchDigests()).toBe(0);
+      expect(await dispatch()).toBe(0);
+      expect(mailer.sent).toEqual([]);
+      await setMode(bruno, 'instant');
+    });
+
+    it('keeps the news for the next run when the SMTP fails', async () => {
+      await setMode(bruno, 'daily');
+      try {
+        await newIdea('Falha no resumo');
+        mailer.failing = true;
+        expect(await dispatcher.dispatchDigests()).toBe(0);
+        mailer.failing = false;
+        expect(await dispatcher.dispatchDigests()).toBe(1);
+        expect(mailer.sent[0]!.text).toContain('Falha no resumo');
+      } finally {
+        await setMode(bruno, 'instant');
+      }
+    });
   });
 
   // Pretends the waiting time passed.
