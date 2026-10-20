@@ -2,6 +2,12 @@
 
 ## Não lançado
 
+## 0.7.0
+
+Avisos em canais de chat e instalação em Kubernetes com Helm.
+
+- **Para atualizar**: nada é obrigatório; a migração só acrescenta a tabela das mensagens aos canais. Novas variáveis opcionais: `SIM_WEBHOOK_SLACK_URL`, `SIM_WEBHOOK_TEAMS_URL`, `SIM_WEBHOOK_GOOGLE_CHAT_URL` e `SIM_WEBHOOK_EVENTS` (veja o `.env.example`). Sem elas, tudo segue como na 0.6.0.
+
 - **Chart Helm** para Kubernetes em `deploy/helm/sim`, publicado a cada versão em `oci://ghcr.io/vicentebrida/charts/sim`. Traz Postgres (pgvector) e Redis embutidos ou usa os seus, worker separado opcional, Ingress, volume para os Anexos e segredos por `existingSecret`.
 - **Canais de chat (webhooks)**: Slack, Microsoft Teams e Google Chat podem receber uma mensagem quando uma Ideia é publicada e quando muda de Status. Configure `SIM_WEBHOOK_SLACK_URL`, `SIM_WEBHOOK_TEAMS_URL` e/ou `SIM_WEBHOOK_GOOGLE_CHAT_URL` (exigem o Redis) e, se quiser, `SIM_WEBHOOK_EVENTS`. A mensagem traz o título e o link, nunca o texto da Ideia. A tela Integrações mostra os canais e envia uma mensagem de teste.
 
