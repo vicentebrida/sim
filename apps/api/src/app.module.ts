@@ -11,6 +11,7 @@ import { SemanticModule } from './semantic/semantic.module';
 import { SettingsModule } from './settings/settings.module';
 import { StatusesModule } from './statuses/statuses.module';
 import { CategoriesModule } from './categories/categories.module';
+import { TagsModule } from './tags/tags.module';
 import { CollaboratorsModule } from './collaborators/collaborators.module';
 import { CommentsModule } from './comments/comments.module';
 import { DomainErrorFilter } from './common/domain-error.filter';
@@ -38,6 +39,7 @@ function webModule(): DynamicModule[] {
     CollaboratorsModule,
     AuthModule,
     CategoriesModule,
+    TagsModule,
     CustomFieldsModule,
     IdeasModule,
     CommentsModule,

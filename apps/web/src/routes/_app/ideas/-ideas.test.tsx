@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { describe, expect, it } from 'vitest';
 import { ana, simulateAuth } from '@/test/api';
-import { FIELDS, sampleIdea, simulateIdeas, TI } from '@/test/ideas';
+import { FIELDS, sampleIdea, simulateIdeas, TAGS, TI } from '@/test/ideas';
 import { renderApp } from '@/test/render';
 import { server } from '@/test/server';
 
@@ -33,6 +33,24 @@ describe('new Idea', () => {
       hiddenAuthorship: false,
       publish: true,
     });
+  });
+
+  it('the Author picks Tags when creating the Idea', async () => {
+    simulateAuth({ session: ana });
+    const { received } = simulateIdeas();
+    renderApp('/ideas/new');
+    const user = userEvent.setup();
+
+    await user.type(await screen.findByLabelText('Título'), 'Ainda pensando');
+    await user.selectOptions(screen.getByLabelText('Categoria'), TI.id);
+    await user.click(await screen.findByRole('checkbox', { name: 'Segurança' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar rascunho' }));
+
+    await waitFor(() =>
+      expect(received.find((r) => r.method === 'POST')?.body).toMatchObject({
+        tagIds: [TAGS[1]!.id],
+      }),
+    );
   });
 
   it('saves a Draft even without the required fields', async () => {
@@ -138,6 +156,40 @@ describe('Idea page', () => {
   });
 });
 
+describe('Tags on the Idea page', () => {
+  it('shows the Tags and lets who can tag change them', async () => {
+    simulateAuth({ session: ana });
+    const { received } = simulateIdeas({
+      idea: sampleIdea({
+        tags: [TAGS[0]!],
+        permissions: { ...sampleIdea().permissions, canTag: true },
+      }),
+    });
+    renderApp('/ideas/7');
+    const user = userEvent.setup();
+
+    expect(await screen.findByText('Custo')).toBeInTheDocument();
+    await user.click(await screen.findByRole('button', { name: 'Editar etiquetas' }));
+    expect(screen.getByRole('checkbox', { name: 'Custo' })).toBeChecked();
+    await user.click(screen.getByRole('checkbox', { name: 'Custo' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Segurança' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar' }));
+
+    expect(await screen.findByText('Segurança')).toBeInTheDocument();
+    expect(screen.queryByText('Custo')).not.toBeInTheDocument();
+    expect(received.find((r) => r.method === 'PUT')?.body).toEqual({ tagIds: [TAGS[1]!.id] });
+  });
+
+  it('only shows the Tags to who cannot change them', async () => {
+    simulateAuth({ session: ana });
+    simulateIdeas({ idea: sampleIdea({ tags: [TAGS[0]!] }) });
+    renderApp('/ideas/7');
+
+    expect(await screen.findByText('Custo')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /etiquetas/ })).not.toBeInTheDocument();
+  });
+});
+
 describe('Likes', () => {
   const bruno = { ...ana, id: '7a2d3b5f-1e8c-4a6f-8b62-4d3c2e1f0a9b', name: 'Bruno Lima' };
   const carla = { id: '8b3e4c6a-2f9d-4b7a-9c73-5e4d3f2a1b0c', name: 'Carla Dias' };
@@ -218,6 +270,21 @@ describe('Ideas list', () => {
     await waitFor(() => expect(router.state.location.search).toMatchObject({ status: 'done' }));
     await waitFor(() =>
       expect(received.some((r) => r.url.searchParams.get('status') === 'done')).toBe(true),
+    );
+  });
+
+  it('shows the Tags of each Idea and filters by Tag', async () => {
+    simulateAuth({ session: ana });
+    const { received } = simulateIdeas({ idea: sampleIdea({ tags: [TAGS[1]!] }) });
+    const { router } = renderApp('/');
+    const user = userEvent.setup();
+
+    const card = await screen.findByRole('link', { name: /Relatório mais rápido/ });
+    expect(within(card).getByText('Segurança')).toBeInTheDocument();
+    await user.selectOptions(await screen.findByLabelText('Etiqueta'), TAGS[1]!.id);
+    await waitFor(() => expect(router.state.location.search).toMatchObject({ tagId: TAGS[1]!.id }));
+    await waitFor(() =>
+      expect(received.some((r) => r.url.searchParams.get('tagId') === TAGS[1]!.id)).toBe(true),
     );
   });
 

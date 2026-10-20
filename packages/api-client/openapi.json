@@ -457,6 +457,120 @@
         ]
       }
     },
+    "/api/tags": {
+      "get": {
+        "operationId": "tags_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TagDto_Output"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tags"
+        ]
+      },
+      "post": {
+        "operationId": "tags_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagDataDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tags"
+        ]
+      }
+    },
+    "/api/tags/{id}": {
+      "patch": {
+        "operationId": "tags_rename",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagDataDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tags"
+        ]
+      },
+      "delete": {
+        "operationId": "tags_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "tags"
+        ]
+      }
+    },
     "/api/custom-fields": {
       "get": {
         "operationId": "customFields_list",
@@ -628,6 +742,16 @@
           },
           {
             "name": "categoryId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          },
+          {
+            "name": "tagId",
             "required": false,
             "in": "query",
             "schema": {
@@ -935,6 +1059,46 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AuthorDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "ideas"
+        ]
+      }
+    },
+    "/api/ideas/{number}/tags": {
+      "put": {
+        "operationId": "ideas_setTags",
+        "parameters": [
+          {
+            "name": "number",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdeaTagsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdeaDto_Output"
                 }
               }
             }
@@ -2629,6 +2793,37 @@
           "collaboratorIds"
         ]
       },
+      "TagDto_Output": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "TagDataDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
       "CustomFieldDto_Output": {
         "type": "object",
         "properties": {
@@ -2866,6 +3061,27 @@
                   ],
                   "additionalProperties": false
                 },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
                 "author": {
                   "type": "object",
                   "properties": {
@@ -2932,6 +3148,7 @@
                 "title",
                 "status",
                 "category",
+                "tags",
                 "author",
                 "hiddenAuthorship",
                 "likes",
@@ -3014,6 +3231,16 @@
           },
           "hiddenAuthorship": {
             "type": "boolean"
+          },
+          "tagIds": {
+            "default": [],
+            "maxItems": 10,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
           }
         },
         "required": [
@@ -3068,6 +3295,27 @@
               "name"
             ],
             "additionalProperties": false
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name"
+              ],
+              "additionalProperties": false
+            }
           },
           "author": {
             "type": "object",
@@ -3367,6 +3615,9 @@
               "canPublish": {
                 "type": "boolean"
               },
+              "canTag": {
+                "type": "boolean"
+              },
               "canLike": {
                 "type": "boolean"
               },
@@ -3398,6 +3649,7 @@
               "canEdit",
               "canDelete",
               "canPublish",
+              "canTag",
               "canLike",
               "canReview",
               "canRecategorize",
@@ -3412,6 +3664,7 @@
           "title",
           "status",
           "category",
+          "tags",
           "author",
           "hiddenAuthorship",
           "likes",
@@ -3660,6 +3913,23 @@
           "name"
         ],
         "additionalProperties": false
+      },
+      "IdeaTagsDto": {
+        "type": "object",
+        "properties": {
+          "tagIds": {
+            "maxItems": 10,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        },
+        "required": [
+          "tagIds"
+        ]
       },
       "StatusChangeDto": {
         "type": "object",

@@ -9,6 +9,7 @@ import type { IdeaPageDtoOutputItemsItemAuthor } from './ideaPageDtoOutputItemsI
 import type { IdeaPageDtoOutputItemsItemCategory } from './ideaPageDtoOutputItemsItemCategory.ts';
 import type { IdeaPageDtoOutputItemsItemLikes } from './ideaPageDtoOutputItemsItemLikes.ts';
 import type { IdeaPageDtoOutputItemsItemStatus } from './ideaPageDtoOutputItemsItemStatus.ts';
+import type { IdeaPageDtoOutputItemsItemTagsItem } from './ideaPageDtoOutputItemsItemTagsItem.ts';
 
 export type IdeaPageDtoOutputItemsItem = {
   /** @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$ */
@@ -21,6 +22,7 @@ export type IdeaPageDtoOutputItemsItem = {
   title: string;
   status: IdeaPageDtoOutputItemsItemStatus;
   category: IdeaPageDtoOutputItemsItemCategory;
+  tags: IdeaPageDtoOutputItemsItemTagsItem[];
   author: IdeaPageDtoOutputItemsItemAuthor;
   hiddenAuthorship: boolean;
   likes: IdeaPageDtoOutputItemsItemLikes;

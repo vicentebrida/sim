@@ -23,6 +23,7 @@ import { Route as AppAdminDashboardRouteImport } from './routes/_app/admin/dashb
 import { Route as AppAdminIntegrationsRouteImport } from './routes/_app/admin/integrations'
 import { Route as AppAdminSettingsRouteImport } from './routes/_app/admin/settings'
 import { Route as AppAdminStatusesRouteImport } from './routes/_app/admin/statuses'
+import { Route as AppAdminTagsRouteImport } from './routes/_app/admin/tags'
 import { Route as AppIdeasNewRouteImport } from './routes/_app/ideas/new'
 import { Route as AppIdeasNumberIndexRouteImport } from './routes/_app/ideas/$number/index'
 import { Route as AppIdeasNumberEditRouteImport } from './routes/_app/ideas/$number/edit'
@@ -96,6 +97,11 @@ const AppAdminStatusesRoute = AppAdminStatusesRouteImport.update({
   path: '/statuses',
   getParentRoute: () => AppAdminRouteRoute,
 } as any)
+const AppAdminTagsRoute = AppAdminTagsRouteImport.update({
+  id: '/tags',
+  path: '/tags',
+  getParentRoute: () => AppAdminRouteRoute,
+} as any)
 const AppIdeasNewRoute = AppIdeasNewRouteImport.update({
   id: '/ideas/new',
   path: '/ideas/new',
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/admin/integrations': typeof AppAdminIntegrationsRoute
   '/admin/settings': typeof AppAdminSettingsRoute
   '/admin/statuses': typeof AppAdminStatusesRoute
+  '/admin/tags': typeof AppAdminTagsRoute
   '/ideas/new': typeof AppIdeasNewRoute
   '/ideas/$number/edit': typeof AppIdeasNumberEditRoute
   '/ideas/$number/': typeof AppIdeasNumberIndexRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/admin/integrations': typeof AppAdminIntegrationsRoute
   '/admin/settings': typeof AppAdminSettingsRoute
   '/admin/statuses': typeof AppAdminStatusesRoute
+  '/admin/tags': typeof AppAdminTagsRoute
   '/ideas/new': typeof AppIdeasNewRoute
   '/ideas/$number/edit': typeof AppIdeasNumberEditRoute
   '/ideas/$number': typeof AppIdeasNumberIndexRoute
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/_app/admin/integrations': typeof AppAdminIntegrationsRoute
   '/_app/admin/settings': typeof AppAdminSettingsRoute
   '/_app/admin/statuses': typeof AppAdminStatusesRoute
+  '/_app/admin/tags': typeof AppAdminTagsRoute
   '/_app/ideas/new': typeof AppIdeasNewRoute
   '/_app/ideas/$number/edit': typeof AppIdeasNumberEditRoute
   '/_app/ideas/$number/': typeof AppIdeasNumberIndexRoute
@@ -184,6 +193,7 @@ export interface FileRouteTypes {
     | '/admin/integrations'
     | '/admin/settings'
     | '/admin/statuses'
+    | '/admin/tags'
     | '/ideas/new'
     | '/ideas/$number/edit'
     | '/ideas/$number/'
@@ -202,6 +212,7 @@ export interface FileRouteTypes {
     | '/admin/integrations'
     | '/admin/settings'
     | '/admin/statuses'
+    | '/admin/tags'
     | '/ideas/new'
     | '/ideas/$number/edit'
     | '/ideas/$number'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/_app/admin/integrations'
     | '/_app/admin/settings'
     | '/_app/admin/statuses'
+    | '/_app/admin/tags'
     | '/_app/ideas/new'
     | '/_app/ideas/$number/edit'
     | '/_app/ideas/$number/'
@@ -332,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminStatusesRouteImport
       parentRoute: typeof AppAdminRouteRoute
     }
+    '/_app/admin/tags': {
+      id: '/_app/admin/tags'
+      path: '/tags'
+      fullPath: '/admin/tags'
+      preLoaderRoute: typeof AppAdminTagsRouteImport
+      parentRoute: typeof AppAdminRouteRoute
+    }
     '/_app/ideas/new': {
       id: '/_app/ideas/new'
       path: '/ideas/new'
@@ -366,6 +385,7 @@ interface AppAdminRouteRouteChildren {
   AppAdminIntegrationsRoute: typeof AppAdminIntegrationsRoute
   AppAdminSettingsRoute: typeof AppAdminSettingsRoute
   AppAdminStatusesRoute: typeof AppAdminStatusesRoute
+  AppAdminTagsRoute: typeof AppAdminTagsRoute
 }
 
 const AppAdminRouteRouteChildren: AppAdminRouteRouteChildren = {
@@ -378,6 +398,7 @@ const AppAdminRouteRouteChildren: AppAdminRouteRouteChildren = {
   AppAdminIntegrationsRoute: AppAdminIntegrationsRoute,
   AppAdminSettingsRoute: AppAdminSettingsRoute,
   AppAdminStatusesRoute: AppAdminStatusesRoute,
+  AppAdminTagsRoute: AppAdminTagsRoute,
 }
 
 const AppAdminRouteRouteWithChildren = AppAdminRouteRoute._addFileChildren(

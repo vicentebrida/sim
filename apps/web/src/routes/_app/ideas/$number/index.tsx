@@ -11,10 +11,12 @@ import {
   useIdeasRevealAuthor,
   useIdeasPublish,
   useIdeasRecategorize,
+  useIdeasSetTags,
+  useTagsList,
 } from '@sim/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate, useRouteContext } from '@tanstack/react-router';
-import { Pencil, Send, Trash2 } from 'lucide-react';
+import { Pencil, Send, Tag, Trash2 } from 'lucide-react';
 import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Discussion } from '@/components/comments/discussion';
@@ -24,6 +26,7 @@ import { Likes } from '@/components/likes';
 import { NativeSelect } from '@/components/native-select';
 import { AttachmentList } from '@/components/attachments';
 import { StalledBadge, StatusBadge } from '@/components/status-badge';
+import { TagList, TagPicker } from '@/components/tags';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -77,6 +80,7 @@ function IdeaPage() {
             : t('ideas.createdOn', { date: formatDate(idea.createdAt) })}
           {idea.editedAt && ` · ${t('ideas.edited')}`}
         </p>
+        <IdeaTags idea={idea} />
       </header>
 
       {idea.originalIdea && (
@@ -125,6 +129,68 @@ function IdeaPage() {
 
       <Discussion idea={idea} />
     </article>
+  );
+}
+
+function IdeaTags({ idea }: { idea: IdeaDtoOutput }) {
+  const { t } = useTranslation();
+  const refresh = useRefreshIdea(idea.number);
+  const { data } = useTagsList({ query: { staleTime: 60_000, enabled: idea.permissions.canTag } });
+  const [editing, setEditing] = useState(false);
+  const [tagIds, setTagIds] = useState<string[]>([]);
+  const save = useIdeasSetTags({
+    mutation: {
+      onSuccess: async () => {
+        setEditing(false);
+        await refresh();
+      },
+    },
+  });
+  const failure = apiErrorMessage(save.error, t);
+  const canTag = idea.permissions.canTag && (data?.data.length ?? 0) > 0;
+
+  if (editing) {
+    return (
+      <div className="grid gap-3 rounded-md border p-3">
+        <TagPicker value={tagIds} onChange={setTagIds} disabled={save.isPending} />
+        {failure && (
+          <p role="alert" className="text-sm text-destructive">
+            {failure}
+          </p>
+        )}
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            disabled={save.isPending}
+            onClick={() => save.mutate({ number: idea.number, data: { tagIds } })}
+          >
+            {t('tags.save')}
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>
+            {t('tags.cancel')}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+  if (!idea.tags.length && !canTag) return null;
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <TagList tags={idea.tags} />
+      {canTag && (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => {
+            setTagIds(idea.tags.map((tag) => tag.id));
+            setEditing(true);
+          }}
+        >
+          <Tag />
+          {idea.tags.length ? t('tags.edit') : t('tags.add')}
+        </Button>
+      )}
+    </div>
   );
 }
 

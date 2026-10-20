@@ -14,6 +14,7 @@ import type { IdeaDtoOutputLikes } from './ideaDtoOutputLikes.ts';
 import type { IdeaDtoOutputOriginalIdea } from './ideaDtoOutputOriginalIdea.ts';
 import type { IdeaDtoOutputPermissions } from './ideaDtoOutputPermissions.ts';
 import type { IdeaDtoOutputStatus } from './ideaDtoOutputStatus.ts';
+import type { IdeaDtoOutputTagsItem } from './ideaDtoOutputTagsItem.ts';
 import type { IdeaDtoOutputValues } from './ideaDtoOutputValues.ts';
 
 export interface IdeaDtoOutput {
@@ -27,6 +28,7 @@ export interface IdeaDtoOutput {
   title: string;
   status: IdeaDtoOutputStatus;
   category: IdeaDtoOutputCategory;
+  tags: IdeaDtoOutputTagsItem[];
   author: IdeaDtoOutputAuthor;
   hiddenAuthorship: boolean;
   likes: IdeaDtoOutputLikes;

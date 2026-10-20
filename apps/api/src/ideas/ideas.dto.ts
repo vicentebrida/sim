@@ -1,6 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 import { AttachmentSchema } from '../attachments/attachments.dto';
+import { TagSchema } from '../tags/tags.dto';
 import { FIELD_TYPES } from './domain/fields';
 import { SORT_ORDERS, STATUSES } from './domain/idea';
 
@@ -10,6 +11,10 @@ const title = z.string().trim().min(1).max(120);
 const justification = z.string().trim().min(1).max(2000);
 const StatusSchema = z.enum(STATUSES);
 const Reference = z.object({ id: z.uuid(), name: z.string() });
+const TagIds = z
+  .array(z.uuid())
+  .max(10)
+  .refine((ids) => new Set(ids).size === ids.length, 'Repeated ids');
 
 export class NewIdeaDto extends createZodDto(
   z.object({
@@ -20,8 +25,11 @@ export class NewIdeaDto extends createZodDto(
     publish: z.boolean().default(false),
     // Needs the Hidden authorship setting.
     hiddenAuthorship: z.boolean().optional(),
+    tagIds: TagIds.default([]),
   }),
 ) {}
+
+export class IdeaTagsDto extends createZodDto(z.object({ tagIds: TagIds })) {}
 
 export class IdeaUpdateDto extends createZodDto(
   z.object({
@@ -54,6 +62,7 @@ export class ListIdeasQueryDto extends createZodDto(
       .transform((value) => value?.split(',').filter(Boolean))
       .pipe(z.array(StatusSchema).optional()),
     categoryId: z.uuid().optional(),
+    tagId: z.uuid().optional(),
     // "me" lists the current Collaborator's Ideas, Drafts included.
     author: z.enum(['me']).optional(),
     // Only Ideas the current Collaborator follows.
@@ -107,6 +116,7 @@ const IdeaSummarySchema = z.object({
   title: z.string(),
   status: StatusSchema,
   category: Reference,
+  tags: z.array(TagSchema),
   // For anyone but the Author, a stand-in when the Author chose to hide the name.
   author: Reference,
   hiddenAuthorship: z.boolean(),
@@ -158,6 +168,8 @@ export class IdeaDto extends createZodDto(
       canEdit: z.boolean(),
       canDelete: z.boolean(),
       canPublish: z.boolean(),
+      // Change the Tags (PUT /ideas/:number/tags).
+      canTag: z.boolean(),
       canLike: z.boolean(),
       canReview: z.boolean(),
       canRecategorize: z.boolean(),

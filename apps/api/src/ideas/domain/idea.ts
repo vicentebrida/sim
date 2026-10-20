@@ -155,6 +155,20 @@ export function assertCanEdit(idea: IdeaForRules, actor: Actor) {
   }
 }
 
+/**
+ * Tags: the Author while the text is editable; the Reviewers of the Category and the
+ * Administrators on any published Idea.
+ */
+export function assertCanTag(idea: IdeaForRules, actor: Actor) {
+  if (idea.status !== 'draft' && canReview(idea, actor)) return;
+  if (!isAuthor(idea, actor)) {
+    throw new DomainError('FORBIDDEN', 'Only the Author, Reviewers or Administrators tag the Idea');
+  }
+  if (!EDITABLE.includes(idea.status)) {
+    throw new DomainError('EDIT_LOCKED', 'The Idea is under review; its Reviewers handle the Tags');
+  }
+}
+
 export function assertCanPublish(idea: IdeaForRules, actor: Actor) {
   if (!isAuthor(idea, actor)) {
     throw new DomainError('FORBIDDEN', 'Only the Author publishes the Idea');
@@ -218,6 +232,7 @@ export function permissions(
     canEdit: allows(() => assertCanEdit(idea, actor)),
     canDelete: allows(() => assertCanDelete(idea, actor, context)),
     canPublish: allows(() => assertCanPublish(idea, actor)),
+    canTag: allows(() => assertCanTag(idea, actor)),
     canLike: allows(() => assertCanLike(idea, actor)),
     canReview: reviews,
     canRecategorize: reviews && RECATEGORIZABLE.includes(idea.status),

@@ -10,3 +10,4 @@ export * from './branding';
 export * from './status-settings';
 export * from './audit';
 export * from './settings';
+export * from './tags';

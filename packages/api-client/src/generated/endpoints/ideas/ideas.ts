@@ -29,6 +29,7 @@ import type {
   FollowingDtoOutput,
   IdeaDtoOutput,
   IdeaPageDtoOutput,
+  IdeaTagsDto,
   IdeaUpdateDto,
   IdeaVersionDtoOutput,
   IdeasListParams,
@@ -846,6 +847,100 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getIdeasRevealAuthorMutationOptions(options), queryClient);
+    }
+    export type ideasSetTagsResponse200 = {
+  data: IdeaDtoOutput
+  status: 200
+}
+
+export type ideasSetTagsResponseSuccess = (ideasSetTagsResponse200) & {
+  headers: Headers;
+};
+;
+
+export type ideasSetTagsResponse = (ideasSetTagsResponseSuccess)
+
+export const getIdeasSetTagsUrl = (number: number,) => {
+
+
+
+
+  return `/api/ideas/${number}/tags`
+}
+
+export const ideasSetTags = async (number: number,
+    ideaTagsDto: IdeaTagsDto, options?: Parameters<typeof simFetch>[1]): Promise<ideasSetTagsResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return simFetch<ideasSetTagsResponse>(getIdeasSetTagsUrl(number),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(ideaTagsDto)
+  }
+);}
+
+
+
+
+
+export const getIdeasSetTagsMutationKey = () => ['ideasSetTags'] as const;
+
+export const getIdeasSetTagsMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ideasSetTags>>, TError,IdeasSetTagsMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof ideasSetTags>>, TError,IdeasSetTagsMutationVariables, TContext> => {
+
+const mutationKey = getIdeasSetTagsMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof ideasSetTags>>, IdeasSetTagsMutationVariables> = (props) => {
+          const {number,data} = props ?? {};
+
+          return  ideasSetTags(number,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type IdeasSetTagsMutationResult = NonNullable<Awaited<ReturnType<typeof ideasSetTags>>>
+    export type IdeasSetTagsMutationBody = BodyType<IdeaTagsDto>
+    export type IdeasSetTagsMutationError = ErrorType<unknown>
+    export type IdeasSetTagsMutationVariables = {number: number;data: BodyType<IdeaTagsDto>}
+
+    export const useIdeasSetTags = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ideasSetTags>>, TError,IdeasSetTagsMutationVariables, TContext>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof ideasSetTags>>,
+        TError,
+        IdeasSetTagsMutationVariables,
+        TContext
+      > => {
+      return useMutation(getIdeasSetTagsMutationOptions(options), queryClient);
     }
     export type ideasPublishResponse200 = {
   data: IdeaDtoOutput

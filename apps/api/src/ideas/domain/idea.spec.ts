@@ -6,6 +6,7 @@ import {
   assertCanDelete,
   assertCanLike,
   assertCanRecategorize,
+  assertCanTag,
   type IdeaForRules,
   permissions,
   STATUSES,
@@ -213,6 +214,22 @@ describe('Likes', () => {
   });
 });
 
+describe('Tags', () => {
+  it('the Author tags while the text is editable', () => {
+    expect(errorCode(() => assertCanTag(idea('draft'), author))).toBeUndefined();
+    expect(errorCode(() => assertCanTag(idea('open'), author))).toBeUndefined();
+    expect(errorCode(() => assertCanTag(idea('under_review'), author))).toBe('EDIT_LOCKED');
+  });
+
+  it('Reviewers and Administrators tag any published Idea, but not a colleague', () => {
+    for (const status of ['open', 'under_review', 'done', 'archived'] as const) {
+      expect(errorCode(() => assertCanTag(idea(status), reviewer))).toBeUndefined();
+      expect(errorCode(() => assertCanTag(idea(status), administrator))).toBeUndefined();
+    }
+    expect(errorCode(() => assertCanTag(idea('open'), colleague))).toBe('FORBIDDEN');
+  });
+});
+
 describe('permissions computed for the web app', () => {
   it('the Author of an Open Idea can edit and delete, but not review or like', () => {
     expect(permissions(idea('open'), author, noInteraction)).toEqual({
@@ -220,6 +237,7 @@ describe('permissions computed for the web app', () => {
       canEdit: true,
       canDelete: true,
       canPublish: false,
+      canTag: true,
       canLike: false,
       canReview: false,
       canRecategorize: false,

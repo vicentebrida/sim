@@ -13,3 +13,4 @@ export * from './integrations/integrations.ts';
 export * from './notifications/notifications.ts';
 export * from './settings/settings.ts';
 export * from './statuses/statuses.ts';
+export * from './tags/tags.ts';

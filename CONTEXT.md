@@ -16,6 +16,11 @@ _Avoid_: Melhoria (como entidade), sugestão, ticket, post, tópico
 _Code_: `Category` (tabela `categories`)
 _Avoid_: Departamento, setor, área, tag
 
+**Etiqueta**:
+Rótulo criado pelo Administrador que agrupa Ideias de Categorias diferentes (ex.: Custo, Segurança). Uma Ideia tem nenhuma ou várias. Diferente da Categoria, não define quem avalia.
+_Code_: `Tag` (tabelas `tags` e `idea_tags`)
+_Avoid_: Marcador, label, categoria secundária
+
 **Campo Personalizado**:
 Campo do formulário da Ideia definido pelo Administrador (ex.: Situação atual, Proposta, Benefício esperado), válido para todas as Categorias ou só para algumas. Uma vez preenchido em alguma Ideia, só pode ser desativado, nunca excluído.
 _Code_: `CustomField` (tabela `custom_fields`)
