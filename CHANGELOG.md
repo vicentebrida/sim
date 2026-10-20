@@ -1,6 +1,10 @@
 # Changelog
 
-## Não lançado
+## 0.6.0
+
+Etiquetas, Avaliadores pelo grupo do SSO, logo nos e-mails e a opção de desligar o Rascunho.
+
+- **Para atualizar**: nada é obrigatório; as migrações rodam sozinhas e só acrescentam tabelas e colunas. Nenhuma variável nova. Sem Etiquetas criadas e sem grupo do SSO nas Categorias, tudo segue como na 0.5.0.
 
 - **Etiquetas**: o Administrador cria as Etiquetas na nova tela Etiquetas (ex.: Custo, Segurança). O Autor escolhe ao criar a Ideia e enquanto ela está Aberta; depois, os Avaliadores e Administradores. A lista de Ideias mostra as Etiquetas e filtra por elas.
 - **Avaliadores pelo grupo do SSO**: cada Categoria pode ter um grupo do SSO (em Editar). Quem está nele vira Avaliador da Categoria a cada login e deixa de ser ao sair do grupo. Os Avaliadores escolhidos à mão continuam, e a tela mostra quem veio "pelo SSO". Usa a mesma claim de grupos de `SIM_SSO_CLAIM_GROUPS`.
