@@ -37,7 +37,7 @@ services:
   #   docker compose -f docker/compose.yml --profile clamav up -d
   # e no .env: SIM_CLAMAV_URL=tcp://clamav:3310
   clamav:
-    image: clamav/clamav:stable
+    image: clamav/clamav-debian:stable
     profiles: [clamav]
     volumes:
       - clamav:/var/lib/clamav

@@ -53,7 +53,7 @@ com mais de um pod, use `persistence.accessMode=ReadWriteMany` ou o S3 (`env.SIM
 
 ### Antivírus
 
-O chart não traz o ClamAV. Com um `clamd` no cluster (por exemplo, a imagem `clamav/clamav`),
+O chart não traz o ClamAV. Com um `clamd` no cluster (por exemplo, a imagem `clamav/clamav-debian`, que também roda em ARM),
 aponte o SIM para ele: `env.SIM_CLAMAV_URL=tcp://clamav.infra:3310`. Enquanto estiver
 configurado, os envios de Anexos são recusados se o antivírus não responder.
 
