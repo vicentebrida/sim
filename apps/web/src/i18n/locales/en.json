@@ -136,7 +136,9 @@
       "HIDDEN_AUTHORSHIP_DISABLED": "Hidden authorship is turned off on this installation.",
       "AUTHORSHIP_NOT_HIDDEN": "The Author of this idea is not hidden.",
       "TAG_NAME_TAKEN": "A tag with this name already exists.",
-      "UNKNOWN_TAG": "One of the tags no longer exists. Reload the page."
+      "UNKNOWN_TAG": "One of the tags no longer exists. Reload the page.",
+      "ATTACHMENT_INFECTED": "The antivirus found a threat in this file, so it was not sent.",
+      "ANTIVIRUS_UNAVAILABLE": "The file could not be checked by the antivirus right now. Try again shortly."
     },
     "fields": {
       "required": "Required.",
@@ -276,7 +278,8 @@
       "collaborator.anonymized": "Anonymized a person",
       "authorship.revealed": "Revealed the author of an idea",
       "settings.hidden_authorship_changed": "Changed the hidden authorship setting",
-      "settings.stalled_deadlines_changed": "Changed the stalled idea deadlines"
+      "settings.stalled_deadlines_changed": "Changed the stalled idea deadlines",
+      "attachment.infected": "Had an attachment blocked by the antivirus"
     }
   },
   "status": {
@@ -528,7 +531,11 @@
     "events": {
       "published": "new ideas",
       "status": "status changes"
-    }
+    },
+    "antivirus": "Antivirus (ClamAV)",
+    "antivirusOff": "Off. Set SIM_CLAMAV_URL (e.g. tcp://clamav:3310) to check every attachment before storing it.",
+    "antivirusOn": "Every attachment is checked before it is stored. While the antivirus is down, uploads are refused.",
+    "antivirusOk": "Connection ok: {{version}}."
   },
   "tags": {
     "title": "Tags",

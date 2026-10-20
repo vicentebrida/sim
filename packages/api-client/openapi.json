@@ -2258,6 +2258,27 @@
         ]
       }
     },
+    "/api/integrations/antivirus/test": {
+      "post": {
+        "operationId": "integrations_testAntivirus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AntivirusTestDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "integrations"
+        ]
+      }
+    },
     "/api/integrations/semantic-search/test": {
       "post": {
         "operationId": "integrations_testSemanticSearch",
@@ -5395,6 +5416,18 @@
               "events"
             ],
             "additionalProperties": false
+          },
+          "antivirus": {
+            "type": "object",
+            "properties": {
+              "configured": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "configured"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
@@ -5403,7 +5436,8 @@
           "storage",
           "redis",
           "semanticSearch",
-          "webhooks"
+          "webhooks",
+          "antivirus"
         ],
         "additionalProperties": false
       },
@@ -5437,6 +5471,40 @@
           ],
           "additionalProperties": false
         }
+      },
+      "AntivirusTestDto_Output": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "ok",
+          "version",
+          "error"
+        ],
+        "additionalProperties": false
       },
       "ConnectionTestDto_Output": {
         "type": "object",

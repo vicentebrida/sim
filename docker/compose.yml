@@ -32,6 +32,17 @@ services:
       - ollama:/root/.ollama
     restart: unless-stopped
 
+  # Opcional, antivírus nos Anexos (precisa de uns 2 GB de memória; na primeira subida baixa as
+  # assinaturas, o que leva alguns minutos):
+  #   docker compose -f docker/compose.yml --profile clamav up -d
+  # e no .env: SIM_CLAMAV_URL=tcp://clamav:3310
+  clamav:
+    image: clamav/clamav:stable
+    profiles: [clamav]
+    volumes:
+      - clamav:/var/lib/clamav
+    restart: unless-stopped
+
   redis:
     image: redis:7-alpine
     volumes:
@@ -53,6 +64,7 @@ services:
     restart: unless-stopped
 
 volumes:
+  clamav:
   ollama:
   sim-data:
   postgres:

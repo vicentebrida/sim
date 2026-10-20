@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { describe, expect, it } from 'vitest';
@@ -11,6 +11,7 @@ const admin = { ...ana, name: 'Admin', administrator: true };
 const state = (
   semanticSearch: object,
   webhooks: object = { channels: [], events: ['published', 'status'] },
+  antivirus: object = { configured: false },
 ) => ({
   sso: { mode: 'oidc' },
   smtp: { configured: true },
@@ -18,6 +19,7 @@ const state = (
   redis: { configured: true },
   semanticSearch,
   webhooks,
+  antivirus,
 });
 
 const semanticOff = {
@@ -128,5 +130,29 @@ describe('Integrations', () => {
     await user.click(screen.getByRole('button', { name: 'Enviar mensagem de teste' }));
     expect(await screen.findByText('Slack: mensagem enviada')).toBeInTheDocument();
     expect(screen.getByText('Microsoft Teams: Falhou: HTTP 404')).toBeInTheDocument();
+  });
+
+  it('tests the antivirus and explains how to turn it on', async () => {
+    simulateAuth({ session: admin });
+    let configured = true;
+    server.use(
+      http.get('*/api/integrations', () =>
+        HttpResponse.json(state(semanticOff, undefined, { configured })),
+      ),
+      http.post('*/api/integrations/antivirus/test', () =>
+        HttpResponse.json({ ok: true, version: 'ClamAV 1.4.1/27431', error: null }),
+      ),
+    );
+    renderApp('/admin/integrations');
+    const user = userEvent.setup();
+
+    expect(await screen.findByText(/os envios são recusados/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Testar conexão' }));
+    expect(await screen.findByText('Conexão ok: ClamAV 1.4.1/27431.')).toBeInTheDocument();
+
+    cleanup();
+    configured = false;
+    renderApp('/admin/integrations');
+    expect(await screen.findByText(/Defina SIM_CLAMAV_URL/)).toBeInTheDocument();
   });
 });

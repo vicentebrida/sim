@@ -1,6 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { and, count, eq, isNull } from 'drizzle-orm';
+import { AntivirusService } from '../antivirus/antivirus.service';
+import { AuditService } from '../audit/audit.service';
 import { assertCanEditComment, canReadText } from '../comments/domain/comment';
 import { DomainError } from '../common/domain-error';
 import { ENV } from '../config/config.module';
@@ -36,6 +38,8 @@ export class AttachmentsService {
     @Inject(ENV) private readonly env: Env,
     private readonly ideas: IdeasService,
     private readonly storage: FileStorage,
+    private readonly antivirus: AntivirusService,
+    private readonly audit: AuditService,
   ) {}
 
   async addToIdea(collaborator: Collaborator, number: number, file: UploadedFile | undefined) {
@@ -111,6 +115,19 @@ export class AttachmentsService {
       );
     if ((existing?.total ?? 0) >= this.env.SIM_ATTACHMENT_MAX_COUNT) {
       throw new DomainError('TOO_MANY_ATTACHMENTS', 'The limit of Attachments was reached');
+    }
+
+    const scan = await this.antivirus.scan(file.buffer);
+    if (scan?.infected) {
+      // Administrators see the attempt in the Audit; the file is never stored.
+      await this.audit.record(this.db, {
+        actorId: collaborator.id,
+        action: 'attachment.infected',
+        targetType: 'idea',
+        targetId: target.ideaId,
+        details: { filename, signature: scan.signature, commentId: target.commentId },
+      });
+      throw new DomainError('ATTACHMENT_INFECTED', 'The antivirus found a threat in the file');
     }
 
     const storageKey = randomUUID();

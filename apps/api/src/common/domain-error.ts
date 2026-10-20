@@ -48,6 +48,8 @@ export const ERROR_STATUS = {
   ATTACHMENT_TYPE_NOT_ALLOWED: HttpStatus.BAD_REQUEST,
   ATTACHMENT_TOO_LARGE: HttpStatus.PAYLOAD_TOO_LARGE,
   TOO_MANY_ATTACHMENTS: HttpStatus.CONFLICT,
+  ATTACHMENT_INFECTED: HttpStatus.UNPROCESSABLE_ENTITY,
+  ANTIVIRUS_UNAVAILABLE: HttpStatus.SERVICE_UNAVAILABLE,
 } as const satisfies Record<string, HttpStatus>;
 
 export type ErrorCode = keyof typeof ERROR_STATUS;

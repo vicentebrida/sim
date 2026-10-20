@@ -2,6 +2,8 @@
 
 ## Não lançado
 
+- **Antivírus nos Anexos (opcional)**: com `SIM_CLAMAV_URL` apontando para o `clamd` do ClamAV (ex.: `tcp://clamav:3310`), cada Anexo é verificado antes de ser guardado. Arquivo com ameaça é recusado e a tentativa vai para a Auditoria; com o antivírus fora do ar, os envios são recusados em vez de guardados sem verificação. A tela Integrações mostra o estado e testa a conexão, e o compose ganhou o perfil `clamav`.
+
 ## 0.7.0
 
 Avisos em canais de chat e instalação em Kubernetes com Helm.

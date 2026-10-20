@@ -9,6 +9,7 @@
 export * from './accessConfigurationDtoOutput.ts';
 export * from './accessConfigurationDtoOutputAttachments.ts';
 export * from './accessConfigurationDtoOutputSso.ts';
+export * from './antivirusTestDtoOutput.ts';
 export * from './attachmentDtoOutput.ts';
 export * from './attachmentsAddToCommentBody.ts';
 export * from './attachmentsAddToIdeaBody.ts';
@@ -98,6 +99,7 @@ export * from './ideaVersionDtoOutputAnswersItem.ts';
 export * from './ideaVersionDtoOutputAnswersItemType.ts';
 export * from './ideaVersionDtoOutputCategory.ts';
 export * from './integrationsDtoOutput.ts';
+export * from './integrationsDtoOutputAntivirus.ts';
 export * from './integrationsDtoOutputRedis.ts';
 export * from './integrationsDtoOutputSemanticSearch.ts';
 export * from './integrationsDtoOutputSmtp.ts';

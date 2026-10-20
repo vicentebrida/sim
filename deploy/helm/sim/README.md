@@ -51,6 +51,12 @@ canais de chat) vão para um pod próprio e `web.replicas` pode crescer. Os Anex
 com mais de um pod, use `persistence.accessMode=ReadWriteMany` ou o S3 (`env.SIM_STORAGE=s3` e
 `persistence.enabled=false`). As sessões ficam no banco, então não é preciso afinidade.
 
+### Antivírus
+
+O chart não traz o ClamAV. Com um `clamd` no cluster (por exemplo, a imagem `clamav/clamav`),
+aponte o SIM para ele: `env.SIM_CLAMAV_URL=tcp://clamav.infra:3310`. Enquanto estiver
+configurado, os envios de Anexos são recusados se o antivírus não responder.
+
 ## O que fica depois de `helm uninstall`
 
 O volume dos Anexos (`<release>-data`) e o do Postgres embutido não são apagados.

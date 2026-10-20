@@ -1,6 +1,7 @@
 import {
   getIntegrationsGetQueryKey,
   useIntegrationsGet,
+  useIntegrationsTestAntivirus,
   useIntegrationsTestSemanticSearch,
   useIntegrationsTestWebhooks,
 } from '@sim/api-client';
@@ -32,9 +33,11 @@ function IntegrationsPage() {
     },
   });
   const testWebhooks = useIntegrationsTestWebhooks();
+  const testAntivirus = useIntegrationsTestAntivirus();
   const integrations = data?.data;
   const result = test.data?.data;
   const webhookResults = testWebhooks.data?.data;
+  const antivirusResult = testAntivirus.data?.data;
 
   return (
     <div className="space-y-6">
@@ -190,6 +193,42 @@ function IntegrationsPage() {
                 </>
               ) : (
                 <p className="text-muted-foreground">{t('integrations.webhooksOff')}</p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <h2>{t('integrations.antivirus')}</h2>
+                <State on={integrations.antivirus.configured} />
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              {integrations.antivirus.configured ? (
+                <>
+                  <p className="text-muted-foreground">{t('integrations.antivirusOn')}</p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={testAntivirus.isPending}
+                    onClick={() => testAntivirus.mutate()}
+                  >
+                    {t('integrations.test')}
+                  </Button>
+                  {antivirusResult?.ok && (
+                    <p role="status">
+                      {t('integrations.antivirusOk', { version: antivirusResult.version })}
+                    </p>
+                  )}
+                  {antivirusResult && !antivirusResult.ok && (
+                    <p role="alert" className="text-destructive">
+                      {t('integrations.testFailed', { error: antivirusResult.error })}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className="text-muted-foreground">{t('integrations.antivirusOff')}</p>
               )}
             </CardContent>
           </Card>

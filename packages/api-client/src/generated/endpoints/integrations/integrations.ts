@@ -25,6 +25,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AntivirusTestDtoOutput,
   ConnectionTestDtoOutput,
   IntegrationsDtoOutput,
   WebhookTestDtoOutput
@@ -237,6 +238,85 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getIntegrationsTestWebhooksMutationOptions(options), queryClient);
+    }
+    export type integrationsTestAntivirusResponse200 = {
+  data: AntivirusTestDtoOutput
+  status: 200
+}
+
+export type integrationsTestAntivirusResponseSuccess = (integrationsTestAntivirusResponse200) & {
+  headers: Headers;
+};
+;
+
+export type integrationsTestAntivirusResponse = (integrationsTestAntivirusResponseSuccess)
+
+export const getIntegrationsTestAntivirusUrl = () => {
+
+
+
+
+  return `/api/integrations/antivirus/test`
+}
+
+export const integrationsTestAntivirus = async ( options?: Parameters<typeof simFetch>[1]): Promise<integrationsTestAntivirusResponse> => {
+
+  return simFetch<integrationsTestAntivirusResponse>(getIntegrationsTestAntivirusUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getIntegrationsTestAntivirusMutationKey = () => ['integrationsTestAntivirus'] as const;
+
+export const getIntegrationsTestAntivirusMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof integrationsTestAntivirus>>, TError,void, TContext>, request?: SecondParameter<typeof simFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof integrationsTestAntivirus>>, TError,void, TContext> => {
+
+const mutationKey = getIntegrationsTestAntivirusMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof integrationsTestAntivirus>>, void> = () => {
+
+
+          return  integrationsTestAntivirus(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type IntegrationsTestAntivirusMutationResult = NonNullable<Awaited<ReturnType<typeof integrationsTestAntivirus>>>
+
+    export type IntegrationsTestAntivirusMutationError = ErrorType<unknown>
+
+
+    export const useIntegrationsTestAntivirus = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof integrationsTestAntivirus>>, TError,void, TContext>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof integrationsTestAntivirus>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getIntegrationsTestAntivirusMutationOptions(options), queryClient);
     }
     export type integrationsTestSemanticSearchResponse200 = {
   data: ConnectionTestDtoOutput

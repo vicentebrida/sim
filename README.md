@@ -21,7 +21,7 @@ Quando alguém começa a escrever uma Ideia que já existe, o SIM mostra as **Id
 - Interface em pt-BR e en
 - Ideias Paradas com aviso aos Avaliadores e escalonamento aos Administradores
 - Identidade visual da empresa (nome, cor, logo, favicon e página de login)
-- Anexos (imagens e documentos) em Ideias e Comentários
+- Anexos (imagens e documentos) em Ideias e Comentários, com antivírus opcional (ClamAV)
 - Painel para Administradores, com exportação em CSV
 - Aparência dos Status personalizável (nome, cor e descrição)
 - Busca semântica opcional (OpenAI, Ollama ou compatível) nas Ideias Semelhantes

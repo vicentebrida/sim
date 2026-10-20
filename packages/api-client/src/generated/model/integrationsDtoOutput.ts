@@ -5,6 +5,7 @@
  * SIM REST API
  * OpenAPI spec version: 0.0.0
  */
+import type { IntegrationsDtoOutputAntivirus } from './integrationsDtoOutputAntivirus.ts';
 import type { IntegrationsDtoOutputRedis } from './integrationsDtoOutputRedis.ts';
 import type { IntegrationsDtoOutputSemanticSearch } from './integrationsDtoOutputSemanticSearch.ts';
 import type { IntegrationsDtoOutputSmtp } from './integrationsDtoOutputSmtp.ts';
@@ -19,4 +20,5 @@ export interface IntegrationsDtoOutput {
   redis: IntegrationsDtoOutputRedis;
   semanticSearch: IntegrationsDtoOutputSemanticSearch;
   webhooks: IntegrationsDtoOutputWebhooks;
+  antivirus: IntegrationsDtoOutputAntivirus;
 }
