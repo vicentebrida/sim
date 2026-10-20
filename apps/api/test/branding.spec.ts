@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { detectBrandingImage } from '../src/attachments/domain/file-type';
-import { renderEmail } from '../src/notifications/email/email-templates';
+import { renderDigest, renderEmail } from '../src/notifications/email/email-templates';
 import {
   type Browser,
   createApp,
@@ -45,6 +45,17 @@ describe('e-mail with the identity', () => {
     expect(email.html).toContain('background:#ffee00;color:#111111');
     expect(renderEmail({ ...context, brand: { name: 'X', color: '#102030' } }).html).toContain(
       'color:#ffffff',
+    );
+  });
+
+  it('puts the logo on top of the e-mail and of the daily summary', () => {
+    const brand = { name: 'Acme', color: null, logo: true };
+    expect(renderEmail({ ...context, brand }).html).toMatch(
+      /^<p><img src="cid:logo@sim" alt="Acme"/,
+    );
+    expect(renderDigest({ ...context, brand, items: [context] }).html).toContain('cid:logo@sim');
+    expect(renderEmail({ ...context, brand: { ...brand, logo: false } }).html).not.toContain(
+      '<img',
     );
   });
 });

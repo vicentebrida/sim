@@ -229,7 +229,7 @@
       "loginImage": "Imagem da página de login"
     },
     "kindHelp": {
-      "logoLight": "Aparece no topo do SIM. Sem logo, aparece o nome.",
+      "logoLight": "Aparece no topo do SIM e dos e-mails (nos e-mails, só PNG, JPG ou GIF de até 300 KB). Sem logo, aparece o nome.",
       "logoDark": "Usada no tema escuro. Sem ela, vale a logo clara.",
       "favicon": "PNG, SVG ou ICO quadrado.",
       "loginImage": "Aparece acima do formulário de login."

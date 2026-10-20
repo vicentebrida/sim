@@ -229,7 +229,7 @@
       "loginImage": "Login page image"
     },
     "kindHelp": {
-      "logoLight": "Shown at the top of the SIM. Without a logo, the name is shown.",
+      "logoLight": "Shown at the top of the SIM and of e-mails (in e-mails, only PNG, JPG or GIF up to 300 KB). Without a logo, the name is shown.",
       "logoDark": "Used in the dark theme. Without it, the light logo is used.",
       "favicon": "Square PNG, SVG or ICO.",
       "loginImage": "Shown above the login form."

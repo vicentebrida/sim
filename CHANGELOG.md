@@ -2,6 +2,7 @@
 
 ## Não lançado
 
+- **Logo nos e-mails**: as Notificações e o resumo diário trazem no topo a logo da identidade visual (a clara, ou a escura se for a única), embutida na mensagem. Vale para PNG, JPG ou GIF de até 300 KB; com outra imagem, o e-mail sai sem logo.
 - **Desligar o Rascunho**: na tela Status, o Administrador pode desligar o Rascunho; aí toda Ideia nova já sai publicada e o botão "Salvar rascunho" some. Os Rascunhos que já existiam continuam com seus Autores, que podem editar, publicar ou excluir.
 
 ## 0.5.0

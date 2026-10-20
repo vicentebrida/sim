@@ -5,8 +5,8 @@ export type Locale = 'pt-BR' | 'en';
 
 export interface EmailContext {
   locale: Locale;
-  /** Installation name and primary color (visual identity). */
-  brand?: { name: string; color: string | null };
+  /** Installation name, primary color and whether the logo goes along (visual identity). */
+  brand?: { name: string; color: string | null; logo?: boolean };
   /** Names the Administrator gave to Statuses, replacing the defaults. */
   statusLabels?: Partial<Record<Status, string>>;
   type: NotificationType;
@@ -109,6 +109,15 @@ function buttonStyle(color: string | null) {
 
 const escapeHtml = (text: string) => text.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
+/** Content-ID of the logo sent inline with the e-mail. */
+export const LOGO_CID = 'logo@sim';
+
+/** The logo on top, when the installation has one that e-mail clients show. */
+function header(brand: EmailContext['brand']) {
+  if (!brand?.logo) return '';
+  return `<p><img src="cid:${LOGO_CID}" alt="${escapeHtml(brand.name)}" style="max-height:40px;max-width:200px;border:0"></p>`;
+}
+
 /**
  * E-mails carry no Comment text: if it is hidden or removed later, nothing stays in inboxes.
  */
@@ -124,6 +133,7 @@ export function renderEmail(context: EmailContext) {
     subject: `[${context.brand?.name ?? 'SIM'}] ${what}`.replace(/\s+/g, ' ').slice(0, 200),
     text: `${greeting}\n\n${what}\n\n${open}: ${context.url}\n\n--\n${footer}\n`,
     html:
+      header(context.brand) +
       `<p>${escapeHtml(greeting)}</p><p>${escapeHtml(what)}</p>` +
       `<p><a href="${escapeHtml(context.url)}" style="${buttonStyle(context.brand?.color ?? null)}">${open}</a></p>` +
       `<p style="color:#666;font-size:12px">${escapeHtml(footer)}</p>`,
@@ -154,6 +164,7 @@ export function renderDigest(context: EmailContext & { items: EmailContext[] }) 
     ).slice(0, 200),
     text: `${greeting}\n\n${intro}\n\n${lines.map((line) => `- ${line.what}\n  ${open}: ${line.url}`).join('\n')}\n\n--\n${footer}\n`,
     html:
+      header(context.brand) +
       `<p>${escapeHtml(greeting)}</p><p>${escapeHtml(intro)}</p><ul>` +
       lines
         .map(

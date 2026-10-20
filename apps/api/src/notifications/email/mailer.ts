@@ -5,6 +5,8 @@ export interface MailMessage {
   subject: string;
   text: string;
   html: string;
+  /** Inline images, referenced in the HTML as `cid:<cid>`. */
+  attachments?: { filename: string; content: Buffer; contentType: string; cid: string }[];
 }
 
 /** Sends an e-mail. An abstract class so tests can replace it. */
