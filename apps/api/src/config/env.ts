@@ -88,6 +88,12 @@ const baseSchema = z
       .optional(),
     SIM_EMERGENCY_PASSWORD: z.string().min(MIN_PASSWORD_LENGTH).optional(),
     SIM_WEB_DIST: z.string().optional(),
+    // Optional semantic search: any OpenAI-compatible embeddings service (OpenAI, Ollama, ...).
+    SIM_EMBEDDINGS_URL: z.url().optional(),
+    SIM_EMBEDDINGS_MODEL: optionalString,
+    SIM_EMBEDDINGS_API_KEY: optionalString,
+    // Cosine similarity (0 to 1) from which an Idea counts as similar in meaning.
+    SIM_SEMANTIC_THRESHOLD: z.coerce.number().min(0).max(1).default(0.75),
     // Collaborators (other than Administrators) without login for this many days are deactivated.
     SIM_INACTIVITY_DAYS: z.coerce.number().int().positive().optional(),
     // Attachments are stored on disk (mount a volume here).
@@ -114,6 +120,14 @@ const baseSchema = z
         if (value === 'true' || value === 'false') return value === 'true';
         return /^\d+$/.test(value) ? Number(value) : value;
       }),
+  })
+  .refine((env) => !env.SIM_EMBEDDINGS_URL || env.SIM_EMBEDDINGS_MODEL, {
+    path: ['SIM_EMBEDDINGS_MODEL'],
+    message: 'required when SIM_EMBEDDINGS_URL is set',
+  })
+  .refine((env) => !env.SIM_EMBEDDINGS_URL || env.REDIS_URL, {
+    path: ['REDIS_URL'],
+    message: 'required when SIM_EMBEDDINGS_URL is set (Ideas are indexed by a background job)',
   })
   .refine((env) => !env.SMTP_URL || env.REDIS_URL, {
     path: ['REDIS_URL'],

@@ -71,7 +71,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 - Os links das Ideias Semelhantes abrem em nova aba, para não perder o texto que está sendo escrito.
 - A busca textual pontua cada Ideia por três sinais: quanto do título digitado aparece nela (o principal, que evita sugestões por uma única palavra genérica como "melhorar"), a relevância do texto completo e a semelhança entre os títulos (pega erros de digitação). Ignora acentos e variações das palavras ("relatórios" encontra "relatório").
 - **Busca textual** (Postgres full-text em português + pg_trgm): sempre ativa.
-- **Busca semântica** (embeddings + pgvector): ativa quando há provedor configurado, seja API compatível com OpenAI ou Ollama. Quando as duas estão ativas, os resultados são combinados.
+- **Busca semântica** (embeddings + pgvector): ativa quando há provedor configurado, seja API compatível com OpenAI ou Ollama. Quando as duas estão ativas, os resultados são combinados: ficam as Ideias achadas pelo texto e as que só o sentido achou (acima de `SIM_SEMANTIC_THRESHOLD`), ordenadas pela pontuação, no máximo 5. As Ideias são indexadas em segundo plano (título + campos de detecção); um texto editado ou um modelo trocado reindexa sozinho, e os vetores de modelos diferentes nunca são comparados. Com o serviço fora do ar, vale só a busca textual. Rascunhos e Duplicadas não entram. A tela **Integrações** mostra quantas Ideias já foram indexadas e testa a conexão. O texto digitado sai do SIM para o serviço de embeddings escolhido: com Ollama, tudo fica na sua infraestrutura.
 
 ### 3.5 Curtidas e listagem
 

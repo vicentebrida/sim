@@ -24,7 +24,8 @@
     "fields": "Fields",
     "collaborators": "People",
     "logout": "Sign out",
-    "settings": "Settings"
+    "settings": "Settings",
+    "integrations": "Integrations"
   },
   "login": {
     "title": "Sign in to SIM",
@@ -460,5 +461,27 @@
     "hide": "Hide earlier versions",
     "version": "Version {{number}}",
     "period": "from {{from}} to {{to}}"
+  },
+  "integrations": {
+    "title": "Integrations",
+    "subtitle": "Set through the server environment variables; this only shows their state. Secrets never appear.",
+    "configured": "Configured",
+    "notConfigured": "Not configured",
+    "sso": "Single sign-on (SSO)",
+    "ssoOff": "Off. Set SIM_SSO_MODE to use OIDC or OAuth2.",
+    "ssoMode": "{{mode}} mode.",
+    "smtp": "E-mail (SMTP)",
+    "smtpHelp": "Set SMTP_URL to send notifications by e-mail.",
+    "redis": "Redis (background jobs)",
+    "redisHelp": "Needed for e-mail, stalled ideas, automatic deactivation and semantic search.",
+    "semantic": "Semantic search (AI)",
+    "semanticOff": "Off. Set SIM_EMBEDDINGS_URL and SIM_EMBEDDINGS_MODEL (OpenAI, Ollama or another compatible service) to find similar ideas by meaning.",
+    "semanticModel": "Model {{model}} · minimum similarity {{threshold}}.",
+    "semanticIndexed": "{{indexed}} of {{total}} ideas indexed",
+    "semanticPending_one": "{{count}} waiting",
+    "semanticPending_other": "{{count}} waiting",
+    "test": "Test connection",
+    "testOk": "Connection ok: the service returned {{dimensions}}-dimension vectors.",
+    "testFailed": "Failed: {{error}}"
   }
 }

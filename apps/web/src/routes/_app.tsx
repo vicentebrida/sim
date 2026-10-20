@@ -69,6 +69,9 @@ function AppLayout() {
                 <Link to="/admin/collaborators" className={NAV_LINK}>
                   {t('nav.collaborators')}
                 </Link>
+                <Link to="/admin/integrations" className={NAV_LINK}>
+                  {t('nav.integrations')}
+                </Link>
                 <Link to="/admin/settings" className={NAV_LINK}>
                   {t('nav.settings')}
                 </Link>

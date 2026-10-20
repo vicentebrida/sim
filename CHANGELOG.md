@@ -1,5 +1,9 @@
 # Changelog
 
+## Não lançado
+
+- **Busca semântica (opcional)**: as Ideias Semelhantes passam a achar também o que é parecido no sentido, não só nas palavras, com qualquer serviço de embeddings compatível com a API da OpenAI (OpenAI, Ollama, ...). As Ideias são indexadas em segundo plano; se o serviço cair, vale a busca textual. Configuração em `SIM_EMBEDDINGS_*` (veja o `.env.example`); o compose traz o perfil `ollama`. A tela **Integrações** mostra o estado e testa a conexão. Exige o Postgres com pgvector (a imagem do compose já tem).
+
 ## 0.3.0
 
 Marco 3: governança e refinamento. Fica de fora, por decisão, a busca semântica com IA do Marco 2.
