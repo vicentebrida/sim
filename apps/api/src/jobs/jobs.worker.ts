@@ -17,6 +17,7 @@ import { EmailDispatcher } from '../notifications/email/email-dispatcher.service
 const QUEUE = 'sim-jobs';
 const EMAILS = 'dispatch-emails';
 const STALLED = 'check-stalled-ideas';
+const DIGESTS = 'send-daily-digests';
 const EMBEDDINGS = 'embed-ideas';
 const INACTIVITY = 'deactivate-inactive-collaborators';
 
@@ -52,7 +53,14 @@ export class JobsWorker implements OnApplicationBootstrap, OnApplicationShutdown
     };
     this.queue = new Queue(QUEUE, { connection: connect() });
     this.queue.on('error', (error) => this.logger.warn(`Queue: ${error.message}`));
-    if (SMTP_URL) await this.queue.upsertJobScheduler(EMAILS, { every: 15_000 }, { name: EMAILS });
+    if (SMTP_URL) {
+      await this.queue.upsertJobScheduler(EMAILS, { every: 15_000 }, { name: EMAILS });
+      await this.queue.upsertJobScheduler(
+        DIGESTS,
+        { pattern: `0 ${this.env.SIM_DIGEST_HOUR} * * *`, tz: this.env.SIM_TIMEZONE },
+        { name: DIGESTS },
+      );
+    }
     await this.queue.upsertJobScheduler(STALLED, { every: 3_600_000 }, { name: STALLED });
     if (this.semantic.enabled) {
       await this.queue.upsertJobScheduler(EMBEDDINGS, { every: 30_000 }, { name: EMBEDDINGS });
@@ -71,6 +79,7 @@ export class JobsWorker implements OnApplicationBootstrap, OnApplicationShutdown
 
   private async run(job: Job) {
     if (job.name === EMAILS) return this.dispatcher.dispatchPending();
+    if (job.name === DIGESTS) return this.dispatcher.dispatchDigests();
     if (job.name === STALLED) return this.stalled.check();
     if (job.name === EMBEDDINGS) return this.semantic.indexPending();
     if (job.name === INACTIVITY && this.env.SIM_INACTIVITY_DAYS) {

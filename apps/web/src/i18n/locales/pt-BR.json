@@ -414,7 +414,7 @@
     "empty": "Nenhuma notificação por enquanto.",
     "unread": "Não lida",
     "newCommentsPreference": "Avisar sobre novos comentários nas ideias que sigo",
-    "emailPreference": "Receber também estas notificações por e-mail",
+    "emailPreference": "E-mails de notificações",
     "types": {
       "status": "{{actor}} mudou a ideia #{{number}} para {{to}}",
       "duplicate": "{{actor}} marcou a ideia #{{number}} como duplicada da #{{original}}",
@@ -424,6 +424,11 @@
       "stalled": "A ideia #{{number}} está parada ({{status}}) e aguarda avaliação",
       "stalled_escalated": "A ideia #{{number}} continua parada ({{status}}) e precisa de um administrador",
       "new_idea": "Nova ideia para avaliar: #{{number}}"
+    },
+    "emailModes": {
+      "instant": "Na hora",
+      "daily": "Um resumo por dia",
+      "off": "Não receber"
     }
   },
   "follow": {

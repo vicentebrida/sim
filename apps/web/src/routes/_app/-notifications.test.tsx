@@ -27,7 +27,10 @@ function notification(
 /** Simulated Notifications API with an in-memory list. */
 function simulateNotifications(initial: NotificationPageDtoOutputItemsItem[]) {
   let items = initial;
-  let preferences = { newComments: true, byEmail: true };
+  let preferences: { newComments: boolean; email: 'instant' | 'daily' | 'off' } = {
+    newComments: true,
+    email: 'instant',
+  };
   const unread = () => items.filter((n) => !n.read).length;
   server.use(
     http.get('*/api/notifications/unread-count', () => HttpResponse.json({ unread: unread() })),
@@ -112,10 +115,10 @@ describe('the bell', () => {
     );
     await waitFor(() => expect(api.preferences().newComments).toBe(false));
 
-    await user.click(
-      screen.getByRole('checkbox', { name: 'Receber também estas notificações por e-mail' }),
-    );
-    await waitFor(() => expect(api.preferences().byEmail).toBe(false));
+    await user.selectOptions(screen.getByLabelText('E-mails de notificações'), 'daily');
+    await waitFor(() => expect(api.preferences().email).toBe('daily'));
+    await user.selectOptions(screen.getByLabelText('E-mails de notificações'), 'off');
+    await waitFor(() => expect(api.preferences().email).toBe('off'));
   });
 
   it('shows an empty state', async () => {

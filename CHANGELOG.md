@@ -1,5 +1,9 @@
 # Changelog
 
+## Não lançado
+
+- **Resumo diário por e-mail**: nas preferências do sininho cada pessoa escolhe receber os e-mails na hora, num resumo por dia ou nenhum. O resumo sai no horário `SIM_DIGEST_HOUR` (padrão 8) no fuso `SIM_TIMEZONE` (padrão UTC), com uma linha e um link por novidade. Quem tinha desligado os e-mails continua sem receber.
+
 ## 0.4.0
 
 A busca semântica opcional chega, fechando o que faltava do Marco 2.

@@ -16,7 +16,9 @@ import type { TFunction } from 'i18next';
 import { Bell } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { NativeSelect } from '@/components/native-select';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { formatDateTime } from '@/lib/dates';
 import { cn } from '@/lib/utils';
@@ -182,16 +184,25 @@ function Preferences() {
         {t('notifications.newCommentsPreference')}
       </label>
       {preferences.emailAvailable && (
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            className="size-4"
-            checked={preferences.byEmail}
+        <div className="grid gap-1">
+          <Label htmlFor="email-mode">{t('notifications.emailPreference')}</Label>
+          <NativeSelect
+            id="email-mode"
+            value={preferences.email}
             disabled={setPreferences.isPending}
-            onChange={(event) => setPreferences.mutate({ data: { byEmail: event.target.checked } })}
-          />
-          {t('notifications.emailPreference')}
-        </label>
+            onChange={(event) =>
+              setPreferences.mutate({
+                data: { email: event.target.value as typeof preferences.email },
+              })
+            }
+          >
+            {(['instant', 'daily', 'off'] as const).map((mode) => (
+              <option key={mode} value={mode}>
+                {t(`notifications.emailModes.${mode}`)}
+              </option>
+            ))}
+          </NativeSelect>
+        </div>
       )}
     </div>
   );

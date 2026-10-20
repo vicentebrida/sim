@@ -5,9 +5,10 @@
  * SIM REST API
  * OpenAPI spec version: 0.0.0
  */
+import type { NotificationPreferencesDtoOutputEmail } from './notificationPreferencesDtoOutputEmail.ts';
 
 export interface NotificationPreferencesDtoOutput {
   newComments: boolean;
-  byEmail: boolean;
+  email: NotificationPreferencesDtoOutputEmail;
   emailAvailable: boolean;
 }

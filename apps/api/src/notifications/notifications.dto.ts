@@ -1,5 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { EMAIL_MODES } from '../database/schema';
 import { NOTIFICATION_TYPES } from './domain/recipients';
 
 export class ListNotificationsQueryDto extends createZodDto(
@@ -38,13 +39,13 @@ export class NotificationPreferencesDto extends createZodDto(
   z.object({
     // Notification of new Comments on followed Ideas.
     newComments: z.boolean(),
-    // Also receive Notifications by e-mail.
-    byEmail: z.boolean(),
+    // Notifications by e-mail: as they happen, once a day in a summary, or never.
+    email: z.enum(EMAIL_MODES),
     // Whether this installation sends e-mail at all (SMTP configured).
     emailAvailable: z.boolean(),
   }),
 ) {}
 
 export class UpdateNotificationPreferencesDto extends createZodDto(
-  z.object({ newComments: z.boolean().optional(), byEmail: z.boolean().optional() }),
+  z.object({ newComments: z.boolean().optional(), email: z.enum(EMAIL_MODES).optional() }),
 ) {}

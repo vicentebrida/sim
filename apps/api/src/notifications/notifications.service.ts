@@ -6,6 +6,7 @@ import type { Env } from '../config/env';
 import { DB, type Database, type Executor } from '../database/database.module';
 import {
   type Collaborator,
+  type EmailMode,
   collaborators,
   followers,
   type Idea,
@@ -282,23 +283,23 @@ export class NotificationsService {
   preferences(collaborator: Collaborator) {
     return {
       newComments: collaborator.notifyNewComments,
-      byEmail: collaborator.notifyByEmail,
+      email: collaborator.emailMode,
       emailAvailable: Boolean(this.env.SMTP_URL),
     };
   }
 
   async setPreferences(
     collaborator: Collaborator,
-    data: { newComments?: boolean; byEmail?: boolean },
+    data: { newComments?: boolean; email?: EmailMode },
   ) {
-    if (data.newComments === undefined && data.byEmail === undefined) {
+    if (data.newComments === undefined && data.email === undefined) {
       return this.preferences(collaborator);
     }
     const [updated] = await this.db
       .update(collaborators)
       .set({
         ...(data.newComments !== undefined && { notifyNewComments: data.newComments }),
-        ...(data.byEmail !== undefined && { notifyByEmail: data.byEmail }),
+        ...(data.email !== undefined && { emailMode: data.email }),
       })
       .where(eq(collaborators.id, collaborator.id))
       .returning();
@@ -323,24 +324,27 @@ export class NotificationsService {
       .values(created)
       .returning({ id: notifications.id, recipientId: notifications.recipientId });
     if (!this.env.SMTP_URL) return;
-    // E-mail copy for whoever wants it; the dispatcher job sends it (ADR-0006).
-    await executor
-      .update(notifications)
-      .set({ emailStatus: 'pending' })
-      .where(
-        and(
-          inArray(
-            notifications.id,
-            inserted.map(({ id }) => id),
+    // E-mail copy for whoever wants it: now or in the daily summary (sent by the jobs, ADR-0006).
+    const ids = inserted.map(({ id }) => id);
+    for (const [mode, emailStatus] of [
+      ['instant', 'pending'],
+      ['daily', 'digest'],
+    ] as const) {
+      await executor
+        .update(notifications)
+        .set({ emailStatus })
+        .where(
+          and(
+            inArray(notifications.id, ids),
+            inArray(
+              notifications.recipientId,
+              executor
+                .select({ id: collaborators.id })
+                .from(collaborators)
+                .where(and(eq(collaborators.emailMode, mode), eq(collaborators.active, true))),
+            ),
           ),
-          inArray(
-            notifications.recipientId,
-            executor
-              .select({ id: collaborators.id })
-              .from(collaborators)
-              .where(and(eq(collaborators.notifyByEmail, true), eq(collaborators.active, true))),
-          ),
-        ),
-      );
+        );
+    }
   }
 }

@@ -92,3 +92,22 @@ describe('semantic search configuration', () => {
     ).toBe('nomic-embed-text');
   });
 });
+
+describe('daily summary configuration', () => {
+  const base = { DATABASE_URL: 'postgres://u:p@localhost/db' };
+
+  it("defaults to 8 o'clock UTC and accepts an IANA time zone", () => {
+    expect(loadEnv(base)).toMatchObject({ SIM_DIGEST_HOUR: 8, SIM_TIMEZONE: 'UTC' });
+    expect(
+      loadEnv({ ...base, SIM_TIMEZONE: 'America/Sao_Paulo', SIM_DIGEST_HOUR: '7' }),
+    ).toMatchObject({
+      SIM_DIGEST_HOUR: 7,
+      SIM_TIMEZONE: 'America/Sao_Paulo',
+    });
+  });
+
+  it('refuses a made-up time zone or hour', () => {
+    expect(() => loadEnv({ ...base, SIM_TIMEZONE: 'Marte/Olympus' })).toThrow(/time zone/);
+    expect(() => loadEnv({ ...base, SIM_DIGEST_HOUR: '24' })).toThrow();
+  });
+});

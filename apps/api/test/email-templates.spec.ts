@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { type EmailContext, renderEmail } from '../src/notifications/email/email-templates';
+import {
+  type EmailContext,
+  renderDigest,
+  renderEmail,
+} from '../src/notifications/email/email-templates';
 
 const base: EmailContext = {
   locale: 'pt-BR',
@@ -51,5 +55,37 @@ describe('renderEmail', () => {
   it('escapes HTML coming from titles and names', () => {
     const email = renderEmail({ ...base, ideaTitle: '<script>alert(1)</script>' });
     expect(email.html).not.toContain('<script>');
+  });
+});
+
+describe('renderDigest', () => {
+  it('lists every Notification with its link, in the language of the installation', () => {
+    const second = {
+      ...base,
+      ideaNumber: 8,
+      ideaTitle: 'Outra',
+      url: 'https://sim.example.com/ideas/8',
+      type: 'comment' as const,
+      data: {},
+    };
+    const email = renderDigest({
+      ...base,
+      items: [base, second],
+      brand: { name: 'Acme', color: null },
+    });
+    expect(email.subject).toBe('[Acme] Resumo do dia: 2 novidades');
+    expect(email.text).toContain('Vagas para motos');
+    expect(email.text).toContain('https://sim.example.com/ideas/8');
+    expect(renderDigest({ ...base, locale: 'en', items: [base] }).subject).toBe(
+      '[SIM] Daily summary: 1 update',
+    );
+  });
+
+  it('escapes HTML coming from titles', () => {
+    const email = renderDigest({
+      ...base,
+      items: [{ ...base, ideaTitle: '<img src=x onerror=alert(1)>' }],
+    });
+    expect(email.html).not.toContain('<img');
   });
 });
