@@ -96,8 +96,19 @@ const baseSchema = z
     SIM_SEMANTIC_THRESHOLD: z.coerce.number().min(0).max(1).default(0.75),
     // Collaborators (other than Administrators) without login for this many days are deactivated.
     SIM_INACTIVITY_DAYS: z.coerce.number().int().positive().optional(),
-    // Attachments are stored on disk (mount a volume here).
+    // Where Attachments and identity images are stored: a folder (mount a volume there) or an
+    // S3-compatible bucket.
+    SIM_STORAGE: z.enum(['disk', 's3']).default('disk'),
     SIM_DATA_DIR: z.string().default('./data'),
+    SIM_S3_BUCKET: optionalString,
+    SIM_S3_REGION: z.string().default('us-east-1'),
+    SIM_S3_ENDPOINT: z.url().optional(),
+    SIM_S3_ACCESS_KEY_ID: optionalString,
+    SIM_S3_SECRET_ACCESS_KEY: optionalString,
+    SIM_S3_FORCE_PATH_STYLE: z
+      .enum(['true', 'false'])
+      .default('false')
+      .transform((value) => value === 'true'),
     SIM_ATTACHMENT_MAX_MB: z.coerce.number().positive().default(10),
     SIM_ATTACHMENT_MAX_COUNT: z.coerce.number().int().positive().default(5),
     // Stalled Ideas: days without Reviewer action (a Category can override the first two).
@@ -133,6 +144,14 @@ const baseSchema = z
         if (value === 'true' || value === 'false') return value === 'true';
         return /^\d+$/.test(value) ? Number(value) : value;
       }),
+  })
+  .refine((env) => env.SIM_STORAGE !== 's3' || env.SIM_S3_BUCKET, {
+    path: ['SIM_S3_BUCKET'],
+    message: 'required when SIM_STORAGE=s3',
+  })
+  .refine((env) => Boolean(env.SIM_S3_ACCESS_KEY_ID) === Boolean(env.SIM_S3_SECRET_ACCESS_KEY), {
+    path: ['SIM_S3_SECRET_ACCESS_KEY'],
+    message: 'SIM_S3_ACCESS_KEY_ID and SIM_S3_SECRET_ACCESS_KEY must be set together',
   })
   .refine((env) => !env.SIM_EMBEDDINGS_URL || env.SIM_EMBEDDINGS_MODEL, {
     path: ['SIM_EMBEDDINGS_MODEL'],

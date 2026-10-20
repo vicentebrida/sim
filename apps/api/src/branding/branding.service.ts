@@ -94,7 +94,7 @@ export class BrandingService {
   async readAsset(kind: BrandingAssetKind) {
     const asset = (await this.get())[kind];
     if (!asset) throw new NotFoundException('Image not set');
-    return { contentType: asset.contentType, stream: this.storage.read(asset.storageKey) };
+    return { contentType: asset.contentType, stream: await this.storage.read(asset.storageKey) };
   }
 }
 

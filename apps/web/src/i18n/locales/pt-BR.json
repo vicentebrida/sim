@@ -497,6 +497,12 @@
     "semanticPending_other": "{{count}} aguardando",
     "test": "Testar conexão",
     "testOk": "Conexão ok: o serviço devolveu vetores de {{dimensions}} dimensões.",
-    "testFailed": "Falhou: {{error}}"
+    "testFailed": "Falhou: {{error}}",
+    "storage": "Armazenamento de arquivos",
+    "storageKinds": {
+      "disk": "Disco",
+      "s3": "S3"
+    },
+    "storageHelp": "Anexos e imagens da identidade. Escolhido por SIM_STORAGE (disco no volume /data, ou um bucket S3 compatível)."
   }
 }

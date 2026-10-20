@@ -2,6 +2,7 @@
 
 ## Não lançado
 
+- **Armazenamento S3 (opcional)** para Anexos e imagens da identidade, em AWS ou serviços compatíveis (MinIO, Cloudflare R2...): `SIM_STORAGE=s3` e `SIM_S3_*`. O padrão continua sendo o disco. Trocar não move os arquivos já enviados. A tela Integrações mostra qual está em uso.
 - **Prazos de Ideia Parada pela tela Configurações**: o Administrador ajusta os dias (Aberta, Em análise e escalonamento) sem mexer no servidor; as variáveis `SIM_STALLED_*` viram o padrão enquanto nada for escolhido. Cada mudança fica na Auditoria.
 - **Resumo diário por e-mail**: nas preferências do sininho cada pessoa escolhe receber os e-mails na hora, num resumo por dia ou nenhum. O resumo sai no horário `SIM_DIGEST_HOUR` (padrão 8) no fuso `SIM_TIMEZONE` (padrão UTC), com uma linha e um link por novidade. Quem tinha desligado os e-mails continua sem receber.
 

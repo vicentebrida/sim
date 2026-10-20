@@ -100,6 +100,8 @@ export * from './integrationsDtoOutputSemanticSearch.ts';
 export * from './integrationsDtoOutputSmtp.ts';
 export * from './integrationsDtoOutputSso.ts';
 export * from './integrationsDtoOutputSsoMode.ts';
+export * from './integrationsDtoOutputStorage.ts';
+export * from './integrationsDtoOutputStorageKind.ts';
 export * from './likeDtoOutput.ts';
 export * from './likeDtoOutputCollaborator.ts';
 export * from './likesDtoOutput.ts';

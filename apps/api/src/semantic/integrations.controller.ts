@@ -11,6 +11,8 @@ class IntegrationsDto extends createZodDto(
   z.object({
     sso: z.object({ mode: z.enum(['off', 'oidc', 'oauth2']) }),
     smtp: z.object({ configured: z.boolean() }),
+    // Where Attachments and identity images are kept.
+    storage: z.object({ kind: z.enum(['disk', 's3']) }),
     redis: z.object({ configured: z.boolean() }),
     semanticSearch: z.object({
       configured: z.boolean(),
@@ -54,6 +56,7 @@ export class IntegrationsController {
     return {
       sso: { mode: this.env.SIM_SSO_MODE },
       smtp: { configured: Boolean(this.env.SMTP_URL) },
+      storage: { kind: this.env.SIM_STORAGE },
       redis: { configured: Boolean(this.env.REDIS_URL) },
       semanticSearch: {
         configured: this.semantic.enabled,
