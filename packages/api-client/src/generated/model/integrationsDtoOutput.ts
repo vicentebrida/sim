@@ -10,6 +10,7 @@ import type { IntegrationsDtoOutputSemanticSearch } from './integrationsDtoOutpu
 import type { IntegrationsDtoOutputSmtp } from './integrationsDtoOutputSmtp.ts';
 import type { IntegrationsDtoOutputSso } from './integrationsDtoOutputSso.ts';
 import type { IntegrationsDtoOutputStorage } from './integrationsDtoOutputStorage.ts';
+import type { IntegrationsDtoOutputWebhooks } from './integrationsDtoOutputWebhooks.ts';
 
 export interface IntegrationsDtoOutput {
   sso: IntegrationsDtoOutputSso;
@@ -17,4 +18,5 @@ export interface IntegrationsDtoOutput {
   storage: IntegrationsDtoOutputStorage;
   redis: IntegrationsDtoOutputRedis;
   semanticSearch: IntegrationsDtoOutputSemanticSearch;
+  webhooks: IntegrationsDtoOutputWebhooks;
 }

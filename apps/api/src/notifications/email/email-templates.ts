@@ -43,7 +43,7 @@ const STATUS_NAMES: Record<Locale, Record<Status, string>> = {
   },
 };
 
-const statusName = (locale: Locale, status: unknown, labels: EmailContext['statusLabels'] = {}) =>
+export const statusName = (locale: Locale, status: unknown, labels: EmailContext['statusLabels'] = {}) =>
   labels[status as Status] ?? STATUS_NAMES[locale][status as Status] ?? String(status);
 
 const who = (context: EmailContext) =>

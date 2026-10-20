@@ -11,3 +11,4 @@ export * from './status-settings';
 export * from './audit';
 export * from './settings';
 export * from './tags';
+export * from './webhooks';

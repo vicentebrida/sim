@@ -26,7 +26,8 @@ import type {
 
 import type {
   ConnectionTestDtoOutput,
-  IntegrationsDtoOutput
+  IntegrationsDtoOutput,
+  WebhookTestDtoOutput
 } from '../../model';
 
 import { simFetch } from '../../../fetcher.ts';
@@ -158,7 +159,86 @@ export function useIntegrationsGet<TData = Awaited<ReturnType<typeof integration
 
 
 
-export type integrationsTestSemanticSearchResponse200 = {
+export type integrationsTestWebhooksResponse200 = {
+  data: WebhookTestDtoOutput
+  status: 200
+}
+
+export type integrationsTestWebhooksResponseSuccess = (integrationsTestWebhooksResponse200) & {
+  headers: Headers;
+};
+;
+
+export type integrationsTestWebhooksResponse = (integrationsTestWebhooksResponseSuccess)
+
+export const getIntegrationsTestWebhooksUrl = () => {
+
+
+
+
+  return `/api/integrations/webhooks/test`
+}
+
+export const integrationsTestWebhooks = async ( options?: Parameters<typeof simFetch>[1]): Promise<integrationsTestWebhooksResponse> => {
+
+  return simFetch<integrationsTestWebhooksResponse>(getIntegrationsTestWebhooksUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getIntegrationsTestWebhooksMutationKey = () => ['integrationsTestWebhooks'] as const;
+
+export const getIntegrationsTestWebhooksMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof integrationsTestWebhooks>>, TError,void, TContext>, request?: SecondParameter<typeof simFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof integrationsTestWebhooks>>, TError,void, TContext> => {
+
+const mutationKey = getIntegrationsTestWebhooksMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof integrationsTestWebhooks>>, void> = () => {
+
+
+          return  integrationsTestWebhooks(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type IntegrationsTestWebhooksMutationResult = NonNullable<Awaited<ReturnType<typeof integrationsTestWebhooks>>>
+
+    export type IntegrationsTestWebhooksMutationError = ErrorType<unknown>
+
+
+    export const useIntegrationsTestWebhooks = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof integrationsTestWebhooks>>, TError,void, TContext>, request?: SecondParameter<typeof simFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof integrationsTestWebhooks>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getIntegrationsTestWebhooksMutationOptions(options), queryClient);
+    }
+    export type integrationsTestSemanticSearchResponse200 = {
   data: ConnectionTestDtoOutput
   status: 200
 }

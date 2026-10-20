@@ -29,6 +29,7 @@ import { AttachmentStore } from '../attachments/attachment-store';
 import { isStalledSql } from './domain/stalled';
 import { StalledIdeasService } from './stalled-ideas.service';
 import { TagsService } from '../tags/tags.service';
+import { WebhooksService } from '../webhooks/webhooks.service';
 import { DB, type Database, type Transaction } from '../database/database.module';
 import {
   categories,
@@ -113,6 +114,7 @@ export class IdeasService {
     private readonly audit: AuditService,
     private readonly semantic: SemanticService,
     private readonly tags: TagsService,
+    private readonly webhooks: WebhooksService,
     @Inject(ENV) private readonly env: Env,
   ) {}
 
@@ -549,6 +551,10 @@ export class IdeasService {
         justification: data.justification,
         collaboratorId: collaborator.id,
       });
+      await this.webhooks.record(tx, 'status', idea.id, collaborator.id, {
+        from: idea.status,
+        to: data.to,
+      });
     });
     return this.detail(collaborator, number);
   }
@@ -857,5 +863,6 @@ export class IdeasService {
       collaboratorId: author.id,
     });
     await this.notifications.onArrivedInCategory(tx, idea, idea.categoryId, author.id);
+    await this.webhooks.record(tx, 'published', idea.id, author.id);
   }
 }

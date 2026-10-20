@@ -5,6 +5,8 @@ import { z } from 'zod';
 import { AdministratorOnly } from '../auth/decorators';
 import { ENV } from '../config/config.module';
 import type { Env } from '../config/env';
+import { WEBHOOK_CHANNELS } from '../database/schema';
+import { WebhooksService } from '../webhooks/webhooks.service';
 import { SemanticService } from './semantic.service';
 
 class IntegrationsDto extends createZodDto(
@@ -23,7 +25,18 @@ class IntegrationsDto extends createZodDto(
       indexed: z.number().int(),
       pending: z.number().int(),
     }),
+    // Chat channels that get the news (the URLs are secrets and never leave the server).
+    webhooks: z.object({
+      channels: z.array(z.enum(WEBHOOK_CHANNELS)),
+      events: z.array(z.enum(['published', 'status'])),
+    }),
   }),
+) {}
+
+class WebhookTestDto extends createZodDto(
+  z.array(
+    z.object({ channel: z.enum(WEBHOOK_CHANNELS), ok: z.boolean(), error: z.string().nullable() }),
+  ),
 ) {}
 
 class ConnectionTestDto extends createZodDto(
@@ -45,6 +58,7 @@ export class IntegrationsController {
   constructor(
     @Inject(ENV) private readonly env: Env,
     private readonly semantic: SemanticService,
+    private readonly webhooks: WebhooksService,
   ) {}
 
   @Get()
@@ -64,7 +78,18 @@ export class IntegrationsController {
         threshold: this.env.SIM_SEMANTIC_THRESHOLD,
         ...coverage,
       },
+      webhooks: {
+        channels: this.webhooks.channels.map(({ channel }) => channel),
+        events: this.webhooks.events,
+      },
     };
+  }
+
+  /** Sends a test message to each configured channel. */
+  @Post('webhooks/test')
+  @ZodResponse({ status: 200, type: WebhookTestDto })
+  testWebhooks() {
+    return this.webhooks.test();
   }
 
   @Post('semantic-search/test')

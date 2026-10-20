@@ -2237,6 +2237,27 @@
         ]
       }
     },
+    "/api/integrations/webhooks/test": {
+      "post": {
+        "operationId": "integrations_testWebhooks",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookTestDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "integrations"
+        ]
+      }
+    },
     "/api/integrations/semantic-search/test": {
       "post": {
         "operationId": "integrations_testSemanticSearch",
@@ -5343,6 +5364,37 @@
               "pending"
             ],
             "additionalProperties": false
+          },
+          "webhooks": {
+            "type": "object",
+            "properties": {
+              "channels": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "slack",
+                    "teams",
+                    "google_chat"
+                  ]
+                }
+              },
+              "events": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "published",
+                    "status"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "channels",
+              "events"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
@@ -5350,9 +5402,41 @@
           "smtp",
           "storage",
           "redis",
-          "semanticSearch"
+          "semanticSearch",
+          "webhooks"
         ],
         "additionalProperties": false
+      },
+      "WebhookTestDto_Output": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "channel": {
+              "type": "string",
+              "enum": [
+                "slack",
+                "teams",
+                "google_chat"
+              ]
+            },
+            "ok": {
+              "type": "boolean"
+            },
+            "error": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "channel",
+            "ok",
+            "error"
+          ],
+          "additionalProperties": false
+        }
       },
       "ConnectionTestDto_Output": {
         "type": "object",
