@@ -1,6 +1,10 @@
 # Changelog
 
-## Não lançado
+## 0.5.0
+
+Resumo diário por e-mail, prazos de Ideia Parada ajustáveis pela interface e armazenamento S3 opcional.
+
+- **Para atualizar**: nada é obrigatório; as migrações rodam sozinhas. Quem tinha desligado os e-mails fica com a opção "nenhum" e quem recebia continua recebendo na hora. Novas variáveis opcionais: `SIM_DIGEST_HOUR`, `SIM_TIMEZONE`, `SIM_STORAGE` e `SIM_S3_*` (veja o `.env.example`). Os prazos em `SIM_STALLED_*` continuam valendo até um Administrador escolher outros em Configurações.
 
 - **Armazenamento S3 (opcional)** para Anexos e imagens da identidade, em AWS ou serviços compatíveis (MinIO, Cloudflare R2...): `SIM_STORAGE=s3` e `SIM_S3_*`. O padrão continua sendo o disco. Trocar não move os arquivos já enviados. A tela Integrações mostra qual está em uso.
 - **Prazos de Ideia Parada pela tela Configurações**: o Administrador ajusta os dias (Aberta, Em análise e escalonamento) sem mexer no servidor; as variáveis `SIM_STALLED_*` viram o padrão enquanto nada for escolhido. Cada mudança fica na Auditoria.
