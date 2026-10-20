@@ -6,7 +6,7 @@ import { isUniqueViolation } from '../database/errors';
 import { type Category, categories, collaborators, ideas, reviewers } from '../database/schema';
 
 export interface CategoryWithReviewers extends Category {
-  reviewers: { id: string; name: string }[];
+  reviewers: { id: string; name: string; viaSso: boolean }[];
 }
 
 const nameTaken = () =>
@@ -34,6 +34,7 @@ export class CategoriesService {
         categoryId: reviewers.categoryId,
         id: collaborators.id,
         name: collaborators.name,
+        viaSso: reviewers.viaSso,
       })
       .from(reviewers)
       .innerJoin(collaborators, eq(reviewers.collaboratorId, collaborators.id))
@@ -49,7 +50,7 @@ export class CategoriesService {
       ...category,
       reviewers: assignments
         .filter((assignment) => assignment.categoryId === category.id)
-        .map(({ id, name }) => ({ id, name })),
+        .map(({ id, name, viaSso }) => ({ id, name, viaSso })),
     }));
   }
 
@@ -77,15 +78,25 @@ export class CategoriesService {
       active?: boolean;
       stalledOpenDays?: number | null;
       stalledReviewDays?: number | null;
+      ssoGroup?: string | null;
     },
   ) {
     try {
-      const [updated] = await this.db
-        .update(categories)
-        .set(data)
-        .where(eq(categories.id, id))
-        .returning({ id: categories.id });
-      if (!updated) throw new NotFoundException('Category not found');
+      await this.db.transaction(async (tx) => {
+        const [current] = await tx
+          .select({ ssoGroup: categories.ssoGroup })
+          .from(categories)
+          .where(eq(categories.id, id))
+          .for('update');
+        if (!current) throw new NotFoundException('Category not found');
+        await tx.update(categories).set(data).where(eq(categories.id, id));
+        // Who came from the old group leaves; members of the new one come at their next login.
+        if (data.ssoGroup !== undefined && data.ssoGroup !== current.ssoGroup) {
+          await tx
+            .delete(reviewers)
+            .where(and(eq(reviewers.categoryId, id), eq(reviewers.viaSso, true)));
+        }
+      });
     } catch (error) {
       if (isUniqueViolation(error)) throw nameTaken();
       throw error;
@@ -93,7 +104,11 @@ export class CategoriesService {
     return this.find(id);
   }
 
-  /** Replaces the Category's Reviewers. Only active Collaborators can review. */
+  /**
+   * Replaces the Reviewers the Administrator chose; those from the SSO group stay. Choosing one of
+   * them makes the choice manual, so it no longer depends on the group. Only active Collaborators
+   * can review.
+   */
   async setReviewers(id: string, collaboratorIds: string[]) {
     await this.find(id);
     if (collaboratorIds.length) {
@@ -107,11 +122,17 @@ export class CategoriesService {
     }
 
     await this.db.transaction(async (tx) => {
-      await tx.delete(reviewers).where(eq(reviewers.categoryId, id));
+      await tx
+        .delete(reviewers)
+        .where(and(eq(reviewers.categoryId, id), eq(reviewers.viaSso, false)));
       if (collaboratorIds.length) {
         await tx
           .insert(reviewers)
-          .values(collaboratorIds.map((collaboratorId) => ({ categoryId: id, collaboratorId })));
+          .values(collaboratorIds.map((collaboratorId) => ({ categoryId: id, collaboratorId })))
+          .onConflictDoUpdate({
+            target: [reviewers.categoryId, reviewers.collaboratorId],
+            set: { viaSso: false },
+          });
       }
     });
     return this.find(id);

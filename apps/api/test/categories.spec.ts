@@ -79,7 +79,9 @@ describe('Categories and Reviewers', () => {
       .put(`/api/categories/${category.id}/reviewers`)
       .send({ collaboratorIds: [colleagueId] })
       .expect(200);
-    expect(withReviewer.body.reviewers).toEqual([{ id: colleagueId, name: 'Carlos' }]);
+    expect(withReviewer.body.reviewers).toEqual([
+      { id: colleagueId, name: 'Carlos', viaSso: false },
+    ]);
 
     const withoutReviewer = await admin
       .put(`/api/categories/${category.id}/reviewers`)

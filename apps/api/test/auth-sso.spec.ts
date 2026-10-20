@@ -266,4 +266,41 @@ describe('SSO groups', () => {
     const { browser } = await login('boss', ['sim-users']);
     expect((await browser.get('/api/auth/me')).body.administrator).toBe(true);
   });
+  it('makes members of a Category SSO group its Reviewers, at each login', async () => {
+    const { browser: boss } = await login('boss', ['sim-users']);
+    const create = async (name: string) =>
+      (await boss.post('/api/categories').send({ name }).expect(201)).body.id as string;
+    const [ti, rh] = [await create('TI'), await create('RH')];
+    await boss.patch(`/api/categories/${ti}`).send({ ssoGroup: 'comite-ti' }).expect(200);
+    await boss.patch(`/api/categories/${rh}`).send({ ssoGroup: 'comite-rh' }).expect(200);
+    const reviewersOf = async (id: string) =>
+      (await boss.get('/api/categories').expect(200)).body.find(
+        (category: { id: string }) => category.id === id,
+      ).reviewers as { name: string; viaSso: boolean }[];
+
+    const eva = await login('eva', ['sim-users', 'comite-ti']);
+    const evaId = (await eva.browser.get('/api/auth/me')).body.id;
+    const fabio = await login('fabio', ['sim-users']);
+    const fabioId = (await fabio.browser.get('/api/auth/me')).body.id;
+    expect(await reviewersOf(ti)).toEqual([{ id: evaId, name: 'eva', viaSso: true }]);
+
+    // Choosing Reviewers by hand keeps the ones from the group.
+    await boss.put(`/api/categories/${ti}/reviewers`).send({ collaboratorIds: [fabioId] });
+    expect(await reviewersOf(ti)).toEqual([
+      { id: evaId, name: 'eva', viaSso: true },
+      { id: fabioId, name: 'fabio', viaSso: false },
+    ]);
+
+    // Changing groups in the provider moves Eva at the next login; Fabio, chosen by hand, stays.
+    await login('eva', ['sim-users', 'comite-rh']);
+    await login('fabio', ['sim-users']);
+    expect(await reviewersOf(ti)).toEqual([{ id: fabioId, name: 'fabio', viaSso: false }]);
+    expect(await reviewersOf(rh)).toEqual([{ id: evaId, name: 'eva', viaSso: true }]);
+
+    // Changing the Category's group drops who came from the old one.
+    await boss.patch(`/api/categories/${rh}`).send({ ssoGroup: 'outro' }).expect(200);
+    expect(await reviewersOf(rh)).toEqual([]);
+    await boss.patch(`/api/categories/${rh}`).send({ ssoGroup: null }).expect(200);
+    await boss.patch(`/api/categories/${rh}`).send({ ssoGroup: '  ' }).expect(400);
+  });
 });

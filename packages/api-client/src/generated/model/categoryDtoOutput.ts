@@ -15,5 +15,6 @@ export interface CategoryDtoOutput {
   active: boolean;
   stalledOpenDays: number | null;
   stalledReviewDays: number | null;
+  ssoGroup: string | null;
   reviewers: CategoryDtoOutputReviewersItem[];
 }

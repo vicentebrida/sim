@@ -2,6 +2,7 @@
 
 ## Não lançado
 
+- **Avaliadores pelo grupo do SSO**: cada Categoria pode ter um grupo do SSO (em Editar). Quem está nele vira Avaliador da Categoria a cada login e deixa de ser ao sair do grupo. Os Avaliadores escolhidos à mão continuam, e a tela mostra quem veio "pelo SSO". Usa a mesma claim de grupos de `SIM_SSO_CLAIM_GROUPS`.
 - **Logo nos e-mails**: as Notificações e o resumo diário trazem no topo a logo da identidade visual (a clara, ou a escura se for a única), embutida na mensagem. Vale para PNG, JPG ou GIF de até 300 KB; com outra imagem, o e-mail sai sem logo.
 - **Desligar o Rascunho**: na tela Status, o Administrador pode desligar o Rascunho; aí toda Ideia nova já sai publicada e o botão "Salvar rascunho" some. Os Rascunhos que já existiam continuam com seus Autores, que podem editar, publicar ou excluir.
 

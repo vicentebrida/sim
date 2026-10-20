@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { and, asc, eq, isNull, lt, sql } from 'drizzle-orm';
+import { and, asc, eq, isNotNull, isNull, lt, notInArray, sql } from 'drizzle-orm';
 import { generateTemporaryPassword, hashPassword } from '../auth/password';
 import { DomainError } from '../common/domain-error';
 import { ENV } from '../config/config.module';
@@ -8,6 +8,7 @@ import { DB, type Database, type Transaction } from '../database/database.module
 import { AuditService } from '../audit/audit.service';
 import { renameMention } from '../comments/domain/mentions';
 import {
+  categories,
   type Collaborator,
   collaborators,
   comments,
@@ -134,21 +135,51 @@ export class CollaboratorsService {
         : await tx.select().from(collaborators).where(eq(collaborators.email, email));
       const existing = bySubject ?? byEmail;
 
-      if (existing) {
-        const [updated] = await tx
-          .update(collaborators)
-          .set({ ...profileData, ...administratorChange })
-          .where(eq(collaborators.id, existing.id))
-          .returning();
-        return updated!;
-      }
-
-      const [created] = await tx
-        .insert(collaborators)
-        .values({ ...profileData, ...administratorChange })
-        .returning();
-      return created!;
+      const [collaborator] = existing
+        ? await tx
+            .update(collaborators)
+            .set({ ...profileData, ...administratorChange })
+            .where(eq(collaborators.id, existing.id))
+            .returning()
+        : await tx
+            .insert(collaborators)
+            .values({ ...profileData, ...administratorChange })
+            .returning();
+      if (collaborator!.active) await this.syncSsoReviewers(tx, collaborator!.id, profile.groups);
+      return collaborator!;
     });
+  }
+
+  /**
+   * Makes the person a Reviewer of each Category whose SSO group they are in, and takes them out
+   * of those whose group they left. Reviewers chosen by an Administrator are left alone.
+   */
+  private async syncSsoReviewers(tx: Transaction, collaboratorId: string, groups: string[]) {
+    const withGroup = await tx
+      .select({ id: categories.id, ssoGroup: categories.ssoGroup })
+      .from(categories)
+      .where(isNotNull(categories.ssoGroup));
+    const member = withGroup.filter((category) => groups.includes(category.ssoGroup!));
+    await tx.delete(reviewers).where(
+      and(
+        eq(reviewers.collaboratorId, collaboratorId),
+        eq(reviewers.viaSso, true),
+        member.length
+          ? notInArray(
+              reviewers.categoryId,
+              member.map((category) => category.id),
+            )
+          : undefined,
+      ),
+    );
+    if (member.length) {
+      await tx
+        .insert(reviewers)
+        .values(
+          member.map((category) => ({ categoryId: category.id, collaboratorId, viaSso: true })),
+        )
+        .onConflictDoNothing();
+    }
   }
 
   // ---------- life cycle (PRD §3.11) ----------
