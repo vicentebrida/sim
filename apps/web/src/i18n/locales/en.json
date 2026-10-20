@@ -497,6 +497,12 @@
     "semanticPending_other": "{{count}} waiting",
     "test": "Test connection",
     "testOk": "Connection ok: the service returned {{dimensions}}-dimension vectors.",
-    "testFailed": "Failed: {{error}}"
+    "testFailed": "Failed: {{error}}",
+    "storage": "File storage",
+    "storageKinds": {
+      "disk": "Disk",
+      "s3": "S3"
+    },
+    "storageHelp": "Attachments and identity images. Chosen by SIM_STORAGE (disk on the /data volume, or an S3-compatible bucket)."
   }
 }

@@ -65,7 +65,7 @@ export class AttachmentsService {
         throw new NotFoundException('Attachment not found');
       }
     }
-    return { attachment, stream: this.storage.read(attachment.storageKey) };
+    return { attachment, stream: await this.storage.read(attachment.storageKey) };
   }
 
   async remove(collaborator: Collaborator, id: string) {

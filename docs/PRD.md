@@ -95,7 +95,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 - Ideias e Comentários aceitam Anexos: imagens (png, jpg, webp, gif) e documentos (pdf, docx, xlsx, pptx, txt).
 - Configurável. Padrão: 10 MB por arquivo e até 5 por item.
 - Imagens aparecem em miniatura. Os demais tipos ficam como download.
-- Armazenamento em disco local (`SIM_DATA_DIR`, o volume `/data` na imagem); o armazenamento compatível com S3 fica para uma etapa futura. Limites em `SIM_ATTACHMENT_MAX_MB` e `SIM_ATTACHMENT_MAX_COUNT`.
+- Armazenamento em disco local (`SIM_DATA_DIR`, o volume `/data` na imagem); o armazenamento compatível com S3 (AWS, MinIO, R2...) vale para Anexos e imagens da identidade, escolhido por `SIM_STORAGE=s3` (veja `.env.example`; as chaves podem faltar se a instalação usar o papel IAM). Trocar de disco para S3 não move os arquivos já enviados. Limites em `SIM_ATTACHMENT_MAX_MB` e `SIM_ATTACHMENT_MAX_COUNT`.
 - O tipo vem da extensão e é conferido pelo conteúdo do arquivo (um `.png` que não é PNG é recusado); SVG e HTML não são aceitos. Quem pode anexar ou apagar segue quem pode editar: o Autor da Ideia enquanto ela é editável, e o autor do Comentário. Anexo de Comentário oculto ou removido some para quem não pode ler o texto; ao remover o Comentário ou apagar a Ideia, os arquivos são apagados.
 - O download passa sempre pelo backend, com checagem de autenticação.
 

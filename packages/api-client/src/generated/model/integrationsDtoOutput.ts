@@ -9,10 +9,12 @@ import type { IntegrationsDtoOutputRedis } from './integrationsDtoOutputRedis.ts
 import type { IntegrationsDtoOutputSemanticSearch } from './integrationsDtoOutputSemanticSearch.ts';
 import type { IntegrationsDtoOutputSmtp } from './integrationsDtoOutputSmtp.ts';
 import type { IntegrationsDtoOutputSso } from './integrationsDtoOutputSso.ts';
+import type { IntegrationsDtoOutputStorage } from './integrationsDtoOutputStorage.ts';
 
 export interface IntegrationsDtoOutput {
   sso: IntegrationsDtoOutputSso;
   smtp: IntegrationsDtoOutputSmtp;
+  storage: IntegrationsDtoOutputStorage;
   redis: IntegrationsDtoOutputRedis;
   semanticSearch: IntegrationsDtoOutputSemanticSearch;
 }

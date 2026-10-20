@@ -4978,6 +4978,22 @@
             ],
             "additionalProperties": false
           },
+          "storage": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "disk",
+                  "s3"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "additionalProperties": false
+          },
           "redis": {
             "type": "object",
             "properties": {
@@ -5035,6 +5051,7 @@
         "required": [
           "sso",
           "smtp",
+          "storage",
           "redis",
           "semanticSearch"
         ],

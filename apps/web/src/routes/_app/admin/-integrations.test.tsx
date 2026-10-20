@@ -11,6 +11,7 @@ const admin = { ...ana, name: 'Admin', administrator: true };
 const state = (semanticSearch: object) => ({
   sso: { mode: 'oidc' },
   smtp: { configured: true },
+  storage: { kind: 's3' },
   redis: { configured: true },
   semanticSearch,
 });
@@ -35,6 +36,7 @@ describe('Integrations', () => {
     renderApp('/admin/integrations');
 
     expect(await screen.findByText('Modo OIDC.')).toBeInTheDocument();
+    expect(screen.getByText('S3')).toBeInTheDocument();
     expect(screen.getByText('8 de 10 ideias indexadas · 2 aguardando')).toBeInTheDocument();
     expect(screen.getByText(/nomic-embed-text/)).toBeInTheDocument();
   });

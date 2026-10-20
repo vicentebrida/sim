@@ -7,7 +7,7 @@ import { IdeasModule } from '../ideas/ideas.module';
 import { AttachmentStore } from './attachment-store';
 import { AttachmentsController } from './attachments.controller';
 import { AttachmentsService } from './attachments.service';
-import { DiskStorage, FileStorage } from './file-storage';
+import { DiskStorage, FileStorage, S3Storage } from './file-storage';
 
 /** Read side and file cleanup, used by Ideas and Comments without depending on the upload side. */
 @Global()
@@ -17,7 +17,17 @@ import { DiskStorage, FileStorage } from './file-storage';
     {
       provide: FileStorage,
       inject: [ENV],
-      useFactory: (env: Env) => new DiskStorage(env.SIM_DATA_DIR),
+      useFactory: (env: Env): FileStorage =>
+        env.SIM_STORAGE === 's3'
+          ? new S3Storage({
+              bucket: env.SIM_S3_BUCKET!,
+              region: env.SIM_S3_REGION,
+              endpoint: env.SIM_S3_ENDPOINT,
+              accessKeyId: env.SIM_S3_ACCESS_KEY_ID,
+              secretAccessKey: env.SIM_S3_SECRET_ACCESS_KEY,
+              forcePathStyle: env.SIM_S3_FORCE_PATH_STYLE,
+            })
+          : new DiskStorage(env.SIM_DATA_DIR),
     },
   ],
   exports: [AttachmentStore, FileStorage],

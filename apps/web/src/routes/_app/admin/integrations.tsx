@@ -70,6 +70,20 @@ function IntegrationsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
+                <h2>{t('integrations.storage')}</h2>
+                <Badge variant="secondary">
+                  {t(`integrations.storageKinds.${integrations.storage.kind}`)}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              {t('integrations.storageHelp')}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
                 <h2>{t('integrations.redis')}</h2>
                 <State on={integrations.redis.configured} />
               </CardTitle>
