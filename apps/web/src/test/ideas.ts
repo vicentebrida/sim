@@ -18,6 +18,7 @@ export const TI: CategoryDtoOutput = {
   active: true,
   stalledOpenDays: null,
   stalledReviewDays: null,
+  ssoGroup: null,
   reviewers: [],
 };
 

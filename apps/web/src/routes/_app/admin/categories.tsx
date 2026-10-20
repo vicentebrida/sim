@@ -40,6 +40,7 @@ const categorySchema = z.object({
     .string()
     .trim()
     .regex(/^\d{0,3}$/),
+  ssoGroup: z.string().trim().max(200),
 });
 const days = (text: string) => (text ? Number(text) : null);
 type CategoryData = z.infer<typeof categorySchema>;
@@ -121,6 +122,17 @@ function CategoryFields({
           <p className="text-sm text-muted-foreground">{t('categories.stalledDeadlinesHelp')}</p>
         </fieldset>
       )}
+      {withDeadlines && (
+        <div className="grid gap-2">
+          <FormField
+            id={`${prefix}-sso-group`}
+            label={t('categories.ssoGroup')}
+            placeholder={t('categories.ssoGroupPlaceholder')}
+            {...form.register('ssoGroup')}
+          />
+          <p className="text-sm text-muted-foreground">{t('categories.ssoGroupHelp')}</p>
+        </div>
+      )}
     </>
   );
 }
@@ -130,7 +142,13 @@ function NewCategory() {
   const reload = useReloadCategories();
   const form = useForm<CategoryData>({
     resolver: zodResolver(categorySchema),
-    defaultValues: { name: '', description: '', stalledOpenDays: '', stalledReviewDays: '' },
+    defaultValues: {
+      name: '',
+      description: '',
+      stalledOpenDays: '',
+      stalledReviewDays: '',
+      ssoGroup: '',
+    },
   });
   const create = useCategoriesCreate({
     mutation: {
@@ -227,10 +245,20 @@ function CategoryItem({ category }: { category: CategoryDtoOutput }) {
           <div className="text-sm">
             <span className="font-medium">{t('categories.reviewers')}: </span>
             {category.reviewers.length ? (
-              category.reviewers.map((reviewer) => reviewer.name).join(', ')
+              category.reviewers
+                .map((reviewer) =>
+                  reviewer.viaSso ? `${reviewer.name} (${t('categories.viaSso')})` : reviewer.name,
+                )
+                .join(', ')
             ) : (
               <span className="text-muted-foreground">{t('categories.noReviewers')}</span>
             )}
+          </div>
+        )}
+        {mode === 'view' && category.ssoGroup && (
+          <div className="text-sm">
+            <span className="font-medium">{t('categories.ssoGroup')}: </span>
+            <code>{category.ssoGroup}</code>
           </div>
         )}
       </CardContent>
@@ -248,6 +276,7 @@ function EditCategory({ category, onClose }: { category: CategoryDtoOutput; onCl
       description: category.description,
       stalledOpenDays: category.stalledOpenDays?.toString() ?? '',
       stalledReviewDays: category.stalledReviewDays?.toString() ?? '',
+      ssoGroup: category.ssoGroup ?? '',
     },
   });
   const update = useCategoriesUpdate({
@@ -264,13 +293,14 @@ function EditCategory({ category, onClose }: { category: CategoryDtoOutput; onCl
     <form
       className="grid gap-4"
       noValidate
-      onSubmit={form.handleSubmit(({ stalledOpenDays, stalledReviewDays, ...data }) =>
+      onSubmit={form.handleSubmit(({ stalledOpenDays, stalledReviewDays, ssoGroup, ...data }) =>
         update.mutate({
           id: category.id,
           data: {
             ...data,
             stalledOpenDays: days(stalledOpenDays),
             stalledReviewDays: days(stalledReviewDays),
+            ssoGroup: ssoGroup || null,
           },
         }),
       )}
@@ -304,8 +334,15 @@ function ChooseReviewers({
   const reload = useReloadCategories();
   const { data } = useCollaboratorsList();
   const [search, setSearch] = useState('');
+  // Reviewers from the SSO group are not chosen here: they come and go with the group.
+  const fromSso = new Set(
+    category.reviewers.filter((reviewer) => reviewer.viaSso).map((reviewer) => reviewer.id),
+  );
   const [selected, setSelected] = useState(
-    () => new Set(category.reviewers.map((reviewer) => reviewer.id)),
+    () =>
+      new Set(
+        category.reviewers.filter((reviewer) => !reviewer.viaSso).map((reviewer) => reviewer.id),
+      ),
   );
   const setReviewers = useCategoriesSetReviewers({
     mutation: {
@@ -353,11 +390,15 @@ function ChooseReviewers({
             <input
               type="checkbox"
               className="size-4"
-              checked={selected.has(collaborator.id)}
+              checked={fromSso.has(collaborator.id) || selected.has(collaborator.id)}
+              disabled={fromSso.has(collaborator.id)}
               onChange={() => toggle(collaborator.id)}
             />
             <span>{collaborator.name}</span>
             <span className="text-muted-foreground">{collaborator.email}</span>
+            {fromSso.has(collaborator.id) && (
+              <Badge variant="outline">{t('categories.viaSso')}</Badge>
+            )}
           </label>
         ))}
       </fieldset>

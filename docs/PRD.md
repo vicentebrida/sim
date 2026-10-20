@@ -16,7 +16,7 @@ O maior risco de um sistema de ideias é o Colaborador sugerir e ninguém respon
 | Papel             | Quem                                                           | Pode                                                                                                                        |
 | ----------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | **Colaborador**   | Qualquer pessoa autenticada                                    | Criar Ideias, curtir, comentar, seguir                                                                                      |
-| **Avaliador**     | Designado por Categoria, dentro do SIM                         | Triar e mudar Status e Categoria das Ideias das suas Categorias, ocultar Comentários. Não avalia Ideias das quais é o Autor |
+| **Avaliador**     | Designado por Categoria, no SIM ou pelo grupo do SSO           | Triar e mudar Status e Categoria das Ideias das suas Categorias, ocultar Comentários. Não avalia Ideias das quais é o Autor |
 | **Administrador** | Via `SIM_ADMIN_EMAILS` / `SIM_ADMIN_GROUP` ou atribuído no SIM | Tudo. Configura o produto e cuida das Ideias de Categorias sem Avaliador                                                    |
 
 ## 3. Requisitos funcionais
@@ -26,7 +26,7 @@ O maior risco de um sistema de ideias é o Colaborador sugerir e ninguém respon
 - Contas locais (e-mail + senha) habilitadas por padrão. São **criadas por Administradores**, com senha temporária que precisa ser trocada no primeiro login. Não há cadastro livre até existir confirmação de e-mail (Marco 2, com SMTP), porque sem ela qualquer pessoa poderia se cadastrar com um e-mail de `SIM_ADMIN_EMAILS`.
 - A **conta de emergência** (`SIM_EMERGENCY_EMAIL` / `SIM_EMERGENCY_PASSWORD`) é o primeiro Administrador da instalação.
 - Um provedor SSO configurável com dois modos: **OIDC**, informando só a issuer URL (o resto vem do discovery), e **OAuth2 genérico**, com endpoints authorize/token/userinfo e mapeamento de campos informados manualmente. Os dois usam authorization code + PKCE.
-- **Restrição por grupo:** `SIM_ACCESS_GROUP` limita o SSO a quem pertence ao grupo (a leitura vem de `SIM_SSO_CLAIM_GROUPS`, padrão `groups`, lista ou texto); quem fica de fora volta ao login com aviso e nenhuma conta é criada. `SIM_ADMIN_GROUP` torna Administrador quem está no grupo, a cada login (e deixa de ser quem saiu dele, salvo se estiver em `SIM_ADMIN_EMAILS`). A checagem acontece no login: quem já tem sessão a mantém até ela expirar, e o login local não é afetado.
+- **Restrição por grupo:** `SIM_ACCESS_GROUP` limita o SSO a quem pertence ao grupo (a leitura vem de `SIM_SSO_CLAIM_GROUPS`, padrão `groups`, lista ou texto); quem fica de fora volta ao login com aviso e nenhuma conta é criada. `SIM_ADMIN_GROUP` torna Administrador quem está no grupo, a cada login (e deixa de ser quem saiu dele, salvo se estiver em `SIM_ADMIN_EMAILS`). Cada Categoria pode ter um **grupo do SSO**: quem está nele vira Avaliador da Categoria a cada login e deixa de ser ao sair do grupo; os Avaliadores escolhidos à mão não mudam, e trocar o grupo da Categoria tira quem tinha vindo do grupo anterior. A checagem acontece no login: quem já tem sessão a mantém até ela expirar, e o login local não é afetado.
 - Criação de conta just-in-time no primeiro login via SSO: nome, e-mail e, se o provedor enviar, departamento e foto.
 - Restrição opcional de acesso a um grupo do SSO.
 - Com SSO ativo, o login local pode ser desligado. Uma **conta de emergência** definida por variável de ambiente continua funcionando.
@@ -224,7 +224,7 @@ sim/
 
 ### Backlog (depois dos marcos)
 
-SAML 2.0 e LDAP direto · SCIM · grupo do SSO → Avaliador · Etiquetas · sugestão de Categoria por IA · explicação de semelhança por LLM · arquivamento automático · subetapas de _Em execução_ · sobrescrever textos da interface · editor rico (Tiptap) · tempo real (SSE) · webhooks Teams/Slack/Google Chat · antivírus (ClamAV) · Helm chart · gamificação (premiando Ideias Concluídas, nunca volume).
+SAML 2.0 e LDAP direto · SCIM · Etiquetas · sugestão de Categoria por IA · explicação de semelhança por LLM · arquivamento automático · subetapas de _Em execução_ · sobrescrever textos da interface · editor rico (Tiptap) · tempo real (SSE) · webhooks Teams/Slack/Google Chat · antivírus (ClamAV) · Helm chart · gamificação (premiando Ideias Concluídas, nunca volume).
 
 ## 7. Fora de escopo (decidido)
 

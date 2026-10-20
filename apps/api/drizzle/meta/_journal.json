@@ -141,6 +141,13 @@
       "when": 1792464615135,
       "tag": "0019_stalled_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1792520233062,
+      "tag": "0020_sso_group_reviewers",
+      "breakpoints": true
     }
   ]
 }

@@ -108,7 +108,7 @@ _Code_: `hiddenAuthorship`
 _Avoid_: Ideia anônima, anonimato
 
 **Avaliador**:
-Colaborador designado, dentro do SIM, para triar e decidir o andamento das Ideias de uma ou mais Categorias. Não avalia Ideias das quais é o Autor.
+Colaborador designado, no SIM ou pelo grupo do SSO da Categoria, para triar e decidir o andamento das Ideias de uma ou mais Categorias. Não avalia Ideias das quais é o Autor.
 _Code_: `Reviewer` (tabela `reviewers`)
 _Avoid_: Gestor, moderador, responsável, aprovador
 

@@ -25,6 +25,8 @@ export const categories = pgTable(
     // Stalled Idea deadlines in days; null follows the installation default (SIM_STALLED_*).
     stalledOpenDays: integer(),
     stalledReviewDays: integer(),
+    // Whoever is in this SSO group becomes a Reviewer of the Category at each SSO login.
+    ssoGroup: text(),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
@@ -46,6 +48,8 @@ export const reviewers = pgTable(
     collaboratorId: uuid()
       .notNull()
       .references(() => collaborators.id, { onDelete: 'cascade' }),
+    // Came from the Category's SSO group, and leaves with it; false when chosen by an Administrator.
+    viaSso: boolean().notNull().default(false),
     assignedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [

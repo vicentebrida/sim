@@ -20,8 +20,9 @@ const bruno = {
   email: 'bruno@company.test',
 };
 
-function simulateCategories() {
-  let categories: CategoryDtoOutput[] = [];
+function simulateCategories(initial: CategoryDtoOutput[] = []) {
+  let categories = initial;
+  const sent: unknown[] = [];
   let nextId = 1;
   const id = () => `00000000-0000-4000-8000-00000000000${nextId++}`;
   server.use(
@@ -43,6 +44,7 @@ function simulateCategories() {
         active: true,
         stalledOpenDays: null,
         stalledReviewDays: null,
+        ssoGroup: null,
         reviewers: [],
       };
       categories.push(category);
@@ -55,13 +57,23 @@ function simulateCategories() {
     }),
     http.put('*/api/categories/:id/reviewers', async ({ params, request }) => {
       const { collaboratorIds } = (await request.json()) as { collaboratorIds: string[] };
+      sent.push(collaboratorIds);
       const people = [admin, bruno].filter((p) => collaboratorIds.includes(p.id));
       categories = categories.map((c) =>
-        c.id === params.id ? { ...c, reviewers: people.map(({ id, name }) => ({ id, name })) } : c,
+        c.id === params.id
+          ? {
+              ...c,
+              reviewers: [
+                ...c.reviewers.filter((r) => r.viaSso),
+                ...people.map(({ id, name }) => ({ id, name, viaSso: false })),
+              ],
+            }
+          : c,
       );
       return HttpResponse.json(categories.find((c) => c.id === params.id));
     }),
   );
+  return { sent };
 }
 
 describe('Categories management', () => {
@@ -111,6 +123,40 @@ describe('Categories management', () => {
     await user.click(within(item).getByRole('button', { name: 'Salvar' }));
     await user.click(await within(item).findByRole('button', { name: 'Editar' }));
     expect(within(item).getByLabelText('Aberta')).toHaveValue('');
+  });
+
+  it('shows who reviews through the SSO group, and leaves them out of the manual choice', async () => {
+    simulateAuth({ session: admin });
+    const { sent } = simulateCategories([
+      {
+        id: '00000000-0000-4000-8000-000000000009',
+        name: 'TI',
+        description: '',
+        active: true,
+        stalledOpenDays: null,
+        stalledReviewDays: null,
+        ssoGroup: 'comite-ti',
+        reviewers: [{ id: bruno.id, name: 'Bruno', viaSso: true }],
+      },
+    ]);
+    renderApp('/admin/categories');
+    const user = userEvent.setup();
+
+    const item = (await screen.findByRole('heading', { name: 'TI' })).closest('li')!;
+    expect(within(item).getByText('Bruno (pelo SSO)')).toBeInTheDocument();
+    expect(within(item).getByText('comite-ti')).toBeInTheDocument();
+
+    await user.click(within(item).getByRole('button', { name: 'Avaliadores' }));
+    const fromSso = await within(item).findByRole('checkbox', { name: /Bruno/ });
+    expect(fromSso).toBeChecked();
+    expect(fromSso).toBeDisabled();
+    await user.click(within(item).getByRole('checkbox', { name: /Admin/ }));
+    await user.click(within(item).getByRole('button', { name: 'Salvar' }));
+    expect(await within(item).findByText('Bruno (pelo SSO), Admin')).toBeInTheDocument();
+    expect(sent).toEqual([[admin.id]]);
+
+    await user.click(within(item).getByRole('button', { name: 'Editar' }));
+    expect(within(item).getByLabelText('Grupo do SSO')).toHaveValue('comite-ti');
   });
 
   it('warns when the Category name already exists', async () => {

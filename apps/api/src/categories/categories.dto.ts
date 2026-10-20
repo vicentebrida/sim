@@ -14,7 +14,10 @@ export class CategoryDto extends createZodDto(
     // Stalled Idea deadlines in days; null follows the installation default.
     stalledOpenDays: z.number().int().nullable(),
     stalledReviewDays: z.number().int().nullable(),
-    reviewers: z.array(z.object({ id: z.uuid(), name: z.string() })),
+    // Members of this SSO group become Reviewers at each SSO login.
+    ssoGroup: z.string().nullable(),
+    // `viaSso`: came from the SSO group, not chosen by an Administrator.
+    reviewers: z.array(z.object({ id: z.uuid(), name: z.string(), viaSso: z.boolean() })),
   }),
 ) {}
 
@@ -36,6 +39,7 @@ export class CategoryUpdateDto extends createZodDto(
     active: z.boolean().optional(),
     stalledOpenDays: days.nullable().optional(),
     stalledReviewDays: days.nullable().optional(),
+    ssoGroup: z.string().trim().min(1).max(200).nullable().optional(),
   }),
 ) {}
 

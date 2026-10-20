@@ -2493,6 +2493,16 @@
               }
             ]
           },
+          "ssoGroup": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "reviewers": {
             "type": "array",
             "items": {
@@ -2505,11 +2515,15 @@
                 },
                 "name": {
                   "type": "string"
+                },
+                "viaSso": {
+                  "type": "boolean"
                 }
               },
               "required": [
                 "id",
-                "name"
+                "name",
+                "viaSso"
               ],
               "additionalProperties": false
             }
@@ -2522,6 +2536,7 @@
           "active",
           "stalledOpenDays",
           "stalledReviewDays",
+          "ssoGroup",
           "reviewers"
         ],
         "additionalProperties": false
@@ -2577,6 +2592,18 @@
                 "type": "integer",
                 "minimum": 1,
                 "maximum": 365
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ssoGroup": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
               },
               {
                 "type": "null"

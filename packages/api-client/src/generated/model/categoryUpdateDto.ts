@@ -17,4 +17,5 @@ export interface CategoryUpdateDto {
   active?: boolean;
   stalledOpenDays?: number | null;
   stalledReviewDays?: number | null;
+  ssoGroup?: string | null;
 }
