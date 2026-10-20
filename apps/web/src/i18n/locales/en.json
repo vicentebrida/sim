@@ -25,7 +25,8 @@
     "collaborators": "People",
     "logout": "Sign out",
     "settings": "Settings",
-    "integrations": "Integrations"
+    "integrations": "Integrations",
+    "tags": "Tags"
   },
   "login": {
     "title": "Sign in to SIM",
@@ -133,7 +134,9 @@
       "WRONG_CURRENT_PASSWORD": "Current password is wrong.",
       "SAME_PASSWORD": "The new password must differ from the current one.",
       "HIDDEN_AUTHORSHIP_DISABLED": "Hidden authorship is turned off on this installation.",
-      "AUTHORSHIP_NOT_HIDDEN": "The Author of this idea is not hidden."
+      "AUTHORSHIP_NOT_HIDDEN": "The Author of this idea is not hidden.",
+      "TAG_NAME_TAKEN": "A tag with this name already exists.",
+      "UNKNOWN_TAG": "One of the tags no longer exists. Reload the page."
     },
     "fields": {
       "required": "Required.",
@@ -294,7 +297,9 @@
       "category": "Category",
       "allCategories": "All",
       "mine": "Only mine (includes drafts)",
-      "following": "Following"
+      "following": "Following",
+      "tag": "Tag",
+      "allTags": "All"
     },
     "sort": {
       "label": "Sort by",
@@ -509,5 +514,22 @@
       "s3": "S3"
     },
     "storageHelp": "Attachments and identity images. Chosen by SIM_STORAGE (disk on the /data volume, or an S3-compatible bucket)."
+  },
+  "tags": {
+    "title": "Tags",
+    "adminTitle": "Tags",
+    "subtitle": "Tags group ideas across categories (e.g. Cost, Security). The author picks them on creation and while the idea is open; afterwards, reviewers and administrators do.",
+    "none": "No tags created yet.",
+    "new": "New tag",
+    "name": "Name",
+    "create": "Create tag",
+    "rename": "Rename",
+    "delete": "Delete",
+    "deleteWarning": "It is removed from every idea.",
+    "confirmDelete": "Delete for good",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit tags",
+    "add": "Add tags"
   }
 }

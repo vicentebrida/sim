@@ -1,10 +1,11 @@
-import { useCategoriesList, useIdeasList } from '@sim/api-client';
+import { useCategoriesList, useIdeasList, useTagsList } from '@sim/api-client';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { Lightbulb } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { LikeCount } from '@/components/likes';
 import { NativeSelect } from '@/components/native-select';
+import { TagList } from '@/components/tags';
 import { StalledBadge, StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -28,6 +29,7 @@ const SORT_ORDERS = ['trending', 'most_liked', 'newest'] as const;
 const filtersSchema = z.object({
   status: z.enum(FILTERABLE_STATUSES).optional().catch(undefined),
   categoryId: z.string().optional().catch(undefined),
+  tagId: z.string().optional().catch(undefined),
   mine: z.boolean().optional().catch(undefined),
   following: z.boolean().optional().catch(undefined),
   // Missing from the URL means "trending", the default order.
@@ -49,9 +51,12 @@ function HomePage() {
   const navigate = useNavigate({ from: Route.fullPath });
   const page = filters.page ?? 1;
   const { data: categoriesResponse } = useCategoriesList();
+  const { data: tagsResponse } = useTagsList({ query: { staleTime: 60_000 } });
+  const tags = tagsResponse?.data ?? [];
   const { data } = useIdeasList({
     status: filters.status,
     categoryId: filters.categoryId,
+    tagId: filters.tagId,
     author: filters.mine ? 'me' : undefined,
     following: filters.following ? 'true' : undefined,
     sort: filters.sort,
@@ -112,6 +117,23 @@ function HomePage() {
             ))}
           </NativeSelect>
         </div>
+        {tags.length > 0 && (
+          <div className="grid min-w-44 gap-1">
+            <Label htmlFor="filter-tag">{t('ideas.filters.tag')}</Label>
+            <NativeSelect
+              id="filter-tag"
+              value={filters.tagId ?? ''}
+              onChange={(event) => filter({ tagId: event.target.value || undefined })}
+            >
+              <option value="">{t('ideas.filters.allTags')}</option>
+              {tags.map((tag) => (
+                <option key={tag.id} value={tag.id}>
+                  {tag.name}
+                </option>
+              ))}
+            </NativeSelect>
+          </div>
+        )}
         <div className="grid min-w-44 gap-1">
           <Label htmlFor="filter-sort">{t('ideas.sort.label')}</Label>
           <NativeSelect
@@ -172,6 +194,7 @@ function HomePage() {
                 <span className="text-sm text-muted-foreground">· {idea.category.name}</span>
               </div>
               <h2 className="mt-2 font-medium">{idea.title}</h2>
+              <TagList tags={idea.tags} className="mt-2" />
               <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm text-muted-foreground">
                   {t('ideas.by', { name: idea.author.name })} ·{' '}

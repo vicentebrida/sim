@@ -13,6 +13,7 @@ import { AttachmentList, FilePicker } from '@/components/attachments';
 import { FormField } from '@/components/form-field';
 import { NativeSelect } from '@/components/native-select';
 import { SimilarIdeas } from '@/components/similar-ideas';
+import { TagPicker } from '@/components/tags';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,6 +31,8 @@ export interface IdeaData {
   values: Record<string, FieldValue>;
   /** Show as anonymous (when the installation allows it). */
   hiddenAuthorship?: boolean;
+  /** Only when creating; afterwards the Tags change on the Idea page. */
+  tagIds?: string[];
 }
 
 export interface FormAction {
@@ -65,8 +68,10 @@ export function IdeaForm({
   ideaNumber,
   existingAttachments = [],
   onRemoveAttachment,
+  withTags = false,
 }: {
   initial?: IdeaData;
+  withTags?: boolean;
   actions: FormAction[];
   onCancel?: () => void;
   /** Number of the Idea being edited, left out of the Similar Ideas. */
@@ -192,6 +197,14 @@ export function IdeaForm({
           error={errors.values?.[field.id]?.message}
         />
       ))}
+
+      {withTags && (
+        <Controller
+          control={form.control}
+          name="tagIds"
+          render={({ field }) => <TagPicker value={field.value ?? []} onChange={field.onChange} />}
+        />
+      )}
 
       {canHide && (
         <div className="grid gap-1">

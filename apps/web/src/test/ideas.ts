@@ -6,6 +6,7 @@ import type {
   IdeaDtoOutput,
   LikeDtoOutput,
   SimilarIdeaDtoOutput,
+  TagDtoOutput,
 } from '@sim/api-client';
 import { http, HttpResponse } from 'msw';
 import { ana } from './api';
@@ -49,6 +50,11 @@ export const FIELDS: CustomFieldDtoOutput[] = [
   },
 ];
 
+export const TAGS: TagDtoOutput[] = [
+  { id: '88888888-8888-4888-8888-888888888881', name: 'Custo' },
+  { id: '88888888-8888-4888-8888-888888888882', name: 'Segurança' },
+];
+
 export const BRUNO = { id: '7a2d3b5f-1e8c-4a6f-8b62-4d3c2e1f0a9b', name: 'Bruno Lima' };
 
 export function sampleIdea(partial: Partial<IdeaDtoOutput> = {}): IdeaDtoOutput {
@@ -58,6 +64,7 @@ export function sampleIdea(partial: Partial<IdeaDtoOutput> = {}): IdeaDtoOutput 
     title: 'Relatório mais rápido',
     status: 'open',
     category: { id: TI.id, name: TI.name },
+    tags: [],
     author: { id: ana.id, name: ana.name },
     likes: { total: 0, liked: false },
     following: false,
@@ -87,6 +94,7 @@ export function sampleIdea(partial: Partial<IdeaDtoOutput> = {}): IdeaDtoOutput 
       canEdit: false,
       canDelete: false,
       canPublish: false,
+      canTag: false,
       canLike: false,
       canReview: false,
       canRecategorize: false,
@@ -165,6 +173,13 @@ export function simulateIdeas(
   server.use(
     http.get('*/api/categories', () => HttpResponse.json([TI])),
     http.get('*/api/custom-fields', () => HttpResponse.json(FIELDS)),
+    http.get('*/api/tags', () => HttpResponse.json(TAGS)),
+    http.put('*/api/ideas/:number/tags', async ({ request }) => {
+      await record(request);
+      const { tagIds } = (await request.json()) as { tagIds: string[] };
+      idea = { ...idea, tags: TAGS.filter((tag) => tagIds.includes(tag.id)) };
+      return HttpResponse.json(idea);
+    }),
     http.get('*/api/ideas', async ({ request }) => {
       await record(request);
       const {

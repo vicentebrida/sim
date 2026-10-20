@@ -25,7 +25,8 @@
     "collaborators": "Colaboradores",
     "logout": "Sair",
     "settings": "Configurações",
-    "integrations": "Integrações"
+    "integrations": "Integrações",
+    "tags": "Etiquetas"
   },
   "login": {
     "title": "Entrar no SIM",
@@ -133,7 +134,9 @@
       "WRONG_CURRENT_PASSWORD": "Senha atual incorreta.",
       "SAME_PASSWORD": "A nova senha deve ser diferente da atual.",
       "HIDDEN_AUTHORSHIP_DISABLED": "A autoria oculta está desligada nesta instalação.",
-      "AUTHORSHIP_NOT_HIDDEN": "O autor desta ideia não está oculto."
+      "AUTHORSHIP_NOT_HIDDEN": "O autor desta ideia não está oculto.",
+      "TAG_NAME_TAKEN": "Já existe uma Etiqueta com este nome.",
+      "UNKNOWN_TAG": "Uma das Etiquetas não existe mais. Recarregue a página."
     },
     "fields": {
       "required": "Campo obrigatório.",
@@ -294,7 +297,9 @@
       "category": "Categoria",
       "allCategories": "Todas",
       "mine": "Só as minhas (inclui rascunhos)",
-      "following": "Que sigo"
+      "following": "Que sigo",
+      "tag": "Etiqueta",
+      "allTags": "Todas"
     },
     "sort": {
       "label": "Ordenar por",
@@ -509,5 +514,22 @@
       "s3": "S3"
     },
     "storageHelp": "Anexos e imagens da identidade. Escolhido por SIM_STORAGE (disco no volume /data, ou um bucket S3 compatível)."
+  },
+  "tags": {
+    "title": "Etiquetas",
+    "adminTitle": "Etiquetas",
+    "subtitle": "Etiquetas ajudam a agrupar Ideias de Categorias diferentes (ex.: Custo, Segurança). O Autor escolhe ao criar e enquanto a Ideia está Aberta; depois, os Avaliadores e Administradores.",
+    "none": "Nenhuma Etiqueta criada ainda.",
+    "new": "Nova Etiqueta",
+    "name": "Nome",
+    "create": "Criar Etiqueta",
+    "rename": "Renomear",
+    "delete": "Excluir",
+    "deleteWarning": "Ela sai de todas as Ideias.",
+    "confirmDelete": "Excluir de vez",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "edit": "Editar etiquetas",
+    "add": "Adicionar etiquetas"
   }
 }

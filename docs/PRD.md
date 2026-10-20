@@ -46,6 +46,7 @@ O maior risco de um sistema de ideias é o Colaborador sugerir e ninguém respon
   - O Autor edita livremente em _Rascunho_ e _Aberta_.
   - A partir de _Em análise_, o texto fica travado para o Autor, e informações novas entram como Comentário.
   - Edições após a publicação guardam a versão anterior e marcam a Ideia como "editada". Quem vê a Ideia consulta as versões anteriores (texto, Categoria e respostas, com o período em que valeram); só edições que mudam o conteúdo geram versão. Anexos não entram nas versões.
+- **Etiquetas:** rótulos que agrupam Ideias de Categorias diferentes (ex.: Custo, Segurança). Só o Administrador cria, renomeia e exclui (excluir tira a Etiqueta de todas as Ideias). O Autor escolhe ao criar e enquanto a Ideia está em _Rascunho_ ou _Aberta_; nas Ideias publicadas, os Avaliadores da Categoria e os Administradores também mudam, em qualquer Status. Até 10 por Ideia; não entram nas versões nem no Histórico.
 - **Exclusão pelo Autor:** sempre em _Rascunho_. Em _Aberta_, só se não houver Curtidas nem Comentários de outras pessoas. Nos outros casos não pode excluir.
 
 ### 3.3 Ciclo de vida ([ADR-0004](./adr/0004-status-com-semantica-fixa.md))
@@ -79,7 +80,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 - Só dá pra curtir em _Aberta_, _Em análise_, _Aprovada_ e _Em execução_. Nos demais Status as Curtidas ficam congeladas: não dá pra curtir nem desfazer.
 - Ordenações: **Em alta** (padrão, com Curtidas e Comentários recentes perdendo peso com o tempo), **Mais curtidas** e **Mais recentes**.
   - Em alta: a publicação e cada Curtida (e, depois, cada Comentário) valem 1 e perdem metade do peso a cada 7 dias; a Ideia soma esses pesos. Assim uma Ideia nova aparece bem, e uma antiga volta a subir quando recebe apoio.
-- Filtros por Status, Categoria e Autor, e "minhas Ideias / que sigo".
+- Filtros por Status, Categoria, Etiqueta e Autor, e "minhas Ideias / que sigo".
 
 ### 3.6 Comentários
 
@@ -224,7 +225,7 @@ sim/
 
 ### Backlog (depois dos marcos)
 
-SAML 2.0 e LDAP direto · SCIM · Etiquetas · sugestão de Categoria por IA · explicação de semelhança por LLM · arquivamento automático · subetapas de _Em execução_ · sobrescrever textos da interface · editor rico (Tiptap) · tempo real (SSE) · webhooks Teams/Slack/Google Chat · antivírus (ClamAV) · Helm chart · gamificação (premiando Ideias Concluídas, nunca volume).
+SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM · arquivamento automático · subetapas de _Em execução_ · sobrescrever textos da interface · editor rico (Tiptap) · tempo real (SSE) · webhooks Teams/Slack/Google Chat · antivírus (ClamAV) · Helm chart · gamificação (premiando Ideias Concluídas, nunca volume).
 
 ## 7. Fora de escopo (decidido)
 

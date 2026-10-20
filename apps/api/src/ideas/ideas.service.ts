@@ -28,6 +28,7 @@ import { StatusesService } from '../statuses/statuses.service';
 import { AttachmentStore } from '../attachments/attachment-store';
 import { isStalledSql } from './domain/stalled';
 import { StalledIdeasService } from './stalled-ideas.service';
+import { TagsService } from '../tags/tags.service';
 import { DB, type Database, type Transaction } from '../database/database.module';
 import {
   categories,
@@ -36,6 +37,7 @@ import {
   comments,
   followers,
   type Idea,
+  ideaTags,
   ideaHistory,
   ideaVersions,
   ideas,
@@ -52,6 +54,7 @@ import {
   assertCanLike,
   assertCanPublish,
   assertCanRecategorize,
+  assertCanTag,
   canView,
   permissions,
   type SortOrder,
@@ -63,6 +66,7 @@ import { isSimilar, MAX_SIMILAR_IDEAS, similarityScore } from './domain/similari
 export interface IdeaFilter {
   status?: Status[];
   categoryId?: string;
+  tagId?: string;
   author?: 'me';
   following?: boolean;
   sort: SortOrder;
@@ -108,6 +112,7 @@ export class IdeasService {
     private readonly settings: SettingsService,
     private readonly audit: AuditService,
     private readonly semantic: SemanticService,
+    private readonly tags: TagsService,
     @Inject(ENV) private readonly env: Env,
   ) {}
 
@@ -139,6 +144,9 @@ export class IdeasService {
           ? ne(ideas.status, 'archived')
           : and(ne(ideas.status, 'archived'), ne(ideas.status, 'draft')),
       filter.categoryId ? eq(ideas.categoryId, filter.categoryId) : undefined,
+      filter.tagId
+        ? sql`exists (select 1 from ${ideaTags} where ${ideaTags.ideaId} = ${ideas.id} and ${ideaTags.tagId} = ${filter.tagId})`
+        : undefined,
       filter.author === 'me' ? eq(ideas.authorId, collaborator.id) : undefined,
       filter.following
         ? sql`exists (select 1 from ${followers} where ${followers.ideaId} = ${ideas.id} and ${followers.collaboratorId} = ${collaborator.id})`
@@ -165,10 +173,12 @@ export class IdeasService {
       this.db.select({ total: count() }).from(ideas).where(where),
     ]);
 
+    const tagsOf = await this.tags.ofIdeas(rows.map((row) => row.idea.id));
     return {
       items: rows.map((row) => ({
         ...this.summary(row.idea),
         category: row.category,
+        tags: tagsOf.get(row.idea.id) ?? [],
         author: presentPerson(row.idea, row.author, collaborator.id, this.env.SIM_LOCALE),
         hiddenAuthorship: row.idea.hiddenAuthorship,
         likes: row.likes,
@@ -225,6 +235,7 @@ export class IdeasService {
       following,
       [stalledRow],
       ideaAttachments,
+      tagsOf,
     ] = await Promise.all([
       this.db
         .select({ id: categories.id, name: categories.name })
@@ -259,6 +270,7 @@ export class IdeasService {
         .innerJoin(categories, eq(ideas.categoryId, categories.id))
         .where(eq(ideas.id, idea.id)),
       this.attachmentStore.ofIdea(idea.id),
+      this.tags.ofIdeas([idea.id]),
     ]);
 
     // Category events store ids; show their names instead.
@@ -287,6 +299,7 @@ export class IdeasService {
       ...this.summary(idea),
       editedAt: iso(idea.editedAt),
       category: category!,
+      tags: tagsOf.get(idea.id) ?? [],
       author: presentPerson(idea, author!, collaborator.id, this.env.SIM_LOCALE),
       hiddenAuthorship: idea.hiddenAuthorship,
       likes: likeState,
@@ -326,6 +339,7 @@ export class IdeasService {
       values: FieldValues;
       publish: boolean;
       hiddenAuthorship?: boolean;
+      tagIds?: string[];
     },
   ) {
     await this.requireActiveCategory(data.categoryId);
@@ -358,6 +372,7 @@ export class IdeasService {
         })
         .returning();
       await refreshDetectionText(tx, eq(ideas.id, idea!.id));
+      if (data.tagIds?.length) await this.tags.setOnIdea(tx, idea!.id, data.tagIds);
       // The Author follows their own Idea from the start, Drafts included.
       await this.notifications.follow(tx, idea!.id, collaborator.id);
       if (data.publish) await this.recordPublication(tx, idea!, collaborator);
@@ -457,6 +472,14 @@ export class IdeasService {
       details: { authorId: idea.authorId },
     });
     return author!;
+  }
+
+  /** Replaces the Tags of the Idea. */
+  async setTags(collaborator: Collaborator, number: number, tagIds: string[]) {
+    const { idea, actor } = await this.access(collaborator, { number });
+    assertCanTag(idea, actor);
+    await this.db.transaction((tx) => this.tags.setOnIdea(tx, idea.id, tagIds));
+    return this.detail(collaborator, number);
   }
 
   async publish(collaborator: Collaborator, number: number) {

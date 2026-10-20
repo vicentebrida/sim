@@ -20,6 +20,7 @@ import {
   FollowingDto,
   IdeaDto,
   IdeaPageDto,
+  IdeaTagsDto,
   IdeaUpdateDto,
   IdeaVersionDto,
   LikeDto,
@@ -95,6 +96,16 @@ export class IdeasController {
     @Param('number', ParseIntPipe) number: number,
   ) {
     return this.ideas.revealAuthor(administrator, number);
+  }
+
+  @Put(':number/tags')
+  @ZodResponse({ status: 200, type: IdeaDto })
+  setTags(
+    @CurrentCollaborator() collaborator: Collaborator,
+    @Param('number', ParseIntPipe) number: number,
+    @Body() data: IdeaTagsDto,
+  ) {
+    return this.ideas.setTags(collaborator, number, data.tagIds);
   }
 
   @Post(':number/publish')

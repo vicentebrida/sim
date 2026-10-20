@@ -11,6 +11,7 @@ export type IdeaDtoOutputPermissions = {
   canEdit: boolean;
   canDelete: boolean;
   canPublish: boolean;
+  canTag: boolean;
   canLike: boolean;
   canReview: boolean;
   canRecategorize: boolean;

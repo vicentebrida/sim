@@ -25,6 +25,7 @@ function NewIdeaPage() {
     <div className="mx-auto max-w-2xl space-y-6">
       <h1 className="text-2xl font-semibold">{t('ideas.new')}</h1>
       <IdeaForm
+        withTags
         actions={[
           {
             label: t('ideas.publish'),
