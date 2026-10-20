@@ -120,7 +120,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 
 ### 3.9 Ideia Parada e painel
 
-- Prazos por Status, configuráveis globalmente (variáveis `SIM_STALLED_OPEN_DAYS` e `SIM_STALLED_REVIEW_DAYS`) e por Categoria (tela de Categorias). Padrões: _Aberta_ 15 dias, _Em análise_ 30 dias, contados desde a última mudança de Status.
+- Prazos por Status, configuráveis globalmente (tela **Configurações**; sem escolha vale o padrão das variáveis `SIM_STALLED_OPEN_DAYS`, `SIM_STALLED_REVIEW_DAYS` e `SIM_STALLED_ESCALATION_DAYS`) e por Categoria (tela de Categorias). Cada mudança vai para a Auditoria. Padrões: _Aberta_ 15 dias, _Em análise_ 30 dias, contados desde a última mudança de Status.
 - Quando o prazo estoura, os Avaliadores são notificados (Categoria sem Avaliador: os Administradores). Depois de `SIM_STALLED_ESCALATION_DAYS` (padrão 7) a Ideia escala para os Administradores. Cada aviso sai uma vez por período de Status; mudar o Status recomeça a contagem. O Autor nunca recebe o aviso da própria Ideia.
 - A verificação roda a cada hora no job em segundo plano (precisa de Redis); os avisos entram no sininho e, se configurado, por e-mail.
 - A marca de Ideia Parada aparece só para Avaliadores e Administradores.

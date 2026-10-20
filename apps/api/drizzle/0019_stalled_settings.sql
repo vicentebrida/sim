@@ -1,0 +1,4 @@
+ALTER TABLE "installation_settings" ADD COLUMN "stalled_open_days" integer;--> statement-breakpoint
+ALTER TABLE "installation_settings" ADD COLUMN "stalled_review_days" integer;--> statement-breakpoint
+ALTER TABLE "installation_settings" ADD COLUMN "stalled_escalation_days" integer;--> statement-breakpoint
+ALTER TABLE "installation_settings" ADD CONSTRAINT "installation_settings_valid_stalled_days" CHECK (("installation_settings"."stalled_open_days" is null or "installation_settings"."stalled_open_days" > 0) and ("installation_settings"."stalled_review_days" is null or "installation_settings"."stalled_review_days" > 0) and ("installation_settings"."stalled_escalation_days" is null or "installation_settings"."stalled_escalation_days" > 0));

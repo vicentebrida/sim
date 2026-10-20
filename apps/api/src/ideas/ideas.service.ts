@@ -119,11 +119,11 @@ export class IdeasService {
   }
 
   /** The Stalled mark is only for Administrators and the Reviewers of the Category (not the Author). */
-  private stalledFlag(collaborator: Collaborator) {
+  private async stalledFlag(collaborator: Collaborator) {
     const sees = collaborator.administrator
       ? sql`true`
       : sql`(${ideas.authorId} <> ${collaborator.id} and exists (select 1 from ${reviewers} where ${reviewers.categoryId} = ${ideas.categoryId} and ${reviewers.collaboratorId} = ${collaborator.id}))`;
-    return sql<boolean>`(${isStalledSql(this.stalledIdeas.deadlines())} and ${sees})`;
+    return sql<boolean>`(${isStalledSql(await this.stalledIdeas.deadlines())} and ${sees})`;
   }
 
   // ---------- reading ----------
@@ -145,6 +145,7 @@ export class IdeasService {
         : undefined,
     );
 
+    const stalled = await this.stalledFlag(collaborator);
     const [rows, [counted]] = await Promise.all([
       this.db
         .select({
@@ -152,7 +153,7 @@ export class IdeasService {
           category: { id: categories.id, name: categories.name },
           author: { id: author.id, name: author.name },
           likes: { total: likeCount, liked: likedBy(collaborator) },
-          stalled: this.stalledFlag(collaborator),
+          stalled,
         })
         .from(ideas)
         .innerJoin(categories, eq(ideas.categoryId, categories.id))
@@ -212,6 +213,7 @@ export class IdeasService {
     const { idea, actor } = await this.access(collaborator, { number });
 
     const changedBy = alias(collaborators, 'changed_by');
+    const stalledFlag = await this.stalledFlag(collaborator);
     const [
       [category],
       [author],
@@ -252,7 +254,7 @@ export class IdeasService {
       this.interactionFromOthers(idea),
       this.notifications.isFollowing(idea.id, collaborator.id),
       this.db
-        .select({ stalled: this.stalledFlag(collaborator) })
+        .select({ stalled: stalledFlag })
         .from(ideas)
         .innerJoin(categories, eq(ideas.categoryId, categories.id))
         .where(eq(ideas.id, idea.id)),

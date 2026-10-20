@@ -5,7 +5,9 @@
  * SIM REST API
  * OpenAPI spec version: 0.0.0
  */
+import type { SettingsDtoOutputStalled } from './settingsDtoOutputStalled.ts';
 
 export interface SettingsDtoOutput {
   hiddenAuthorshipEnabled: boolean;
+  stalled: SettingsDtoOutputStalled;
 }

@@ -6,9 +6,31 @@ import { AdministratorOnly, CurrentCollaborator } from '../auth/decorators';
 import type { Collaborator } from '../database/schema';
 import { SettingsService } from './settings.service';
 
-class SettingsDto extends createZodDto(z.object({ hiddenAuthorshipEnabled: z.boolean() })) {}
+const days = z.number().int().min(1).max(365);
+
+class SettingsDto extends createZodDto(
+  z.object({
+    hiddenAuthorshipEnabled: z.boolean(),
+    // Stalled Idea deadlines in force (the choice made here, or else the environment default).
+    stalled: z.object({
+      openDays: z.number().int(),
+      reviewDays: z.number().int(),
+      escalationDays: z.number().int(),
+    }),
+  }),
+) {}
 class SettingsUpdateDto extends createZodDto(
-  z.object({ hiddenAuthorshipEnabled: z.boolean().optional() }),
+  z.object({
+    hiddenAuthorshipEnabled: z.boolean().optional(),
+    // A number sets it; null goes back to the environment default.
+    stalled: z
+      .object({
+        openDays: days.nullable().optional(),
+        reviewDays: days.nullable().optional(),
+        escalationDays: days.nullable().optional(),
+      })
+      .optional(),
+  }),
 ) {}
 
 @ApiTags('settings')

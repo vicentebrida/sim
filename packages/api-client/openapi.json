@@ -4863,10 +4863,37 @@
         "properties": {
           "hiddenAuthorshipEnabled": {
             "type": "boolean"
+          },
+          "stalled": {
+            "type": "object",
+            "properties": {
+              "openDays": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "reviewDays": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "escalationDays": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "openDays",
+              "reviewDays",
+              "escalationDays"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
-          "hiddenAuthorshipEnabled"
+          "hiddenAuthorshipEnabled",
+          "stalled"
         ],
         "additionalProperties": false
       },
@@ -4875,6 +4902,47 @@
         "properties": {
           "hiddenAuthorshipEnabled": {
             "type": "boolean"
+          },
+          "stalled": {
+            "type": "object",
+            "properties": {
+              "openDays": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 365
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "reviewDays": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 365
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "escalationDays": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 365
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
           }
         }
       },

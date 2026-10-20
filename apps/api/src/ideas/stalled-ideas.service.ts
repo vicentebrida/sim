@@ -4,6 +4,7 @@ import { ENV } from '../config/config.module';
 import type { Env } from '../config/env';
 import { DB, type Database } from '../database/database.module';
 import { categories, ideas } from '../database/schema';
+import { SettingsService } from '../settings/settings.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { isStalledSql, stalledStage } from './domain/stalled';
 
@@ -17,13 +18,13 @@ export class StalledIdeasService {
     @Inject(DB) private readonly db: Database,
     @Inject(ENV) private readonly env: Env,
     private readonly notifications: NotificationsService,
+    private readonly settings: SettingsService,
   ) {}
 
-  deadlines() {
-    return {
-      openDays: this.env.SIM_STALLED_OPEN_DAYS,
-      reviewDays: this.env.SIM_STALLED_REVIEW_DAYS,
-    };
+  /** Days without Reviewer action, as set by the Administrator (or the environment default). */
+  async deadlines() {
+    const { openDays, reviewDays } = (await this.settings.get()).stalled;
+    return { openDays, reviewDays };
   }
 
   /** Returns how many Ideas were notified. */
@@ -32,7 +33,7 @@ export class StalledIdeasService {
       .select({ id: ideas.id })
       .from(ideas)
       .innerJoin(categories, eq(ideas.categoryId, categories.id))
-      .where(isStalledSql(this.deadlines()));
+      .where(isStalledSql(await this.deadlines()));
     let notified = 0;
     for (const { id } of stalled) {
       if (await this.handle(id, now)) notified += 1;
@@ -40,16 +41,18 @@ export class StalledIdeasService {
     return notified;
   }
 
-  private handle(id: string, now: Date) {
+  private async handle(id: string, now: Date) {
+    const deadlines = await this.deadlines();
+    const escalationDays = (await this.settings.get()).stalled.escalationDays;
     return this.db.transaction(async (tx) => {
       const [idea] = await tx
         .select()
         .from(ideas)
         .innerJoin(categories, eq(ideas.categoryId, categories.id))
-        .where(and(eq(ideas.id, id), isStalledSql(this.deadlines())))
+        .where(and(eq(ideas.id, id), isStalledSql(deadlines)))
         .for('update', { of: ideas, skipLocked: true });
       if (!idea) return false;
-      const stage = stalledStage(idea.ideas, now, this.env.SIM_STALLED_ESCALATION_DAYS);
+      const stage = stalledStage(idea.ideas, now, escalationDays);
       if (stage === 'none') return false;
 
       await this.notifications.onStalled(tx, idea.ideas, stage);

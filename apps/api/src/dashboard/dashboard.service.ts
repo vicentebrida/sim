@@ -42,7 +42,7 @@ export class DashboardService {
   ) {}
 
   async overview() {
-    const stalled = isStalledSql(this.stalledIdeas.deadlines());
+    const stalled = isStalledSql(await this.stalledIdeas.deadlines());
     const [byStatus, byCategory, [decision], stalledIdeas, mostLiked] = await Promise.all([
       this.db
         .select({ status: ideas.status, total: sql<number>`count(*)::int` })
@@ -133,7 +133,7 @@ export class DashboardService {
         firstDecisionAt,
         likes: likeCount,
         comments: sql<number>`(select count(*) from ${comments} where ${comments.ideaId} = ${ideas.id} and ${comments.removedAt} is null)::int`,
-        stalled: isStalledSql(this.stalledIdeas.deadlines()),
+        stalled: isStalledSql(await this.stalledIdeas.deadlines()),
       })
       .from(ideas)
       .innerJoin(categories, eq(ideas.categoryId, categories.id))
