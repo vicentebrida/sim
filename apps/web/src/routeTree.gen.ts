@@ -20,6 +20,7 @@ import { Route as AppAdminCategoriesRouteImport } from './routes/_app/admin/cate
 import { Route as AppAdminCollaboratorsRouteImport } from './routes/_app/admin/collaborators'
 import { Route as AppAdminCustomFieldsRouteImport } from './routes/_app/admin/custom-fields'
 import { Route as AppAdminDashboardRouteImport } from './routes/_app/admin/dashboard'
+import { Route as AppAdminIntegrationsRouteImport } from './routes/_app/admin/integrations'
 import { Route as AppAdminSettingsRouteImport } from './routes/_app/admin/settings'
 import { Route as AppAdminStatusesRouteImport } from './routes/_app/admin/statuses'
 import { Route as AppIdeasNewRouteImport } from './routes/_app/ideas/new'
@@ -80,6 +81,11 @@ const AppAdminDashboardRoute = AppAdminDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AppAdminRouteRoute,
 } as any)
+const AppAdminIntegrationsRoute = AppAdminIntegrationsRouteImport.update({
+  id: '/integrations',
+  path: '/integrations',
+  getParentRoute: () => AppAdminRouteRoute,
+} as any)
 const AppAdminSettingsRoute = AppAdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/admin/collaborators': typeof AppAdminCollaboratorsRoute
   '/admin/custom-fields': typeof AppAdminCustomFieldsRoute
   '/admin/dashboard': typeof AppAdminDashboardRoute
+  '/admin/integrations': typeof AppAdminIntegrationsRoute
   '/admin/settings': typeof AppAdminSettingsRoute
   '/admin/statuses': typeof AppAdminStatusesRoute
   '/ideas/new': typeof AppIdeasNewRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/admin/collaborators': typeof AppAdminCollaboratorsRoute
   '/admin/custom-fields': typeof AppAdminCustomFieldsRoute
   '/admin/dashboard': typeof AppAdminDashboardRoute
+  '/admin/integrations': typeof AppAdminIntegrationsRoute
   '/admin/settings': typeof AppAdminSettingsRoute
   '/admin/statuses': typeof AppAdminStatusesRoute
   '/ideas/new': typeof AppIdeasNewRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/_app/admin/collaborators': typeof AppAdminCollaboratorsRoute
   '/_app/admin/custom-fields': typeof AppAdminCustomFieldsRoute
   '/_app/admin/dashboard': typeof AppAdminDashboardRoute
+  '/_app/admin/integrations': typeof AppAdminIntegrationsRoute
   '/_app/admin/settings': typeof AppAdminSettingsRoute
   '/_app/admin/statuses': typeof AppAdminStatusesRoute
   '/_app/ideas/new': typeof AppIdeasNewRoute
@@ -172,6 +181,7 @@ export interface FileRouteTypes {
     | '/admin/collaborators'
     | '/admin/custom-fields'
     | '/admin/dashboard'
+    | '/admin/integrations'
     | '/admin/settings'
     | '/admin/statuses'
     | '/ideas/new'
@@ -189,6 +199,7 @@ export interface FileRouteTypes {
     | '/admin/collaborators'
     | '/admin/custom-fields'
     | '/admin/dashboard'
+    | '/admin/integrations'
     | '/admin/settings'
     | '/admin/statuses'
     | '/ideas/new'
@@ -207,6 +218,7 @@ export interface FileRouteTypes {
     | '/_app/admin/collaborators'
     | '/_app/admin/custom-fields'
     | '/_app/admin/dashboard'
+    | '/_app/admin/integrations'
     | '/_app/admin/settings'
     | '/_app/admin/statuses'
     | '/_app/ideas/new'
@@ -299,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminDashboardRouteImport
       parentRoute: typeof AppAdminRouteRoute
     }
+    '/_app/admin/integrations': {
+      id: '/_app/admin/integrations'
+      path: '/integrations'
+      fullPath: '/admin/integrations'
+      preLoaderRoute: typeof AppAdminIntegrationsRouteImport
+      parentRoute: typeof AppAdminRouteRoute
+    }
     '/_app/admin/settings': {
       id: '/_app/admin/settings'
       path: '/settings'
@@ -344,6 +363,7 @@ interface AppAdminRouteRouteChildren {
   AppAdminCollaboratorsRoute: typeof AppAdminCollaboratorsRoute
   AppAdminCustomFieldsRoute: typeof AppAdminCustomFieldsRoute
   AppAdminDashboardRoute: typeof AppAdminDashboardRoute
+  AppAdminIntegrationsRoute: typeof AppAdminIntegrationsRoute
   AppAdminSettingsRoute: typeof AppAdminSettingsRoute
   AppAdminStatusesRoute: typeof AppAdminStatusesRoute
 }
@@ -355,6 +375,7 @@ const AppAdminRouteRouteChildren: AppAdminRouteRouteChildren = {
   AppAdminCollaboratorsRoute: AppAdminCollaboratorsRoute,
   AppAdminCustomFieldsRoute: AppAdminCustomFieldsRoute,
   AppAdminDashboardRoute: AppAdminDashboardRoute,
+  AppAdminIntegrationsRoute: AppAdminIntegrationsRoute,
   AppAdminSettingsRoute: AppAdminSettingsRoute,
   AppAdminStatusesRoute: AppAdminStatusesRoute,
 }

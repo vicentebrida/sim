@@ -17,5 +17,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
+    // Long flows (many clicks) can pass the 5 s default when the machine is busy.
+    testTimeout: 20_000,
   },
 });

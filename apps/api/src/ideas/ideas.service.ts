@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   and,
   asc,
@@ -17,6 +17,7 @@ import { alias } from 'drizzle-orm/pg-core';
 import { DomainError } from '../common/domain-error';
 import { CustomFieldsService } from '../custom-fields/custom-fields.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { SemanticService } from '../semantic/semantic.service';
 import { AuditService } from '../audit/audit.service';
 import { ENV } from '../config/config.module';
 import type { Env } from '../config/env';
@@ -95,6 +96,8 @@ const ORDER_BY: Record<SortOrder, SQL[]> = {
 
 @Injectable()
 export class IdeasService {
+  private readonly logger = new Logger(IdeasService.name);
+
   constructor(
     @Inject(DB) private readonly db: Database,
     private readonly fields: CustomFieldsService,
@@ -104,6 +107,7 @@ export class IdeasService {
     private readonly statuses: StatusesService,
     private readonly settings: SettingsService,
     private readonly audit: AuditService,
+    private readonly semantic: SemanticService,
     @Inject(ENV) private readonly env: Env,
   ) {}
 
@@ -637,15 +641,61 @@ export class IdeasService {
       .orderBy(desc(sql`ts_rank_cd(${ideas.searchVector}, ${fullQuery}, 32)`))
       .limit(50);
 
-    return candidates
+    const byText = candidates
       .map(({ coverage, textRank, titleSimilarity: similarity, ...idea }) => {
         const signals = { coverage, textRank, titleSimilarity: similarity };
         return { ...idea, similar: isSimilar(signals), score: similarityScore(signals) };
       })
-      .filter((idea) => idea.similar)
+      .filter((idea) => idea.similar);
+
+    const bySense = await this.similarInMeaning(query, byText);
+    return [...byText, ...bySense]
       .sort((a, b) => b.score - a.score)
       .slice(0, MAX_SIMILAR_IDEAS)
       .map(({ similar: _, score, ...idea }) => ({ ...idea, score: Math.round(score * 100) / 100 }));
+  }
+
+  /**
+   * Ideas close in meaning (optional semantic search) that the text search did not find. If the
+   * embeddings service is down, the answer is simply the text result.
+   */
+  private async similarInMeaning(
+    query: { title: string; text: string; exclude?: number },
+    found: { number: number }[],
+  ) {
+    if (!this.semantic.enabled) return [];
+    try {
+      const matches = await this.semantic.search(`${query.title}\n${query.text}`, {
+        exclude: query.exclude,
+        limit: MAX_SIMILAR_IDEAS,
+      });
+      const fresh = matches.filter((match) => !found.some((idea) => idea.number === match.number));
+      if (!fresh.length) return [];
+      const rows = await this.db
+        .select({
+          number: ideas.number,
+          title: ideas.title,
+          status: ideas.status,
+          category: { id: categories.id, name: categories.name },
+          likes: likeCount,
+        })
+        .from(ideas)
+        .innerJoin(categories, eq(ideas.categoryId, categories.id))
+        .where(
+          inArray(
+            ideas.number,
+            fresh.map((match) => match.number),
+          ),
+        );
+      return rows.map((row) => ({
+        ...row,
+        similar: true,
+        score: fresh.find((match) => match.number === row.number)!.similarity,
+      }));
+    } catch (error) {
+      this.logger.warn(`Semantic search unavailable: ${(error as Error).message}`);
+      return [];
+    }
   }
 
   // ---------- following ----------

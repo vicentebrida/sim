@@ -21,6 +21,17 @@ services:
         condition: service_started
     restart: unless-stopped
 
+  # Opcional, para a busca semântica sem enviar dados a terceiros:
+  #   docker compose -f docker/compose.yml --profile ollama up -d
+  #   docker compose -f docker/compose.yml exec ollama ollama pull nomic-embed-text
+  # e no .env: SIM_EMBEDDINGS_URL=http://ollama:11434/v1  SIM_EMBEDDINGS_MODEL=nomic-embed-text
+  ollama:
+    image: ollama/ollama:latest
+    profiles: [ollama]
+    volumes:
+      - ollama:/root/.ollama
+    restart: unless-stopped
+
   redis:
     image: redis:7-alpine
     volumes:
@@ -42,6 +53,7 @@ services:
     restart: unless-stopped
 
 volumes:
+  ollama:
   sim-data:
   postgres:
   redis:

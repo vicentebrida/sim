@@ -7,13 +7,13 @@ Sistema open source e self-hosted onde os colaboradores de uma empresa propõem 
 
 Quando alguém começa a escrever uma Ideia que já existe, o SIM mostra as **Ideias Semelhantes** e direciona a pessoa para apoiar e complementar a original, em vez de abrir uma repetida.
 
-> **Versão 0.3.0**: Marcos 1 a 3, com e-mail, Anexos, Ideias Paradas, Painel, identidade visual, governança e Auditoria (a busca semântica com IA ainda não chegou). Veja o [CHANGELOG](./CHANGELOG.md), o [PRD](./docs/PRD.md) e o que vem a seguir nos Marcos 2 e 3.
+> **Versão 0.3.0**: Marcos 1 a 3, com e-mail, Anexos, Ideias Paradas, Painel, identidade visual, governança e Auditoria. Veja o [CHANGELOG](./CHANGELOG.md), o [PRD](./docs/PRD.md) e o que vem a seguir nos Marcos 2 e 3.
 
 ## Principais recursos
 
 - Login local ou pelo **SSO da empresa** (OIDC ou OAuth2 genérico)
 - Ciclo de vida com Status (Aberta → Em análise → Aprovada → Em execução → Concluída), com Histórico e justificativas
-- **Detecção de Ideias Semelhantes** enquanto se escreve (busca textual). A busca semântica opcional com IA ainda está planejada
+- **Detecção de Ideias Semelhantes** enquanto se escreve (busca textual). A busca semântica opcional com IA complementa a busca textual
 - Curtidas, Comentários com Menções, Seguir e Notificações no sininho e por e-mail (opcional, via SMTP)
 - Categorias com Avaliadores e Campos Personalizados configuráveis, inclusive por Categoria
 - Versões de edição, Autoria Oculta (opcional), Colaborador Inativo, Anonimização e Auditoria
@@ -24,7 +24,7 @@ Quando alguém começa a escrever uma Ideia que já existe, o SIM mostra as **Id
 - Anexos (imagens e documentos) em Ideias e Comentários
 - Painel para Administradores, com exportação em CSV
 - Aparência dos Status personalizável (nome, cor e descrição)
-- Planejados: busca semântica opcional com IA
+- Busca semântica opcional (OpenAI, Ollama ou compatível) nas Ideias Semelhantes
 
 ## Documentação
 

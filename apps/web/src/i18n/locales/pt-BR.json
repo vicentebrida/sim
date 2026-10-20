@@ -24,7 +24,8 @@
     "fields": "Campos",
     "collaborators": "Colaboradores",
     "logout": "Sair",
-    "settings": "Configurações"
+    "settings": "Configurações",
+    "integrations": "Integrações"
   },
   "login": {
     "title": "Entrar no SIM",
@@ -460,5 +461,27 @@
     "hide": "Esconder versões anteriores",
     "version": "Versão {{number}}",
     "period": "de {{from}} até {{to}}"
+  },
+  "integrations": {
+    "title": "Integrações",
+    "subtitle": "Configuradas por variáveis de ambiente do servidor; aqui só o estado. Os segredos nunca aparecem.",
+    "configured": "Configurado",
+    "notConfigured": "Não configurado",
+    "sso": "Login único (SSO)",
+    "ssoOff": "Desligado. Defina SIM_SSO_MODE para usar OIDC ou OAuth2.",
+    "ssoMode": "Modo {{mode}}.",
+    "smtp": "E-mail (SMTP)",
+    "smtpHelp": "Defina SMTP_URL para enviar as notificações por e-mail.",
+    "redis": "Redis (tarefas em segundo plano)",
+    "redisHelp": "Necessário para e-mail, Ideias Paradas, inativação automática e busca semântica.",
+    "semantic": "Busca semântica (IA)",
+    "semanticOff": "Desligada. Defina SIM_EMBEDDINGS_URL e SIM_EMBEDDINGS_MODEL (OpenAI, Ollama ou outro serviço compatível) para achar ideias parecidas pelo sentido.",
+    "semanticModel": "Modelo {{model}} · semelhança mínima {{threshold}}.",
+    "semanticIndexed": "{{indexed}} de {{total}} ideias indexadas",
+    "semanticPending_one": "{{count}} aguardando",
+    "semanticPending_other": "{{count}} aguardando",
+    "test": "Testar conexão",
+    "testOk": "Conexão ok: o serviço devolveu vetores de {{dimensions}} dimensões.",
+    "testFailed": "Falhou: {{error}}"
   }
 }

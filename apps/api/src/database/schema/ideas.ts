@@ -145,3 +145,25 @@ export const ideaVersions = pgTable(
 );
 
 export type IdeaVersion = typeof ideaVersions.$inferSelect;
+
+// pgvector without a fixed size: the model decides it, and only vectors of one model are compared.
+const vector = customType<{ data: number[]; driverData: string }>({
+  dataType: () => 'vector',
+  toDriver: (value) => `[${value.join(',')}]`,
+});
+
+/**
+ * Semantic search (optional): the vector of an Idea's title and detection text. Kept apart from
+ * `ideas` so the vector never travels with ordinary reads. An Idea whose model or text hash is out
+ * of date is re-indexed by the background job.
+ */
+export const ideaEmbeddings = pgTable('idea_embeddings', {
+  ideaId: uuid()
+    .primaryKey()
+    .references(() => ideas.id, { onDelete: 'cascade' }),
+  model: text().notNull(),
+  // md5 of the text the vector was made from.
+  textHash: text().notNull(),
+  embedding: vector().notNull(),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});
