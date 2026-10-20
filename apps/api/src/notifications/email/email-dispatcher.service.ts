@@ -5,7 +5,7 @@ import { ENV } from '../../config/config.module';
 import type { Env } from '../../config/env';
 import { DB, type Database, type Executor } from '../../database/database.module';
 import { collaborators, ideas, notifications } from '../../database/schema';
-import { renderDigest, renderEmail } from './email-templates';
+import { LOGO_CID, renderDigest, renderEmail } from './email-templates';
 import { anonymousName, hidesAuthor } from '../../ideas/domain/authorship';
 import { BrandingService } from '../../branding/branding.service';
 import { StatusesService } from '../../statuses/statuses.service';
@@ -15,6 +15,11 @@ export const MAX_EMAIL_ATTEMPTS = 5;
 /** Wait before attempt 2, 3, 4 and 5: an SMTP outage of over an hour is survived. */
 export const RETRY_DELAYS_MINUTES = [1, 5, 15, 60];
 const BATCH_SIZE = 50;
+
+type EmailLogo = NonNullable<Awaited<ReturnType<BrandingService['emailLogo']>>>;
+
+const attach = (logo: EmailLogo | null) =>
+  logo ? { attachments: [{ ...logo, cid: LOGO_CID }] } : {};
 
 /**
  * Sends the e-mail copy of Notifications recorded as `pending`. The database is the source of
@@ -73,8 +78,9 @@ export class EmailDispatcher {
       }
 
       try {
-        const message = renderEmail(await this.context(row));
-        await this.mailer.send({ to: recipient.email, ...message });
+        const logo = await this.logo();
+        const message = renderEmail(await this.context(row, logo));
+        await this.mailer.send({ to: recipient.email, ...message, ...attach(logo) });
       } catch (error) {
         const attempts = notification.emailAttempts + 1;
         const giveUp = attempts >= MAX_EMAIL_ATTEMPTS;
@@ -145,10 +151,12 @@ export class EmailDispatcher {
       }
 
       try {
-        const items = await Promise.all(rows.map((row) => this.context(row)));
+        const logo = await this.logo();
+        const items = await Promise.all(rows.map((row) => this.context(row, logo)));
         await this.mailer.send({
           to: recipient.email,
           ...renderDigest({ ...items[0]!, items, url: this.env.SIM_PUBLIC_URL }),
+          ...attach(logo),
         });
       } catch (error) {
         const attempts =
@@ -200,13 +208,26 @@ export class EmailDispatcher {
       .$dynamic();
   }
 
+  /** The logo for the e-mail; if it cannot be read, the e-mail goes without it. */
+  private async logo(): Promise<EmailLogo | null> {
+    try {
+      return await this.branding.emailLogo();
+    } catch (error) {
+      this.logger.warn(`Logo left out of the e-mail: ${(error as Error).message}`);
+      return null;
+    }
+  }
+
   /** What the templates need to describe one Notification to its recipient. */
-  private async context(row: Awaited<ReturnType<EmailDispatcher['rows']>>[number]) {
+  private async context(
+    row: Awaited<ReturnType<EmailDispatcher['rows']>>[number],
+    logo: EmailLogo | null,
+  ) {
     const { notification, recipient } = row;
     const brand = await this.branding.get();
     return {
       locale: this.env.SIM_LOCALE,
-      brand: { name: brand.name, color: brand.primaryColor },
+      brand: { name: brand.name, color: brand.primaryColor, logo: logo !== null },
       statusLabels: Object.fromEntries(
         (await this.statuses.list()).flatMap(({ status, label }) =>
           label ? [[status, label]] : [],

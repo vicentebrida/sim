@@ -13,6 +13,10 @@ import {
 } from '../database/schema';
 
 export const MAX_BRANDING_IMAGE_BYTES = 2 * 1024 * 1024;
+/** Larger logos stay out of e-mails: the logo goes along with every message. */
+export const MAX_EMAIL_LOGO_BYTES = 300 * 1024;
+/** What e-mail clients show; SVG, WebP and ICO are often blocked or broken. */
+const EMAIL_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/gif'];
 
 @Injectable()
 export class BrandingService {
@@ -95,6 +99,29 @@ export class BrandingService {
     const asset = (await this.get())[kind];
     if (!asset) throw new NotFoundException('Image not set');
     return { contentType: asset.contentType, stream: await this.storage.read(asset.storageKey) };
+  }
+
+  /**
+   * The logo to send inline in e-mails: the light one (e-mails have a white background), or the
+   * dark one when it is the only one, as on the web. Null when there is none that fits.
+   */
+  async emailLogo() {
+    const row = await this.get();
+    const asset = row.logoLight ?? row.logoDark;
+    if (!asset || !EMAIL_LOGO_TYPES.includes(asset.contentType)) return null;
+    const chunks: Buffer[] = [];
+    let size = 0;
+    for await (const chunk of await this.storage.read(asset.storageKey)) {
+      size += (chunk as Buffer).length;
+      if (size > MAX_EMAIL_LOGO_BYTES) return null;
+      chunks.push(chunk as Buffer);
+    }
+    const extension = asset.contentType.slice('image/'.length).replace('jpeg', 'jpg');
+    return {
+      content: Buffer.concat(chunks),
+      contentType: asset.contentType,
+      filename: `logo.${extension}`,
+    };
   }
 }
 

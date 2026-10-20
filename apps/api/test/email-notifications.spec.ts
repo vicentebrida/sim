@@ -91,6 +91,35 @@ describe('E-mail Notifications', () => {
     expect(await emailStatuses()).toContain('sent');
   });
 
+  it('carries the logo inline, when it is an image e-mail clients show', async () => {
+    const png = Buffer.from('89504e470d0a1a0a0000000d49484452', 'hex');
+    const svg = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"></svg>');
+    await newIdea();
+    await dispatch();
+    expect(mailer.sent[0]!.attachments).toBeUndefined();
+    expect(mailer.sent[0]!.html).not.toContain('<img');
+
+    await admin.put('/api/branding/assets/logoDark').attach('file', png, 'logo.png').expect(200);
+    mailer.sent = [];
+    await newIdea();
+    await dispatch();
+    const [email] = mailer.sent;
+    expect(email!.html).toContain('src="cid:logo@sim"');
+    expect(email!.attachments).toEqual([
+      { filename: 'logo.png', content: png, contentType: 'image/png', cid: 'logo@sim' },
+    ]);
+
+    // The light logo wins, but an SVG does not go into e-mails.
+    await admin.put('/api/branding/assets/logoLight').attach('file', svg, 'logo.svg').expect(200);
+    mailer.sent = [];
+    await newIdea();
+    await dispatch();
+    expect(mailer.sent[0]!.attachments).toBeUndefined();
+
+    await admin.delete('/api/branding/assets/logoLight').expect(200);
+    await admin.delete('/api/branding/assets/logoDark').expect(200);
+  });
+
   it('does not put Comment text in the e-mail', async () => {
     const number = await newIdea();
     await bruno.put(`/api/ideas/${number}/follow`).expect(200);
