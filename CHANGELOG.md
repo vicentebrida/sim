@@ -1,6 +1,10 @@
 # Changelog
 
-## Não lançado
+## 0.4.0
+
+A busca semântica opcional chega, fechando o que faltava do Marco 2.
+
+- **Para atualizar**: nada é obrigatório. Para usar a busca semântica, o Postgres precisa ter a extensão pgvector (a imagem do compose já tem) e é preciso configurar `SIM_EMBEDDINGS_URL`, `SIM_EMBEDDINGS_MODEL` e o Redis. Sem isso, tudo segue como na 0.3.0. A migração cria a extensão `vector`.
 
 - **Busca semântica (opcional)**: as Ideias Semelhantes passam a achar também o que é parecido no sentido, não só nas palavras, com qualquer serviço de embeddings compatível com a API da OpenAI (OpenAI, Ollama, ...). As Ideias são indexadas em segundo plano; se o serviço cair, vale a busca textual. Configuração em `SIM_EMBEDDINGS_*` (veja o `.env.example`); o compose traz o perfil `ollama`. A tela **Integrações** mostra o estado e testa a conexão. Exige o Postgres com pgvector (a imagem do compose já tem).
 
