@@ -6,3 +6,5 @@ packages/api-client/src/generated/
 packages/api-client/openapi.json
 apps/web/src/routeTree.gen.ts
 apps/api/drizzle/meta/
+# Templates do Helm (Go template, não YAML puro)
+deploy/helm/sim/templates/

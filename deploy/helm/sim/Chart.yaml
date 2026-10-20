@@ -1,0 +1,12 @@
+apiVersion: v2
+name: sim
+description: SIM (Sistema de Ideias e Melhorias) — API, worker e interface numa imagem só, com Postgres (pgvector) e Redis opcionais.
+type: application
+version: 0.6.0
+appVersion: '0.6.0'
+home: https://github.com/vicentebrida/sim
+sources:
+  - https://github.com/vicentebrida/sim
+keywords:
+  - ideas
+  - innovation

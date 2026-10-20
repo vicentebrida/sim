@@ -156,7 +156,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 ## 4. Requisitos não funcionais
 
 - **Implantação:** uma organização por instalação ([ADR-0001](./adr/0001-uma-organizacao-por-instalacao.md)).
-- **Distribuição:** uma imagem Docker com API, worker e SPA (`SIM_MODE=api|worker|all`) e um `docker-compose.yml` de produção com SIM + Postgres (pgvector) + Redis, mais o profile opcional `ollama`.
+- **Distribuição:** uma imagem Docker com API, worker e SPA (`SIM_MODE=api|worker|all`) e um `docker-compose.yml` de produção com SIM + Postgres (pgvector) + Redis, mais o profile opcional `ollama`. Para Kubernetes, um chart Helm (`deploy/helm/sim`, publicado em `oci://ghcr.io/vicentebrida/charts/sim`) com Postgres e Redis embutidos ou externos e worker separado opcional.
 - **Migrations:** automáticas ao subir, com trava contra execução concorrente. Podem ser desligadas.
 - **Resiliência:** com o Redis fora do ar, o SIM continua operando. O trabalho assíncrono é retomado pela reconciliação ([ADR-0006](./adr/0006-bullmq-redis-com-banco-como-fonte-da-verdade.md)).
 - **Segurança:** segredos só em variáveis de ambiente, download de anexos autenticado, Auditoria de ações sensíveis.
@@ -183,6 +183,7 @@ sim/
 ├── packages/
 │   ├── api-client/     # gerado pelo Orval
 │   └── config/         # tsconfig, ESLint, Prettier
+├── deploy/helm/sim/  # chart Helm
 ├── docker/
 ├── docs/
 │   ├── adr/
@@ -226,7 +227,7 @@ sim/
 
 ### Backlog (depois dos marcos)
 
-SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM · arquivamento automático · subetapas de _Em execução_ · sobrescrever textos da interface · editor rico (Tiptap) · tempo real (SSE) · antivírus (ClamAV) · Helm chart · gamificação (premiando Ideias Concluídas, nunca volume).
+SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM · arquivamento automático · subetapas de _Em execução_ · sobrescrever textos da interface · editor rico (Tiptap) · tempo real (SSE) · antivírus (ClamAV) · gamificação (premiando Ideias Concluídas, nunca volume).
 
 ## 7. Fora de escopo (decidido)
 

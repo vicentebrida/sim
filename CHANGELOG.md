@@ -2,6 +2,7 @@
 
 ## Não lançado
 
+- **Chart Helm** para Kubernetes em `deploy/helm/sim`, publicado a cada versão em `oci://ghcr.io/vicentebrida/charts/sim`. Traz Postgres (pgvector) e Redis embutidos ou usa os seus, worker separado opcional, Ingress, volume para os Anexos e segredos por `existingSecret`.
 - **Canais de chat (webhooks)**: Slack, Microsoft Teams e Google Chat podem receber uma mensagem quando uma Ideia é publicada e quando muda de Status. Configure `SIM_WEBHOOK_SLACK_URL`, `SIM_WEBHOOK_TEAMS_URL` e/ou `SIM_WEBHOOK_GOOGLE_CHAT_URL` (exigem o Redis) e, se quiser, `SIM_WEBHOOK_EVENTS`. A mensagem traz o título e o link, nunca o texto da Ideia. A tela Integrações mostra os canais e envia uma mensagem de teste.
 
 ## 0.6.0
