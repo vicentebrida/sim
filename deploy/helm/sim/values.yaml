@@ -1,0 +1,117 @@
+# Valores do chart do SIM. Veja o README ao lado e o .env.example do repositório para todas as
+# variáveis da aplicação.
+
+image:
+  repository: ghcr.io/vicentebrida/sim
+  # Vazio usa o appVersion do chart.
+  tag: ''
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+
+nameOverride: ''
+fullnameOverride: ''
+
+# Endereço público do SIM (vai nos links dos e-mails e dos canais de chat). Obrigatório.
+publicUrl: ''
+
+# Variáveis da aplicação que não são segredo (ex.: SIM_LOCALE, SIM_TIMEZONE, SIM_SSO_MODE).
+env: {}
+
+# Variáveis secretas (ex.: SMTP_URL, SIM_SSO_CLIENT_SECRET, SIM_WEBHOOK_SLACK_URL). Vão para um
+# Secret criado pelo chart. Prefira `existingSecret` para tirá-las de um cofre.
+secretEnv: {}
+
+# Secret já existente cujas chaves viram variáveis de ambiente (envFrom).
+existingSecret: ''
+
+# Processo web (API + interface). Com o worker separado ligado, roda em SIM_MODE=api;
+# senão, em SIM_MODE=all (API e tarefas em segundo plano no mesmo processo).
+web:
+  replicas: 1
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+
+# Worker separado (SIM_MODE=worker), para escalar a parte web sem repetir as tarefas.
+worker:
+  enabled: false
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ''
+  annotations: {}
+  # Ex.: [{ host: ideias.empresa.com.br }]
+  hosts: []
+  # Ex.: [{ secretName: sim-tls, hosts: [ideias.empresa.com.br] }]
+  tls: []
+
+# Volume dos Anexos e imagens da identidade (/data). Desligue ao usar SIM_STORAGE=s3.
+# Com mais de uma réplica web, use um volume ReadWriteMany ou o S3.
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClass: ''
+  accessMode: ReadWriteOnce
+  existingClaim: ''
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: [ALL]
+
+serviceAccount:
+  create: true
+  name: ''
+  annotations: {}
+
+# Postgres com pgvector dentro do chart, para instalações pequenas. Em produção, prefira um
+# Postgres gerenciado com a extensão pgvector (externalDatabase).
+postgresql:
+  enabled: true
+  image:
+    repository: pgvector/pgvector
+    tag: pg17
+  # Vazio gera uma senha aleatória, mantida entre atualizações.
+  password: ''
+  persistence:
+    size: 10Gi
+    storageClass: ''
+  resources: {}
+
+# Usado quando postgresql.enabled=false: a URL, ou um Secret que a tenha.
+externalDatabase:
+  url: ''
+  existingSecret: ''
+  existingSecretKey: DATABASE_URL
+
+# Redis dentro do chart (tarefas em segundo plano: e-mail, Ideias Paradas, busca semântica, chat).
+redis:
+  enabled: true
+  image:
+    repository: redis
+    tag: 7-alpine
+  resources: {}
+
+# Usado quando redis.enabled=false. Vazio deixa o SIM sem Redis (sem e-mail nem tarefas).
+externalRedis:
+  url: ''
+  existingSecret: ''
+  existingSecretKey: REDIS_URL

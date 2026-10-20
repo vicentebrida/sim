@@ -31,6 +31,21 @@ jobs:
           pnpm generate:api
           git diff --exit-code -- packages/api-client
 
+  helm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: azure/setup-helm@v4
+      - run: helm lint deploy/helm/sim --set publicUrl=https://sim.example.com
+      - name: Renderiza as combinações principais
+        run: |
+          helm template sim deploy/helm/sim --set publicUrl=https://sim.example.com > /dev/null
+          helm template sim deploy/helm/sim --set publicUrl=https://sim.example.com \
+            --set worker.enabled=true --set web.replicas=2 \
+            --set postgresql.enabled=false --set externalDatabase.existingSecret=db \
+            --set redis.enabled=false --set externalRedis.url=redis://redis:6379 \
+            --set ingress.enabled=true --set 'ingress.hosts[0].host=sim.example.com' > /dev/null
+
   docker:
     runs-on: ubuntu-latest
     steps:

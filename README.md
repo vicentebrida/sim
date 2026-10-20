@@ -46,6 +46,14 @@ A imagem pronta também é publicada a cada versão em `ghcr.io/vicentebrida/sim
 
 O SIM fica disponível em `http://localhost:3000`, e a documentação da API em `http://localhost:3000/api/docs`.
 
+## Instalação (Kubernetes)
+
+Há um chart Helm em [`deploy/helm/sim`](./deploy/helm/sim/README.md), publicado a cada versão em `oci://ghcr.io/vicentebrida/charts/sim`:
+
+```bash
+helm install sim oci://ghcr.io/vicentebrida/charts/sim --set publicUrl=https://ideias.empresa.com.br
+```
+
 ## Stack
 
 NestJS · Drizzle · PostgreSQL · React · Vite · TanStack Router/Query · shadcn/ui · pnpm + Turborepo

@@ -1,0 +1,29 @@
+{{- $rwo := and .Values.persistence.enabled (eq .Values.persistence.accessMode "ReadWriteOnce") -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sim.fullname" . }}
+  labels:
+    {{- include "sim.labels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+spec:
+  replicas: {{ .Values.web.replicas }}
+  # A ReadWriteOnce volume cannot be in two pods at once: replace instead of rolling.
+  strategy:
+    type: {{ ternary "Recreate" "RollingUpdate" $rwo }}
+  selector:
+    matchLabels:
+      {{- include "sim.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: web
+  template:
+    metadata:
+      labels:
+        {{- include "sim.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: web
+      annotations:
+        checksum/env: {{ toJson .Values.secretEnv | sha256sum }}
+        {{- with .Values.web.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- include "sim.pod" (dict "root" . "part" "web" "mode" (ternary "api" "all" .Values.worker.enabled)) | nindent 6 }}

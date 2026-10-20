@@ -1,0 +1,20 @@
+O SIM está sendo instalado em {{ .Values.publicUrl }}.
+
+{{- if not .Values.ingress.enabled }}
+
+Sem Ingress: para abrir localmente,
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "sim.fullname" . }} 3000:{{ .Values.service.port }}
+{{- end }}
+
+O primeiro acesso usa a conta de emergência (SIM_EMERGENCY_EMAIL e SIM_EMERGENCY_PASSWORD em
+secretEnv ou existingSecret) ou os e-mails de SIM_ADMIN_EMAILS.
+{{- if and .Values.persistence.enabled (eq .Values.persistence.accessMode "ReadWriteOnce") (or (gt (int .Values.web.replicas) 1) .Values.worker.enabled) }}
+
+ATENÇÃO: o volume /data é ReadWriteOnce, mas há mais de um pod do SIM. Os pods precisam ficar no
+mesmo nó; prefira persistence.accessMode=ReadWriteMany ou o armazenamento S3 (SIM_STORAGE=s3).
+{{- end }}
+{{- if .Values.postgresql.enabled }}
+
+O Postgres embutido serve para instalações pequenas; faça backup do volume
+data-{{ include "sim.fullname" . }}-postgresql-0.
+{{- end }}
