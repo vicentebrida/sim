@@ -7,7 +7,7 @@ Sistema open source e self-hosted onde os colaboradores de uma empresa propõem 
 
 Quando alguém começa a escrever uma Ideia que já existe, o SIM mostra as **Ideias Semelhantes** e direciona a pessoa para apoiar e complementar a original, em vez de abrir uma repetida.
 
-> **Versão 0.4.0**: Marcos 1 a 3, com e-mail, Anexos, Ideias Paradas, Painel, identidade visual, governança, Auditoria e busca semântica opcional. Veja o [CHANGELOG](./CHANGELOG.md), o [PRD](./docs/PRD.md) e o que vem a seguir nos Marcos 2 e 3.
+> **Versão 0.5.0**: Marcos 1 a 3, com e-mail (na hora ou em resumo diário), Anexos (em disco ou S3), Ideias Paradas, Painel, identidade visual, governança, Auditoria e busca semântica opcional. Veja o [CHANGELOG](./CHANGELOG.md), o [PRD](./docs/PRD.md) e o que vem a seguir nos Marcos 2 e 3.
 
 ## Principais recursos
 
