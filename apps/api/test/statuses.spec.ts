@@ -134,6 +134,35 @@ describe('Status settings', () => {
     await admin.put('/api/statuses/done').send({ enabled: false }).expect(400);
   });
 
+  it('with Draft turned off, new Ideas are published and the old Drafts stay', async () => {
+    const draft = (
+      await ana
+        .post('/api/ideas')
+        .send({ title: 'Antiga', categoryId: ti, values: {}, publish: false })
+        .expect(201)
+    ).body.number as number;
+
+    const { body } = await admin.put('/api/statuses/draft').send({ enabled: false }).expect(200);
+    expect(body).toMatchObject({ enabled: false, optional: true });
+    const refused = await ana
+      .post('/api/ideas')
+      .send({ title: 'Nova', categoryId: ti, values: {}, publish: false })
+      .expect(409);
+    expect(refused.body.code).toBe('DRAFTS_OFF');
+    await newIdea();
+
+    // The existing Draft is still edited, published and deleted as before.
+    await ana.patch(`/api/ideas/${draft}`).send({ title: 'Antiga, revista' }).expect(200);
+    await ana.patch(`/api/ideas/${draft}`).send({ values }).expect(200);
+    await ana.post(`/api/ideas/${draft}/publish`).expect(200);
+
+    await admin.put('/api/statuses/draft').send({ enabled: true }).expect(200);
+    await ana
+      .post('/api/ideas')
+      .send({ title: 'De novo', categoryId: ti, values: {}, publish: false })
+      .expect(201);
+  });
+
   it('a Status turned off disappears from the choices and cannot be chosen', async () => {
     const number = await newIdea();
     await bruno

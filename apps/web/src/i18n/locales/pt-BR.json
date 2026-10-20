@@ -98,6 +98,7 @@
       "TOO_MANY_ATTACHMENTS": "O limite de anexos foi atingido.",
       "IMAGE_NOT_ALLOWED": "Envie uma imagem PNG, JPG, GIF, WebP, SVG ou ICO.",
       "STATUS_NOT_OPTIONAL": "Este Status não pode ser desligado.",
+      "DRAFTS_OFF": "Os rascunhos estão desligados; publique a ideia.",
       "CANNOT_DEACTIVATE_SELF": "Você não pode desativar a si mesmo.",
       "LAST_ADMINISTRATOR": "Precisa sobrar pelo menos um administrador ativo.",
       "NOT_INACTIVE": "Desative a pessoa antes de anonimizar.",
@@ -236,7 +237,7 @@
   },
   "statuses": {
     "title": "Aparência dos Status",
-    "sub": "Renomeie, recolora e descreva os Status. As regras de cada um não mudam; Aprovada e Em execução podem ser desligadas, e as ideias passam direto para o próximo.",
+    "sub": "Renomeie, recolora e descreva os Status. As regras de cada um não mudam. Aprovada e Em execução podem ser desligadas, e as ideias passam direto para o próximo; sem Rascunho, toda ideia nova já sai publicada e os rascunhos existentes continuam.",
     "off": "desligado",
     "edit": "Editar",
     "turnOff": "Desligar",

@@ -3,12 +3,14 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { type IdeaData, IdeaForm } from '@/components/idea-form';
 import { uploadAll } from '@/lib/uploads';
+import { useStatusInfo } from '@/lib/use-statuses';
 
 export const Route = createFileRoute('/_app/ideas/new')({ component: NewIdeaPage });
 
 function NewIdeaPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const drafts = useStatusInfo().enabled('draft');
 
   async function create(data: IdeaData, files: File[], publish: boolean) {
     const { data: idea } = await ideasCreate({ ...data, publish });
@@ -29,12 +31,16 @@ function NewIdeaPage() {
             enforceRequired: true,
             run: (d, files) => create(d, files, true),
           },
-          {
-            label: t('ideas.saveDraft'),
-            variant: 'outline',
-            enforceRequired: false,
-            run: (d, files) => create(d, files, false),
-          },
+          ...(drafts
+            ? [
+                {
+                  label: t('ideas.saveDraft'),
+                  variant: 'outline' as const,
+                  enforceRequired: false,
+                  run: (d: IdeaData, files: File[]) => create(d, files, false),
+                },
+              ]
+            : []),
         ]}
         onCancel={() => navigate({ to: '/' })}
       />

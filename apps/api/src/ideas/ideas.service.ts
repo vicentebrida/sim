@@ -330,6 +330,10 @@ export class IdeasService {
   ) {
     await this.requireActiveCategory(data.categoryId);
     await this.assertCanHide(data.hiddenAuthorship);
+    // Drafts that already exist stay; only new ones are refused.
+    if (!data.publish && (await this.statuses.disabled()).includes('draft')) {
+      throw new DomainError('DRAFTS_OFF', 'Drafts are turned off; publish the Idea');
+    }
     const values = normalizeValues(
       await this.fieldDefinitions(data.categoryId),
       data.values,
