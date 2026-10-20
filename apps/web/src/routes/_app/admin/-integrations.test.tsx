@@ -8,13 +8,26 @@ import { server } from '@/test/server';
 
 const admin = { ...ana, name: 'Admin', administrator: true };
 
-const state = (semanticSearch: object) => ({
+const state = (
+  semanticSearch: object,
+  webhooks: object = { channels: [], events: ['published', 'status'] },
+) => ({
   sso: { mode: 'oidc' },
   smtp: { configured: true },
   storage: { kind: 's3' },
   redis: { configured: true },
   semanticSearch,
+  webhooks,
 });
+
+const semanticOff = {
+  configured: false,
+  model: null,
+  threshold: 0.75,
+  total: 0,
+  indexed: 0,
+  pending: 0,
+};
 
 describe('Integrations', () => {
   it('shows the state of each integration, without any secret', async () => {
@@ -87,5 +100,33 @@ describe('Integrations', () => {
     renderApp('/admin/integrations');
     expect(await screen.findByText(/Defina SIM_EMBEDDINGS_URL/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Testar conexão' })).not.toBeInTheDocument();
+  });
+
+  it('shows the chat channels and sends a test message to each', async () => {
+    simulateAuth({ session: admin });
+    server.use(
+      http.get('*/api/integrations', () =>
+        HttpResponse.json(
+          state(semanticOff, { channels: ['slack', 'teams'], events: ['published', 'status'] }),
+        ),
+      ),
+      http.post('*/api/integrations/webhooks/test', () =>
+        HttpResponse.json([
+          { channel: 'slack', ok: true, error: null },
+          { channel: 'teams', ok: false, error: 'HTTP 404' },
+        ]),
+      ),
+    );
+    renderApp('/admin/integrations');
+    const user = userEvent.setup();
+
+    expect(
+      await screen.findByText(
+        'Avisa: Slack, Microsoft Teams. Sobre: Ideias novas, mudanças de Status.',
+      ),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Enviar mensagem de teste' }));
+    expect(await screen.findByText('Slack: mensagem enviada')).toBeInTheDocument();
+    expect(screen.getByText('Microsoft Teams: Falhou: HTTP 404')).toBeInTheDocument();
   });
 });

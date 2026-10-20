@@ -13,6 +13,7 @@ import { CollaboratorsService } from '../collaborators/collaborators.service';
 import { SemanticService } from '../semantic/semantic.service';
 import { StalledIdeasService } from '../ideas/stalled-ideas.service';
 import { EmailDispatcher } from '../notifications/email/email-dispatcher.service';
+import { WebhooksService } from '../webhooks/webhooks.service';
 
 const QUEUE = 'sim-jobs';
 const EMAILS = 'dispatch-emails';
@@ -20,6 +21,7 @@ const STALLED = 'check-stalled-ideas';
 const DIGESTS = 'send-daily-digests';
 const EMBEDDINGS = 'embed-ideas';
 const INACTIVITY = 'deactivate-inactive-collaborators';
+const WEBHOOKS = 'dispatch-webhooks';
 
 /**
  * Background jobs through BullMQ (ADR-0006): sending e-mail every 15 s and looking for Stalled
@@ -39,6 +41,7 @@ export class JobsWorker implements OnApplicationBootstrap, OnApplicationShutdown
     private readonly stalled: StalledIdeasService,
     private readonly collaborators: CollaboratorsService,
     private readonly semantic: SemanticService,
+    private readonly webhooks: WebhooksService,
   ) {}
 
   async onApplicationBootstrap() {
@@ -62,6 +65,9 @@ export class JobsWorker implements OnApplicationBootstrap, OnApplicationShutdown
       );
     }
     await this.queue.upsertJobScheduler(STALLED, { every: 3_600_000 }, { name: STALLED });
+    if (this.webhooks.channels.length) {
+      await this.queue.upsertJobScheduler(WEBHOOKS, { every: 15_000 }, { name: WEBHOOKS });
+    }
     if (this.semantic.enabled) {
       await this.queue.upsertJobScheduler(EMBEDDINGS, { every: 30_000 }, { name: EMBEDDINGS });
     }
@@ -81,6 +87,7 @@ export class JobsWorker implements OnApplicationBootstrap, OnApplicationShutdown
     if (job.name === EMAILS) return this.dispatcher.dispatchPending();
     if (job.name === DIGESTS) return this.dispatcher.dispatchDigests();
     if (job.name === STALLED) return this.stalled.check();
+    if (job.name === WEBHOOKS) return this.webhooks.dispatchPending();
     if (job.name === EMBEDDINGS) return this.semantic.indexPending();
     if (job.name === INACTIVITY && this.env.SIM_INACTIVITY_DAYS) {
       return this.collaborators.deactivateInactive(this.env.SIM_INACTIVITY_DAYS);

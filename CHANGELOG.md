@@ -1,5 +1,9 @@
 # Changelog
 
+## Não lançado
+
+- **Canais de chat (webhooks)**: Slack, Microsoft Teams e Google Chat podem receber uma mensagem quando uma Ideia é publicada e quando muda de Status. Configure `SIM_WEBHOOK_SLACK_URL`, `SIM_WEBHOOK_TEAMS_URL` e/ou `SIM_WEBHOOK_GOOGLE_CHAT_URL` (exigem o Redis) e, se quiser, `SIM_WEBHOOK_EVENTS`. A mensagem traz o título e o link, nunca o texto da Ideia. A tela Integrações mostra os canais e envia uma mensagem de teste.
+
 ## 0.6.0
 
 Etiquetas, Avaliadores pelo grupo do SSO, logo nos e-mails e a opção de desligar o Rascunho.

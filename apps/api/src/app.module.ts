@@ -12,6 +12,7 @@ import { SettingsModule } from './settings/settings.module';
 import { StatusesModule } from './statuses/statuses.module';
 import { CategoriesModule } from './categories/categories.module';
 import { TagsModule } from './tags/tags.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
 import { CollaboratorsModule } from './collaborators/collaborators.module';
 import { CommentsModule } from './comments/comments.module';
 import { DomainErrorFilter } from './common/domain-error.filter';
@@ -40,6 +41,7 @@ function webModule(): DynamicModule[] {
     AuthModule,
     CategoriesModule,
     TagsModule,
+    WebhooksModule,
     CustomFieldsModule,
     IdeasModule,
     CommentsModule,

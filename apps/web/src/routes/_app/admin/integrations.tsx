@@ -2,6 +2,7 @@ import {
   getIntegrationsGetQueryKey,
   useIntegrationsGet,
   useIntegrationsTestSemanticSearch,
+  useIntegrationsTestWebhooks,
 } from '@sim/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
@@ -30,8 +31,10 @@ function IntegrationsPage() {
       onSuccess: () => queryClient.invalidateQueries({ queryKey: getIntegrationsGetQueryKey() }),
     },
   });
+  const testWebhooks = useIntegrationsTestWebhooks();
   const integrations = data?.data;
   const result = test.data?.data;
+  const webhookResults = testWebhooks.data?.data;
 
   return (
     <div className="space-y-6">
@@ -138,6 +141,55 @@ function IntegrationsPage() {
                 </>
               ) : (
                 <p className="text-muted-foreground">{t('integrations.semanticOff')}</p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <h2>{t('integrations.webhooks')}</h2>
+                <State on={integrations.webhooks.channels.length > 0} />
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              {integrations.webhooks.channels.length ? (
+                <>
+                  <p className="text-muted-foreground">
+                    {t('integrations.webhooksChannels', {
+                      channels: integrations.webhooks.channels
+                        .map((channel) => t(`integrations.channels.${channel}`))
+                        .join(', '),
+                    })}{' '}
+                    {t('integrations.webhooksEvents', {
+                      events: integrations.webhooks.events
+                        .map((event) => t(`integrations.events.${event}`))
+                        .join(', '),
+                    })}
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={testWebhooks.isPending}
+                    onClick={() => testWebhooks.mutate()}
+                  >
+                    {t('integrations.webhooksTest')}
+                  </Button>
+                  {webhookResults && (
+                    <ul className="space-y-1" role="status">
+                      {webhookResults.map((entry) => (
+                        <li key={entry.channel} className={entry.ok ? '' : 'text-destructive'}>
+                          {t(`integrations.channels.${entry.channel}`)}:{' '}
+                          {entry.ok
+                            ? t('integrations.webhooksSent')
+                            : t('integrations.testFailed', { error: entry.error })}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              ) : (
+                <p className="text-muted-foreground">{t('integrations.webhooksOff')}</p>
               )}
             </CardContent>
           </Card>

@@ -498,7 +498,7 @@
     "smtp": "E-mail (SMTP)",
     "smtpHelp": "Set SMTP_URL to send notifications by e-mail.",
     "redis": "Redis (background jobs)",
-    "redisHelp": "Needed for e-mail, stalled ideas, automatic deactivation and semantic search.",
+    "redisHelp": "Needed for e-mail, stalled ideas, automatic deactivation, semantic search and chat channels.",
     "semantic": "Semantic search (AI)",
     "semanticOff": "Off. Set SIM_EMBEDDINGS_URL and SIM_EMBEDDINGS_MODEL (OpenAI, Ollama or another compatible service) to find similar ideas by meaning.",
     "semanticModel": "Model {{model}} · minimum similarity {{threshold}}.",
@@ -513,7 +513,22 @@
       "disk": "Disk",
       "s3": "S3"
     },
-    "storageHelp": "Attachments and identity images. Chosen by SIM_STORAGE (disk on the /data volume, or an S3-compatible bucket)."
+    "storageHelp": "Attachments and identity images. Chosen by SIM_STORAGE (disk on the /data volume, or an S3-compatible bucket).",
+    "webhooks": "Chat channels (webhooks)",
+    "webhooksOff": "Off. Set SIM_WEBHOOK_SLACK_URL, SIM_WEBHOOK_TEAMS_URL or SIM_WEBHOOK_GOOGLE_CHAT_URL to tell a channel about ideas.",
+    "webhooksChannels": "Tells: {{channels}}.",
+    "webhooksEvents": "About: {{events}}.",
+    "webhooksTest": "Send a test message",
+    "webhooksSent": "message sent",
+    "channels": {
+      "slack": "Slack",
+      "teams": "Microsoft Teams",
+      "google_chat": "Google Chat"
+    },
+    "events": {
+      "published": "new ideas",
+      "status": "status changes"
+    }
   },
   "tags": {
     "title": "Tags",

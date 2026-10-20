@@ -136,6 +136,21 @@ const baseSchema = z
         }
       }, 'not a valid IANA time zone'),
     SIM_MAIL_FROM: z.string().default('SIM <sim@localhost>'),
+    // Chat channels told about new Ideas and Status changes (incoming webhook URLs; secrets).
+    SIM_WEBHOOK_SLACK_URL: z.url().optional(),
+    SIM_WEBHOOK_TEAMS_URL: z.url().optional(),
+    SIM_WEBHOOK_GOOGLE_CHAT_URL: z.url().optional(),
+    // Which events go to the channels: `published` (new Idea) and `status` (Status change).
+    SIM_WEBHOOK_EVENTS: z
+      .string()
+      .default('published,status')
+      .transform((value) =>
+        value
+          .split(',')
+          .map((event) => event.trim())
+          .filter(Boolean),
+      )
+      .pipe(z.array(z.enum(['published', 'status']))),
     // Express `trust proxy` value: true, number of proxies or a list of IPs/subnets.
     SIM_TRUST_PROXY: z
       .string()
@@ -165,6 +180,18 @@ const baseSchema = z
     path: ['REDIS_URL'],
     message: 'required when SMTP_URL is set (e-mails are sent by a background job)',
   })
+  .refine(
+    (env) =>
+      !(
+        env.SIM_WEBHOOK_SLACK_URL ||
+        env.SIM_WEBHOOK_TEAMS_URL ||
+        env.SIM_WEBHOOK_GOOGLE_CHAT_URL
+      ) || env.REDIS_URL,
+    {
+      path: ['REDIS_URL'],
+      message: 'required when a SIM_WEBHOOK_*_URL is set (messages are sent by a background job)',
+    },
+  )
   .refine((env) => Boolean(env.SIM_EMERGENCY_EMAIL) === Boolean(env.SIM_EMERGENCY_PASSWORD), {
     path: ['SIM_EMERGENCY_PASSWORD'],
     message: 'SIM_EMERGENCY_EMAIL and SIM_EMERGENCY_PASSWORD must be set together',
