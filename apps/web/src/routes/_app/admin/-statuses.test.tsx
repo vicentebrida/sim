@@ -31,7 +31,7 @@ function simulateStatuses(
     color: null,
     description: '',
     enabled: true,
-    optional: status === 'approved' || status === 'in_progress',
+    optional: status === 'draft' || status === 'approved' || status === 'in_progress',
     ...custom[status],
   }));
   const updates: unknown[] = [];

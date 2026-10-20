@@ -1,5 +1,9 @@
 # Changelog
 
+## Não lançado
+
+- **Desligar o Rascunho**: na tela Status, o Administrador pode desligar o Rascunho; aí toda Ideia nova já sai publicada e o botão "Salvar rascunho" some. Os Rascunhos que já existiam continuam com seus Autores, que podem editar, publicar ou excluir.
+
 ## 0.5.0
 
 Resumo diário por e-mail, prazos de Ideia Parada ajustáveis pela interface e armazenamento S3 opcional.

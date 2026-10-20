@@ -10,5 +10,7 @@ export function useStatusInfo() {
     label: (status: string) => settings.get(status as never)?.label ?? t(`status.${status}`),
     color: (status: string) => settings.get(status as never)?.color ?? null,
     description: (status: string) => settings.get(status as never)?.description || undefined,
+    // On while the settings load; the API refuses what is off anyway.
+    enabled: (status: string) => settings.get(status as never)?.enabled ?? true,
   };
 }

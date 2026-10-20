@@ -32,8 +32,15 @@ const TRANSITIONS: Record<Status, readonly Status[]> = {
   archived: ['open'],
 };
 
-/** Statuses the Administrator can turn off; Ideas skip them (ADR-0004). */
-export const OPTIONAL_STATUSES = ['approved', 'in_progress'] as const satisfies readonly Status[];
+/**
+ * Statuses the Administrator can turn off (ADR-0004). Ideas skip a turned-off Approved or In
+ * progress; with Draft off, new Ideas are published on creation.
+ */
+export const OPTIONAL_STATUSES = [
+  'draft',
+  'approved',
+  'in_progress',
+] as const satisfies readonly Status[];
 
 /**
  * Where a Reviewer can take an Idea from `status`. A turned-off Status is replaced by where it

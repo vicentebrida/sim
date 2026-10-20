@@ -98,6 +98,7 @@
       "TOO_MANY_ATTACHMENTS": "The attachment limit was reached.",
       "IMAGE_NOT_ALLOWED": "Send a PNG, JPG, GIF, WebP, SVG or ICO image.",
       "STATUS_NOT_OPTIONAL": "This Status cannot be turned off.",
+      "DRAFTS_OFF": "Drafts are turned off; publish the idea.",
       "CANNOT_DEACTIVATE_SELF": "You cannot deactivate yourself.",
       "LAST_ADMINISTRATOR": "At least one active administrator must remain.",
       "NOT_INACTIVE": "Deactivate the person before anonymizing.",
@@ -236,7 +237,7 @@
   },
   "statuses": {
     "title": "Status appearance",
-    "sub": "Rename, recolor and describe the Statuses. Their rules do not change; Approved and In progress can be turned off, and ideas skip to the next one.",
+    "sub": "Rename, recolor and describe the Statuses. Their rules do not change. Approved and In progress can be turned off, and ideas skip to the next one; without Draft, every new idea is published right away and existing drafts stay.",
     "off": "off",
     "edit": "Edit",
     "turnOff": "Turn off",

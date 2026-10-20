@@ -1,9 +1,11 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { http, HttpResponse } from 'msw';
 import { describe, expect, it } from 'vitest';
 import { ana, simulateAuth } from '@/test/api';
 import { FIELDS, sampleIdea, simulateIdeas, TI } from '@/test/ideas';
 import { renderApp } from '@/test/render';
+import { server } from '@/test/server';
 
 describe('new Idea', () => {
   it('requires the required fields to publish and goes to the created Idea', async () => {
@@ -49,6 +51,31 @@ describe('new Idea', () => {
         values: {},
         publish: false,
       }),
+    );
+  });
+
+  it('only offers to publish when the Administrator turned Drafts off', async () => {
+    simulateAuth({ session: ana });
+    simulateIdeas();
+    server.use(
+      http.get('*/api/statuses', () =>
+        HttpResponse.json([
+          {
+            status: 'draft',
+            label: null,
+            color: null,
+            description: '',
+            enabled: false,
+            optional: true,
+          },
+        ]),
+      ),
+    );
+    renderApp('/ideas/new');
+
+    expect(await screen.findByRole('button', { name: 'Publicar' })).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByRole('button', { name: 'Salvar rascunho' })).not.toBeInTheDocument(),
     );
   });
 });
