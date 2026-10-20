@@ -111,6 +111,9 @@ const baseSchema = z
       .transform((value) => value === 'true'),
     SIM_ATTACHMENT_MAX_MB: z.coerce.number().positive().default(10),
     SIM_ATTACHMENT_MAX_COUNT: z.coerce.number().int().positive().default(5),
+    // Optional antivirus: clamd address, e.g. tcp://clamav:3310. While set, every Attachment is
+    // checked before it is stored, and refused when the check cannot be done.
+    SIM_CLAMAV_URL: z.url({ protocol: /^tcp$/, error: 'use tcp://host:port' }).optional(),
     // Stalled Ideas: days without Reviewer action (a Category can override the first two).
     SIM_STALLED_OPEN_DAYS: z.coerce.number().int().positive().default(15),
     SIM_STALLED_REVIEW_DAYS: z.coerce.number().int().positive().default(30),

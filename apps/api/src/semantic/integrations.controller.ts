@@ -2,6 +2,7 @@ import { Controller, Get, Inject, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { createZodDto, ZodResponse } from 'nestjs-zod';
 import { z } from 'zod';
+import { AntivirusService } from '../antivirus/antivirus.service';
 import { AdministratorOnly } from '../auth/decorators';
 import { ENV } from '../config/config.module';
 import type { Env } from '../config/env';
@@ -30,6 +31,8 @@ class IntegrationsDto extends createZodDto(
       channels: z.array(z.enum(WEBHOOK_CHANNELS)),
       events: z.array(z.enum(['published', 'status'])),
     }),
+    // ClamAV checking every Attachment before it is stored.
+    antivirus: z.object({ configured: z.boolean() }),
   }),
 ) {}
 
@@ -37,6 +40,10 @@ class WebhookTestDto extends createZodDto(
   z.array(
     z.object({ channel: z.enum(WEBHOOK_CHANNELS), ok: z.boolean(), error: z.string().nullable() }),
   ),
+) {}
+
+class AntivirusTestDto extends createZodDto(
+  z.object({ ok: z.boolean(), version: z.string().nullable(), error: z.string().nullable() }),
 ) {}
 
 class ConnectionTestDto extends createZodDto(
@@ -59,6 +66,7 @@ export class IntegrationsController {
     @Inject(ENV) private readonly env: Env,
     private readonly semantic: SemanticService,
     private readonly webhooks: WebhooksService,
+    private readonly antivirus: AntivirusService,
   ) {}
 
   @Get()
@@ -82,6 +90,7 @@ export class IntegrationsController {
         channels: this.webhooks.channels.map(({ channel }) => channel),
         events: this.webhooks.events,
       },
+      antivirus: { configured: this.antivirus.enabled },
     };
   }
 
@@ -90,6 +99,16 @@ export class IntegrationsController {
   @ZodResponse({ status: 200, type: WebhookTestDto })
   testWebhooks() {
     return this.webhooks.test();
+  }
+
+  /** Asks clamd for its version (and the date of its virus database). */
+  @Post('antivirus/test')
+  @ZodResponse({ status: 200, type: AntivirusTestDto })
+  async testAntivirus() {
+    const result = await this.antivirus.test();
+    return result.ok
+      ? { ok: true, version: result.version, error: null }
+      : { ok: false, version: null, error: result.error };
   }
 
   @Post('semantic-search/test')

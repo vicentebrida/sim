@@ -99,6 +99,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 - Armazenamento em disco local (`SIM_DATA_DIR`, o volume `/data` na imagem); o armazenamento compatível com S3 (AWS, MinIO, R2...) vale para Anexos e imagens da identidade, escolhido por `SIM_STORAGE=s3` (veja `.env.example`; as chaves podem faltar se a instalação usar o papel IAM). Trocar de disco para S3 não move os arquivos já enviados. Limites em `SIM_ATTACHMENT_MAX_MB` e `SIM_ATTACHMENT_MAX_COUNT`.
 - O tipo vem da extensão e é conferido pelo conteúdo do arquivo (um `.png` que não é PNG é recusado); SVG e HTML não são aceitos. Quem pode anexar ou apagar segue quem pode editar: o Autor da Ideia enquanto ela é editável, e o autor do Comentário. Anexo de Comentário oculto ou removido some para quem não pode ler o texto; ao remover o Comentário ou apagar a Ideia, os arquivos são apagados.
 - O download passa sempre pelo backend, com checagem de autenticação.
+- Antivírus opcional: com `SIM_CLAMAV_URL` (o `clamd` do ClamAV), cada Anexo é verificado antes de ser guardado. Arquivo com ameaça é recusado, nada fica guardado e a tentativa (quem, qual Ideia, nome do arquivo e assinatura) vai para a Auditoria. Com o antivírus configurado e fora do ar, os envios são recusados em vez de guardados sem verificação. A tela Integrações mostra o estado e testa a conexão. As imagens da identidade visual, enviadas só por Administradores, não passam pelo antivírus.
 
 ### 3.8 Seguir e Notificações
 
@@ -143,7 +144,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
   - Perde as designações de Avaliador.
 - **Anonimização:** irreversível e auditada.
   - Só vale para quem já está inativo. O nome vira "Ex-colaborador" ("Former collaborator" em inglês, conforme `SIM_LOCALE`), e e-mail, senha, foto e dados do SSO são apagados; o nome também sai das Menções nos Comentários. Textos digitados à mão com o nome não são reescritos.
-  - **Auditoria:** a tela **Auditoria** (Administradores) lista desativações, reativações, inativações automáticas e anonimizações. O registro é só de inclusão: um gatilho do banco recusa alterar ou apagar linhas.
+  - **Auditoria:** a tela **Auditoria** (Administradores) lista desativações, reativações, inativações automáticas, anonimizações e Anexos bloqueados pelo antivírus. O registro é só de inclusão: um gatilho do banco recusa alterar ou apagar linhas.
   - O conteúdo permanece.
 
 ### 3.12 Personalização (Administrador)
@@ -159,7 +160,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 - **Distribuição:** uma imagem Docker com API, worker e SPA (`SIM_MODE=api|worker|all`) e um `docker-compose.yml` de produção com SIM + Postgres (pgvector) + Redis, mais o profile opcional `ollama`. Para Kubernetes, um chart Helm (`deploy/helm/sim`, publicado em `oci://ghcr.io/vicentebrida/charts/sim`) com Postgres e Redis embutidos ou externos e worker separado opcional.
 - **Migrations:** automáticas ao subir, com trava contra execução concorrente. Podem ser desligadas.
 - **Resiliência:** com o Redis fora do ar, o SIM continua operando. O trabalho assíncrono é retomado pela reconciliação ([ADR-0006](./adr/0006-bullmq-redis-com-banco-como-fonte-da-verdade.md)).
-- **Segurança:** segredos só em variáveis de ambiente, download de anexos autenticado, Auditoria de ações sensíveis.
+- **Segurança:** segredos só em variáveis de ambiente, download de anexos autenticado, antivírus opcional nos Anexos, Auditoria de ações sensíveis.
 - **API pública:** REST documentada com OpenAPI em `/api/docs`.
 
 ## 5. Arquitetura técnica
@@ -227,7 +228,7 @@ sim/
 
 ### Backlog (depois dos marcos)
 
-SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM · arquivamento automático · subetapas de _Em execução_ · sobrescrever textos da interface · editor rico (Tiptap) · tempo real (SSE) · antivírus (ClamAV) · gamificação (premiando Ideias Concluídas, nunca volume).
+SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM · arquivamento automático · subetapas de _Em execução_ · sobrescrever textos da interface · editor rico (Tiptap) · tempo real (SSE) · gamificação (premiando Ideias Concluídas, nunca volume).
 
 ## 7. Fora de escopo (decidido)
 

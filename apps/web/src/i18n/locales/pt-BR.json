@@ -136,7 +136,9 @@
       "HIDDEN_AUTHORSHIP_DISABLED": "A autoria oculta está desligada nesta instalação.",
       "AUTHORSHIP_NOT_HIDDEN": "O autor desta ideia não está oculto.",
       "TAG_NAME_TAKEN": "Já existe uma Etiqueta com este nome.",
-      "UNKNOWN_TAG": "Uma das Etiquetas não existe mais. Recarregue a página."
+      "UNKNOWN_TAG": "Uma das Etiquetas não existe mais. Recarregue a página.",
+      "ATTACHMENT_INFECTED": "O antivírus encontrou uma ameaça neste arquivo, e ele não foi enviado.",
+      "ANTIVIRUS_UNAVAILABLE": "Não foi possível verificar o arquivo com o antivírus agora. Tente de novo em instantes."
     },
     "fields": {
       "required": "Campo obrigatório.",
@@ -276,7 +278,8 @@
       "collaborator.anonymized": "Anonimizou um colaborador",
       "authorship.revealed": "Revelou o autor de uma ideia",
       "settings.hidden_authorship_changed": "Alterou a configuração de autoria oculta",
-      "settings.stalled_deadlines_changed": "Alterou os prazos de ideia parada"
+      "settings.stalled_deadlines_changed": "Alterou os prazos de ideia parada",
+      "attachment.infected": "Teve um anexo bloqueado pelo antivírus"
     }
   },
   "status": {
@@ -528,7 +531,11 @@
     "events": {
       "published": "Ideias novas",
       "status": "mudanças de Status"
-    }
+    },
+    "antivirus": "Antivírus (ClamAV)",
+    "antivirusOff": "Desligado. Defina SIM_CLAMAV_URL (ex.: tcp://clamav:3310) para verificar cada Anexo antes de guardá-lo.",
+    "antivirusOn": "Cada Anexo é verificado antes de ser guardado. Se o antivírus estiver fora do ar, os envios são recusados.",
+    "antivirusOk": "Conexão ok: {{version}}."
   },
   "tags": {
     "title": "Etiquetas",
