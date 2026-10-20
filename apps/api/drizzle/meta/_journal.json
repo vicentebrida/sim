@@ -134,6 +134,13 @@
       "when": 1792464251307,
       "tag": "0018_drop_notify_by_email",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1792464615135,
+      "tag": "0019_stalled_settings",
+      "breakpoints": true
     }
   ]
 }

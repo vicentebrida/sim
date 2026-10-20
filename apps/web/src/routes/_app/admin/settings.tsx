@@ -1,7 +1,15 @@
-import { getSettingsGetQueryKey, useSettingsGet, useSettingsUpdate } from '@sim/api-client';
+import {
+  getSettingsGetQueryKey,
+  type SettingsDtoOutput,
+  useSettingsGet,
+  useSettingsUpdate,
+} from '@sim/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
+import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FormField } from '@/components/form-field';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { apiErrorMessage } from '@/lib/errors';
 
@@ -54,6 +62,85 @@ function SettingsPage() {
           </CardContent>
         </Card>
       )}
+      {settings && <StalledDeadlines stalled={settings.stalled} />}
     </div>
+  );
+}
+
+const FIELDS = ['openDays', 'reviewDays', 'escalationDays'] as const;
+
+/** Days without Reviewer action before an Idea counts as stalled, and before it escalates. */
+function StalledDeadlines({ stalled }: { stalled: SettingsDtoOutput['stalled'] }) {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const [days, setDays] = useState(() =>
+    Object.fromEntries(FIELDS.map((field) => [field, String(stalled[field])])),
+  );
+  const [saved, setSaved] = useState(false);
+  const update = useSettingsUpdate({
+    mutation: {
+      onSuccess: async () => {
+        setSaved(true);
+        await queryClient.invalidateQueries({ queryKey: getSettingsGetQueryKey() });
+      },
+    },
+  });
+  const valid = FIELDS.every((field) => /^\d{1,3}$/.test(days[field]!) && Number(days[field]) >= 1);
+
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    setSaved(false);
+    update.mutate({
+      data: {
+        stalled: Object.fromEntries(FIELDS.map((field) => [field, Number(days[field])])),
+      },
+    });
+  }
+
+  const failure = apiErrorMessage(update.error, t);
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          <h2>{t('settings.stalled')}</h2>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form className="grid gap-4" onSubmit={submit}>
+          <p className="text-sm text-muted-foreground">{t('settings.stalledHelp')}</p>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {FIELDS.map((field) => (
+              <FormField
+                key={field}
+                id={`stalled-${field}`}
+                label={t(`settings.stalledFields.${field}`)}
+                inputMode="numeric"
+                value={days[field]}
+                onChange={(event) =>
+                  setDays((current) => ({ ...current, [field]: event.target.value }))
+                }
+              />
+            ))}
+          </div>
+          {failure && (
+            <p role="alert" className="text-sm text-destructive">
+              {failure}
+            </p>
+          )}
+          {saved && !failure && (
+            <p role="status" className="text-sm text-muted-foreground">
+              {t('settings.saved')}
+            </p>
+          )}
+          <Button
+            type="submit"
+            className="justify-self-start"
+            disabled={!valid || update.isPending}
+          >
+            {t('settings.save')}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

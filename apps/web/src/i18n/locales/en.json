@@ -267,7 +267,8 @@
       "collaborator.auto_deactivated": "Deactivated a person for inactivity",
       "collaborator.anonymized": "Anonymized a person",
       "authorship.revealed": "Revealed the author of an idea",
-      "settings.hidden_authorship_changed": "Changed the hidden authorship setting"
+      "settings.hidden_authorship_changed": "Changed the hidden authorship setting",
+      "settings.stalled_deadlines_changed": "Changed the stalled idea deadlines"
     }
   },
   "status": {
@@ -447,7 +448,16 @@
     "subtitle": "Product choices for the installation.",
     "hiddenAuthorship": "Hidden authorship",
     "hiddenAuthorshipEnable": "Let Authors hide their name on an idea",
-    "hiddenAuthorshipHelp": "Off by default. When on, the Author can appear as \"Anonymous collaborator\" on the idea and in their comments there. Administrators can identify the Author, and each identification is recorded in the audit log. Turning it off does not reveal ideas that are already hidden."
+    "hiddenAuthorshipHelp": "Off by default. When on, the Author can appear as \"Anonymous collaborator\" on the idea and in their comments there. Administrators can identify the Author, and each identification is recorded in the audit log. Turning it off does not reveal ideas that are already hidden.",
+    "stalled": "Stalled ideas",
+    "stalledHelp": "Days without reviewer action before an idea counts as stalled, and days after the reviewers are told before the administrators are. Each category can have its own deadlines on the Categories screen.",
+    "stalledFields": {
+      "openDays": "Open (days)",
+      "reviewDays": "Under review (days)",
+      "escalationDays": "Escalate after (days)"
+    },
+    "saved": "Settings saved.",
+    "save": "Save"
   },
   "authorship": {
     "hide": "Hide my name on this idea",

@@ -5,7 +5,9 @@
  * SIM REST API
  * OpenAPI spec version: 0.0.0
  */
+import type { SettingsUpdateDtoStalled } from './settingsUpdateDtoStalled.ts';
 
 export interface SettingsUpdateDto {
   hiddenAuthorshipEnabled?: boolean;
+  stalled?: SettingsUpdateDtoStalled;
 }

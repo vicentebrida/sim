@@ -24,7 +24,12 @@ export function simulateAuth(options: {
     http.get('*/api/health', () => HttpResponse.json({ status: 'ok', database: 'up' })),
     // The bell polls this on every page; tests about Notifications override it.
     http.get('*/api/notifications/unread-count', () => HttpResponse.json({ unread: 0 })),
-    http.get('*/api/settings', () => HttpResponse.json({ hiddenAuthorshipEnabled: false })),
+    http.get('*/api/settings', () =>
+      HttpResponse.json({
+        hiddenAuthorshipEnabled: false,
+        stalled: { openDays: 15, reviewDays: 30, escalationDays: 7 },
+      }),
+    ),
     http.get('*/api/statuses', () => HttpResponse.json([])),
     http.get('*/api/branding', () =>
       HttpResponse.json({

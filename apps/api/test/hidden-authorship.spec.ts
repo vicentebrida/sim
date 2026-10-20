@@ -87,7 +87,7 @@ describe('Hidden authorship', () => {
   afterAll(() => sim.close());
 
   it('is off by default, so hiding is refused', async () => {
-    expect((await ana.get('/api/settings').expect(200)).body).toEqual({
+    expect((await ana.get('/api/settings').expect(200)).body).toMatchObject({
       hiddenAuthorshipEnabled: false,
     });
     const refused = await newIdea(true).then((r) => r);

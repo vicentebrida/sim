@@ -201,3 +201,88 @@ describe('Stalled Ideas', () => {
     expect(await marks(carla)).toBe(false);
   });
 });
+
+describe('Stalled Idea deadlines set by the Administrator', () => {
+  let sim: TestApp;
+  let admin: Browser;
+  let ana: Browser;
+  let stalled: StalledIdeasService;
+  let ti: string;
+  let values: Record<string, string>;
+
+  const newIdea = async () =>
+    (
+      await ana
+        .post('/api/ideas')
+        .send({ title: 'Ideia', categoryId: ti, values, publish: true })
+        .expect(201)
+    ).body.number as number;
+  const age = (number: number, days: number) =>
+    sim.pool.query(
+      `update ideas set status_changed_at = now() - make_interval(days => $2) where number = $1`,
+      [number, days],
+    );
+
+  beforeAll(async () => {
+    sim = await createApp({ SIM_STALLED_OPEN_DAYS: '20' });
+    stalled = sim.app.get(StalledIdeasService);
+    admin = await signInAsAdministrator(sim);
+    ana = (await createCollaborator(sim, admin, 'Ana')).browser;
+    ti = (await admin.post('/api/categories').send({ name: 'TI' }).expect(201)).body.id;
+    const fields = (await ana.get('/api/custom-fields').expect(200)).body as {
+      id: string;
+      required: boolean;
+    }[];
+    values = Object.fromEntries(fields.filter((f) => f.required).map((f) => [f.id, 'Texto']));
+  });
+
+  afterAll(() => sim.close());
+
+  it('shows the deadlines in force: the environment default until the Administrator chooses', async () => {
+    const { body } = await ana.get('/api/settings').expect(200);
+    expect(body.stalled).toEqual({ openDays: 20, reviewDays: 30, escalationDays: 7 });
+  });
+
+  it('only Administrators change them, with sensible numbers', async () => {
+    await ana
+      .patch('/api/settings')
+      .send({ stalled: { openDays: 5 } })
+      .expect(403);
+    await admin
+      .patch('/api/settings')
+      .send({ stalled: { openDays: 0 } })
+      .expect(400);
+    await admin
+      .patch('/api/settings')
+      .send({ stalled: { openDays: 1.5 } })
+      .expect(400);
+  });
+
+  it('applies the new deadline at once, and records the change', async () => {
+    const number = await newIdea();
+    await age(number, 10);
+    expect(await stalled.check()).toBe(0); // 10 days is fine under the default of 20
+
+    const { body } = await admin
+      .patch('/api/settings')
+      .send({ stalled: { openDays: 7 } })
+      .expect(200);
+    expect(body.stalled).toEqual({ openDays: 7, reviewDays: 30, escalationDays: 7 });
+    expect(await stalled.check()).toBe(1);
+    expect((await admin.get(`/api/ideas/${number}`).expect(200)).body.stalled).toBe(true);
+
+    const audit = (await admin.get('/api/audit').expect(200)).body.items;
+    expect(audit[0]).toMatchObject({
+      action: 'settings.stalled_deadlines_changed',
+      details: { openDays: 7 },
+    });
+  });
+
+  it('null goes back to the environment default', async () => {
+    const { body } = await admin
+      .patch('/api/settings')
+      .send({ stalled: { openDays: null } })
+      .expect(200);
+    expect(body.stalled.openDays).toBe(20);
+  });
+});

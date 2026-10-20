@@ -267,7 +267,8 @@
       "collaborator.auto_deactivated": "Desativou um colaborador por inatividade",
       "collaborator.anonymized": "Anonimizou um colaborador",
       "authorship.revealed": "Revelou o autor de uma ideia",
-      "settings.hidden_authorship_changed": "Alterou a configuração de autoria oculta"
+      "settings.hidden_authorship_changed": "Alterou a configuração de autoria oculta",
+      "settings.stalled_deadlines_changed": "Alterou os prazos de ideia parada"
     }
   },
   "status": {
@@ -447,7 +448,16 @@
     "subtitle": "Escolhas de produto da instalação.",
     "hiddenAuthorship": "Autoria oculta",
     "hiddenAuthorshipEnable": "Permitir que o Autor oculte o nome numa ideia",
-    "hiddenAuthorshipHelp": "Desligada por padrão. Quando ligada, o Autor pode se mostrar como \"Colaborador anônimo\" na ideia e nos comentários dele nela. Administradores podem identificar o Autor, e cada identificação fica registrada na Auditoria. Desligar não revela as ideias que já estão ocultas."
+    "hiddenAuthorshipHelp": "Desligada por padrão. Quando ligada, o Autor pode se mostrar como \"Colaborador anônimo\" na ideia e nos comentários dele nela. Administradores podem identificar o Autor, e cada identificação fica registrada na Auditoria. Desligar não revela as ideias que já estão ocultas.",
+    "stalled": "Ideias paradas",
+    "stalledHelp": "Dias sem ação de um avaliador até a ideia ficar parada, e dias depois do aviso aos avaliadores até avisar os administradores. Cada categoria pode ter prazos próprios na tela de Categorias.",
+    "stalledFields": {
+      "openDays": "Aberta (dias)",
+      "reviewDays": "Em análise (dias)",
+      "escalationDays": "Escalar após (dias)"
+    },
+    "saved": "Configurações salvas.",
+    "save": "Salvar"
   },
   "authorship": {
     "hide": "Ocultar meu nome nesta ideia",
