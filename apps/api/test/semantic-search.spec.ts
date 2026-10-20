@@ -62,13 +62,10 @@ describe('Semantic search', () => {
     const fields = (await ana.get('/api/custom-fields').expect(200)).body as {
       id: string;
       label: string;
+      required: boolean;
     }[];
     field = fields.find((f) => f.label === 'Situação atual')!.id;
-    required = Object.fromEntries(
-      (fields as { id: string; required: boolean }[])
-        .filter((f) => f.required)
-        .map((f) => [f.id, 'Texto']),
-    );
+    required = Object.fromEntries(fields.filter((f) => f.required).map((f) => [f.id, 'Texto']));
 
     number.parking = await publish('Garagem para carros', 'Faltam lugares');
     number.coffee = await publish('Cafeteira nova', 'cafe');
