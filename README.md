@@ -7,7 +7,7 @@ Sistema open source e self-hosted onde os colaboradores de uma empresa propõem 
 
 Quando alguém começa a escrever uma Ideia que já existe, o SIM mostra as **Ideias Semelhantes** e direciona a pessoa para apoiar e complementar a original, em vez de abrir uma repetida.
 
-> **Versão 0.6.0**: Marcos 1 a 3, com e-mail (na hora ou em resumo diário), Anexos (em disco ou S3), Ideias Paradas, Painel, Etiquetas, identidade visual, governança, Auditoria e busca semântica opcional. Veja o [CHANGELOG](./CHANGELOG.md), o [PRD](./docs/PRD.md) e o que vem a seguir nos Marcos 2 e 3.
+> **Versão 0.7.0**: Marcos 1 a 3, com e-mail (na hora ou em resumo diário), avisos no Slack/Teams/Google Chat, Anexos (em disco ou S3), Ideias Paradas, Painel, Etiquetas, chart Helm, identidade visual, governança, Auditoria e busca semântica opcional. Veja o [CHANGELOG](./CHANGELOG.md), o [PRD](./docs/PRD.md) e o que vem a seguir nos Marcos 2 e 3.
 
 ## Principais recursos
 
@@ -25,6 +25,9 @@ Quando alguém começa a escrever uma Ideia que já existe, o SIM mostra as **Id
 - Painel para Administradores, com exportação em CSV
 - Aparência dos Status personalizável (nome, cor e descrição)
 - Busca semântica opcional (OpenAI, Ollama ou compatível) nas Ideias Semelhantes
+- Etiquetas nas Ideias, com filtro na lista
+- Avisos de Ideias novas e mudanças de Status no Slack, Microsoft Teams ou Google Chat
+- Instalação com Docker Compose ou Kubernetes (chart Helm)
 
 ## Documentação
 
