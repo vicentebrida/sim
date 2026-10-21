@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { formatDate } from '@/lib/dates';
 import { useStatusInfo } from '@/lib/use-statuses';
 import { useText } from '@/lib/use-text';
+import { RecentlyCompleted } from '@/components/recognition';
 
 const FILTERABLE_STATUSES = [
   'open',
@@ -85,6 +86,8 @@ function HomePage() {
           </Link>
         </Button>
       </div>
+
+      <RecentlyCompleted />
 
       <div className="flex flex-wrap items-end gap-4">
         <div className="grid min-w-44 gap-1">

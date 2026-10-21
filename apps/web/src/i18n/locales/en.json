@@ -352,7 +352,8 @@
     "apply": "Apply",
     "recategorize": "Change category",
     "newCategory": "New category",
-    "notFound": "Idea not found."
+    "notFound": "Idea not found.",
+    "byPrefix": "by"
   },
   "fields": {
     "title": "Form fields",
@@ -608,5 +609,18 @@
     },
     "empty": "(no text by default)",
     "save": "Save texts"
+  },
+  "recognition": {
+    "recent": "Recently {{status}}",
+    "by": "by",
+    "notFound": "Profile not found.",
+    "inactive": "No longer in SIM",
+    "completed": "Ideas that became {{status}}",
+    "none": "No idea done yet.",
+    "summary_one": "{{count}} idea done · {{likes}} likes on it",
+    "summary_other": "{{count}} ideas done · {{likes}} likes on them",
+    "likes_one": "{{count}} like",
+    "likes_other": "{{count}} likes",
+    "onlyYou": "Only you see this: your name is hidden on this idea"
   }
 }

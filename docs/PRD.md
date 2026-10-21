@@ -159,6 +159,13 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 - **i18n:** pt-BR e en.
 - Integrações (SSO, SMTP, IA, armazenamento) aparecem na tela só para leitura, com botões "testar conexão" ([ADR-0007](./adr/0007-integracoes-configuradas-por-ambiente.md)).
 
+### 3.13 Reconhecimento
+
+- Premia Ideias Concluídas, nunca volume: sem pontos, sem ranking e sem nada que conte quantas Ideias, Comentários ou Curtidas alguém enviou.
+- **Perfil** de cada Colaborador (aberto a todos que entram no SIM, pelo nome do Autor na Ideia ou no quadro abaixo): nome, departamento, as Ideias dele que chegaram a _Concluída_ (com Categoria, data e Curtidas) e o total de Curtidas que elas receberam. Colaborador Inativo continua com o perfil; Anonimizado não tem perfil.
+- **Concluídas recentemente:** a página inicial mostra as 5 últimas Ideias Concluídas, com o Autor.
+- Autoria Oculta vale aqui também: a Ideia oculta não aparece no perfil público (só o próprio Autor a vê no seu, marcada), e no quadro da página inicial aparece como "Colaborador anônimo", sem link.
+
 ## 4. Requisitos não funcionais
 
 - **Implantação:** uma organização por instalação ([ADR-0001](./adr/0001-uma-organizacao-por-instalacao.md)).
@@ -233,7 +240,7 @@ sim/
 
 ### Backlog (depois dos marcos)
 
-SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM · editor rico (Tiptap) · gamificação (premiando Ideias Concluídas, nunca volume).
+SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM · editor rico (Tiptap).
 
 ## 7. Fora de escopo (decidido)
 
