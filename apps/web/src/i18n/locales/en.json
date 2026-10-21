@@ -425,6 +425,19 @@
     "mentionHelp": "Use @ to mention someone; they will be notified.",
     "suggestions": "People to mention"
   },
+  "editor": {
+    "toolbar": "Formatting",
+    "bold": "Bold",
+    "italic": "Italic",
+    "bulletList": "Bulleted list",
+    "orderedList": "Numbered list",
+    "quote": "Quote",
+    "link": "Link",
+    "linkUrl": "Link address",
+    "linkApply": "Apply",
+    "linkRemove": "Remove link",
+    "linkInvalid": "Use an address starting with http://, https:// or mailto:."
+  },
   "notifications": {
     "title": "Notifications",
     "bell_zero": "Notifications",

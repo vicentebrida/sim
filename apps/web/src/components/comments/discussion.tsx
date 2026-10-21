@@ -22,8 +22,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { formatDateTime } from '@/lib/dates';
 import { apiErrorMessage } from '@/lib/errors';
-import { segment } from '@/lib/mentions';
 import { AttachmentList } from '@/components/attachments';
+import { MarkdownText } from '@/components/markdown-text';
 import { useStatusInfo } from '@/lib/use-statuses';
 import { uploadAll } from '@/lib/uploads';
 import { CommentEditor } from './comment-editor';
@@ -297,33 +297,20 @@ function CommentBody({ comment }: { comment: Comment }) {
         </p>
       )}
       {comment.text !== null && (
-        <p
+        <MarkdownText
+          text={comment.text}
           className={
             comment.state === 'hidden'
-              ? 'rounded-md bg-muted p-2 text-sm whitespace-pre-wrap text-muted-foreground'
-              : 'whitespace-pre-wrap'
+              ? 'rounded-md bg-muted p-2 text-sm text-muted-foreground'
+              : ''
           }
-        >
-          <TextWithMentions text={comment.text} />
-        </p>
+        />
       )}
       <AttachmentList attachments={comment.attachments} />
       {comment.state === 'hidden' && comment.text !== null && (
         <p className="text-xs text-muted-foreground">{t('comments.hiddenTextVisible')}</p>
       )}
     </div>
-  );
-}
-
-function TextWithMentions({ text }: { text: string }) {
-  return segment(text).map((part, index) =>
-    part.type === 'text' ? (
-      part.value
-    ) : (
-      <span key={index} className="font-medium text-primary">
-        @{part.name}
-      </span>
-    ),
   );
 }
 

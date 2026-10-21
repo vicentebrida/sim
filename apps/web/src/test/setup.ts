@@ -4,6 +4,12 @@ import { afterAll, afterEach, beforeAll } from 'vitest';
 import i18n from '../i18n';
 import { server } from './server';
 
+// jsdom has no layout; the editor (ProseMirror) asks where things are on screen.
+const nowhere = new DOMRect();
+document.elementFromPoint = () => null;
+Range.prototype.getBoundingClientRect = () => nowhere;
+Range.prototype.getClientRects = () => Object.assign([], { item: () => null }) as never;
+
 // The first load of a route (code splitting) may take over 1s on slower CI machines.
 configure({ asyncUtilTimeout: 5000 });
 

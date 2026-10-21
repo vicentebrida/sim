@@ -1,28 +1,32 @@
 import { type AttachmentDtoOutput, useMentionableSearch } from '@sim/api-client';
+import type { SuggestionKeyDownProps, SuggestionProps } from '@tiptap/suggestion';
 import {
   type FormEvent,
-  type KeyboardEvent,
   useDeferredValue,
   useId,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AttachmentList, FilePicker } from '@/components/attachments';
+import { EditorFrame } from '@/components/markdown-editor';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { useFilesProblem } from '@/lib/attachments';
-import { type Mentioned, toEditable, toMarkup } from '@/lib/mentions';
+import { MentionNode } from '@/lib/mention-node';
+import { useMarkdownEditor } from '@/lib/use-markdown-editor';
 import { cn } from '@/lib/utils';
 
-// "@" at the start or after a space, followed by what was typed of the name, up to the cursor.
-const MENTION_IN_PROGRESS = /(?:^|\s)@([\p{L}\p{N}._-]{0,40})$/u;
+interface Mentioned {
+  id: string;
+  name: string;
+}
 
 interface Props {
   label: string;
   submitLabel: string;
-  /** Initial text with Mention markup (editing). */
+  /** Initial text, in Markdown with Mention markup (editing). */
   initial?: string;
   sending: boolean;
   error?: string;
@@ -33,6 +37,12 @@ interface Props {
   onRemoveAttachment?: (attachment: AttachmentDtoOutput) => void;
   onCancel?: () => void;
   autoFocus?: boolean;
+}
+
+/** What "@" started: the name typed so far, and how to put the chosen person in its place. */
+interface Typing {
+  query: string;
+  pick: (person: Mentioned) => void;
 }
 
 export function CommentEditor({
@@ -49,71 +59,100 @@ export function CommentEditor({
 }: Props) {
   const { t } = useTranslation();
   const id = useId();
-  const textarea = useRef<HTMLTextAreaElement>(null);
-  const pendingCursor = useRef<number | null>(null);
-  const [initialState] = useState(() => toEditable(initial));
-  const [text, setText] = useState(initialState.text);
-  const [mentioned, setMentioned] = useState<Mentioned[]>(initialState.mentioned);
-  const [query, setQuery] = useState<string | null>(null);
+  const [text, setText] = useState(initial);
+  const [typing, setTyping] = useState<Typing | null>(null);
   const [highlighted, setHighlighted] = useState(0);
   const [files, setFiles] = useState<File[]>([]);
   const [notice, setNotice] = useState<string>();
   const filesProblem = useFilesProblem(files, existingAttachments.length);
-  const search = useDeferredValue(query);
+  const search = useDeferredValue(typing?.query ?? null);
 
   const { data } = useMentionableSearch(
     { search: search ?? '' },
     { query: { enabled: search !== null, staleTime: 30_000 } },
   );
-  const suggestions = query !== null ? (data?.data ?? []) : [];
+  const suggestions = typing ? (data?.data ?? []) : [];
   const open = suggestions.length > 0;
 
-  function followCursor(value: string, cursor: number) {
-    const mention = MENTION_IN_PROGRESS.exec(value.slice(0, cursor));
-    setQuery(mention ? mention[1]! : null);
-    setHighlighted(0);
-  }
-
-  function pick(person: Mentioned) {
-    const cursor = textarea.current?.selectionStart ?? text.length;
-    const before = text.slice(0, cursor).replace(/@[\p{L}\p{N}._-]*$/u, `@${person.name} `);
-    setText(before + text.slice(cursor));
-    setMentioned((current) => [...current.filter((m) => m.id !== person.id), person]);
-    setQuery(null);
-    pendingCursor.current = before.length;
-  }
-
-  // After inserting the Mention, the cursor goes right after it (before the next key).
-  useLayoutEffect(() => {
-    if (pendingCursor.current === null) return;
-    textarea.current?.focus();
-    textarea.current?.setSelectionRange(pendingCursor.current, pendingCursor.current);
-    pendingCursor.current = null;
-  }, [text]);
-
-  function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
-    if (!open) return;
+  // The suggestion plugin calls back outside React: it reads the latest list through a ref.
+  const keys = useRef<(event: KeyboardEvent) => boolean>(() => false);
+  function onSuggestionKey(event: KeyboardEvent) {
+    if (!open || !typing) return false;
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-      event.preventDefault();
       const step = event.key === 'ArrowDown' ? 1 : -1;
       setHighlighted((current) => (current + step + suggestions.length) % suggestions.length);
-    } else if (event.key === 'Enter' || event.key === 'Tab') {
-      event.preventDefault();
-      pick(suggestions[highlighted]!);
-    } else if (event.key === 'Escape') {
-      event.preventDefault();
-      setQuery(null);
+      return true;
     }
+    if (event.key === 'Enter' || event.key === 'Tab') {
+      typing.pick(suggestions[highlighted]!);
+      return true;
+    }
+    if (event.key === 'Escape') {
+      setTyping(null);
+      return true;
+    }
+    return false;
   }
+  useLayoutEffect(() => {
+    keys.current = onSuggestionKey;
+  });
+
+  const extensions = useMemo(
+    () => [
+      MentionNode.configure({
+        HTMLAttributes: { class: 'tiptap-mention' },
+        renderText: ({ node }) => `@${node.attrs.label}`,
+        renderHTML: ({ node, options }) => [
+          'span',
+          { ...options.HTMLAttributes, 'data-type': 'mention' },
+          `@${node.attrs.label}`,
+        ],
+        suggestion: {
+          render: () => {
+            const follow = ({ query, command }: SuggestionProps) => {
+              setTyping({
+                query,
+                pick: (person) => command({ id: person.id, label: person.name }),
+              });
+              setHighlighted(0);
+            };
+            return {
+              onStart: follow,
+              onUpdate: follow,
+              onKeyDown: ({ event }: SuggestionKeyDownProps) => keys.current(event),
+              onExit: () => setTyping(null),
+            };
+          },
+        },
+      }),
+    ],
+    [],
+  );
+
+  const listId = `${id}-suggestions`;
+  const editor = useMarkdownEditor({
+    initial,
+    onChange: setText,
+    placeholder: label,
+    autoFocus,
+    extensions,
+    attributes: {
+      role: 'combobox',
+      'aria-label': label,
+      'aria-expanded': String(open),
+      'aria-controls': listId,
+      'aria-autocomplete': 'list',
+      ...(open && { 'aria-activedescendant': `${listId}-${highlighted}` }),
+    },
+  });
 
   async function submit(event: FormEvent) {
     event.preventDefault();
-    if (!text.trim() || filesProblem) return;
+    if (!text || filesProblem) return;
     setNotice(undefined);
     try {
-      const result = await onSubmit(toMarkup(text.trim(), mentioned), files);
-      setText('');
-      setMentioned([]);
+      const result = await onSubmit(text, files);
+      editor.commands.clearContent(true);
       setFiles([]);
       if (result?.failed) setNotice(t('attachments.failed'));
     } catch {
@@ -121,32 +160,10 @@ export function CommentEditor({
     }
   }
 
-  const listId = `${id}-suggestions`;
   return (
     <form className="grid gap-2" onSubmit={submit}>
-      <label htmlFor={id} className="sr-only">
-        {label}
-      </label>
       <div className="relative">
-        <Textarea
-          id={id}
-          ref={textarea}
-          rows={3}
-          value={text}
-          placeholder={label}
-          autoFocus={autoFocus}
-          role="combobox"
-          aria-expanded={open}
-          aria-controls={listId}
-          aria-autocomplete="list"
-          aria-activedescendant={open ? `${listId}-${highlighted}` : undefined}
-          onChange={(event) => {
-            setText(event.target.value);
-            followCursor(event.target.value, event.target.selectionStart);
-          }}
-          onKeyDown={onKeyDown}
-          onBlur={() => setQuery(null)}
-        />
+        <EditorFrame editor={editor} />
         <ul
           id={listId}
           role="listbox"
@@ -164,10 +181,10 @@ export function CommentEditor({
                 'cursor-pointer rounded-sm px-2 py-1.5 text-sm',
                 index === highlighted && 'bg-accent text-accent-foreground',
               )}
-              // mousedown, not click: a click would blur the field and close the list first.
+              // mousedown, not click: a click would take the focus from the editor first.
               onMouseDown={(event) => {
                 event.preventDefault();
-                pick(person);
+                typing?.pick(person);
               }}
             >
               {person.name}
@@ -189,7 +206,7 @@ export function CommentEditor({
         </p>
       )}
       <div className="flex gap-2">
-        <Button type="submit" size="sm" disabled={!text.trim() || sending}>
+        <Button type="submit" size="sm" disabled={!text || sending}>
           {submitLabel}
         </Button>
         {onCancel && (
