@@ -2,6 +2,8 @@
 
 ## Não lançado
 
+- **Tempo real**: o sininho e a página da Ideia (Comentários, Curtidas, Status, edições, Etiquetas e Anexos) se atualizam na hora, sem recarregar a página, por Server-Sent Events. Funciona sem o Redis e com várias réplicas, porque os eventos vêm do próprio Postgres (LISTEN/NOTIFY, [ADR-0009](./docs/adr/0009-tempo-real-com-sse-e-listen-notify.md)). Se a conexão cair, o sininho volta a perguntar a cada 30 s. Atrás de um proxy, deixe a resposta de `/api/events` sem buffer (o SIM já manda `X-Accel-Buffering: no`, que o nginx respeita) e com tempo de leitura acima de 30 s.
+
 - **Antivírus nos Anexos (opcional)**: com `SIM_CLAMAV_URL` apontando para o `clamd` do ClamAV (ex.: `tcp://clamav:3310`), cada Anexo é verificado antes de ser guardado. Arquivo com ameaça é recusado e a tentativa vai para a Auditoria; com o antivírus fora do ar, os envios são recusados em vez de guardados sem verificação. A tela Integrações mostra o estado e testa a conexão, e o compose ganhou o perfil `clamav`.
 
 ## 0.7.0

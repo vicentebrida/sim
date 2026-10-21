@@ -2299,6 +2299,20 @@
           "integrations"
         ]
       }
+    },
+    "/api/events": {
+      "get": {
+        "operationId": "realtime_stream",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Stream of `idea`, `notifications`, `resync` and `ping` events"
+          }
+        },
+        "tags": [
+          "realtime"
+        ]
+      }
     }
   },
   "info": {

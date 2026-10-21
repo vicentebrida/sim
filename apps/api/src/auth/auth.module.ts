@@ -17,5 +17,6 @@ import { SsoService } from './sso/sso.service';
     LoginAttemptsService,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
+  exports: [SessionsService],
 })
 export class AuthModule {}

@@ -14,7 +14,7 @@ Quando alguém começa a escrever uma Ideia que já existe, o SIM mostra as **Id
 - Login local ou pelo **SSO da empresa** (OIDC ou OAuth2 genérico)
 - Ciclo de vida com Status (Aberta → Em análise → Aprovada → Em execução → Concluída), com Histórico e justificativas
 - **Detecção de Ideias Semelhantes** enquanto se escreve (busca textual). A busca semântica opcional com IA complementa a busca textual
-- Curtidas, Comentários com Menções, Seguir e Notificações no sininho e por e-mail (opcional, via SMTP)
+- Curtidas, Comentários com Menções, Seguir e Notificações no sininho (em tempo real) e por e-mail (opcional, via SMTP)
 - Categorias com Avaliadores e Campos Personalizados configuráveis, inclusive por Categoria
 - Versões de edição, Autoria Oculta (opcional), Colaborador Inativo, Anonimização e Auditoria
 - Acesso e Administradores por grupo do SSO

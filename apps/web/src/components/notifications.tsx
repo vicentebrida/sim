@@ -21,10 +21,11 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { formatDateTime } from '@/lib/dates';
+import { useRealtimeConnected } from '@/lib/realtime';
 import { cn } from '@/lib/utils';
 import { useStatusInfo } from '@/lib/use-statuses';
 
-// The bell polls the unread count (ADR-0006); real-time push may come later.
+// The bell polls the unread count only while the real-time stream is down (ADR-0009).
 const POLL_INTERVAL_MS = 30_000;
 
 type Notification = NotificationPageDtoOutputItemsItem;
@@ -60,7 +61,10 @@ function describeNotification(
 export function NotificationBell() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const { data } = useNotificationsUnreadCount({ query: { refetchInterval: POLL_INTERVAL_MS } });
+  const realtime = useRealtimeConnected();
+  const { data } = useNotificationsUnreadCount({
+    query: { refetchInterval: realtime ? false : POLL_INTERVAL_MS },
+  });
   const unread = data?.data.unread ?? 0;
 
   return (

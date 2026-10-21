@@ -11,6 +11,7 @@ export * from './health/health.ts';
 export * from './ideas/ideas.ts';
 export * from './integrations/integrations.ts';
 export * from './notifications/notifications.ts';
+export * from './realtime/realtime.ts';
 export * from './settings/settings.ts';
 export * from './statuses/statuses.ts';
 export * from './tags/tags.ts';

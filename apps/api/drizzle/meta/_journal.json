@@ -162,6 +162,13 @@
       "when": 1792524114937,
       "tag": "0022_webhooks",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1792548532659,
+      "tag": "0023_realtime",
+      "breakpoints": true
     }
   ]
 }

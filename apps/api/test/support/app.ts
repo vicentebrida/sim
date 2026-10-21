@@ -15,6 +15,7 @@ import { PG_POOL } from '../../src/database/database.module';
 import { runMigrations } from '../../src/database/migrate';
 import { EmbeddingProvider } from '../../src/semantic/embedding-provider';
 import { Mailer } from '../../src/notifications/email/mailer';
+import { HEARTBEAT_MS } from '../../src/realtime/realtime.controller';
 
 export const EMERGENCY = { email: 'emergency@sim.test', password: 'emergency-password-123' };
 
@@ -43,7 +44,7 @@ async function createDatabase(): Promise<string> {
 /** Starts the whole SIM against a fresh database, with the emergency account configured. */
 export async function createApp(
   env: Record<string, string> = {},
-  overrides: { mailer?: Mailer; embeddings?: EmbeddingProvider } = {},
+  overrides: { mailer?: Mailer; embeddings?: EmbeddingProvider; heartbeatMs?: number } = {},
 ): Promise<TestApp> {
   const originalEnv = { ...process.env };
   Object.assign(process.env, {
@@ -60,6 +61,9 @@ export async function createApp(
     if (overrides.mailer) builder.overrideProvider(Mailer).useValue(overrides.mailer);
     if (overrides.embeddings) {
       builder.overrideProvider(EmbeddingProvider).useValue(overrides.embeddings);
+    }
+    if (overrides.heartbeatMs) {
+      builder.overrideProvider(HEARTBEAT_MS).useValue(overrides.heartbeatMs);
     }
     const moduleRef = await builder.compile();
     const app = moduleRef.createNestApplication({ logger: false });
