@@ -8,6 +8,7 @@ import { ApiStatus } from '@/components/api-status';
 import { NotificationBell } from '@/components/notifications';
 import { Button } from '@/components/ui/button';
 import { getCurrentCollaborator } from '@/lib/auth';
+import { useRealtime } from '@/lib/realtime';
 
 /** Layout of the pages that require a session. */
 export const Route = createFileRoute('/_app')({
@@ -29,6 +30,7 @@ function AppLayout() {
   const { collaborator } = Route.useRouteContext();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  useRealtime();
   const logout = useAuthLogout({
     mutation: {
       onSettled: async () => {

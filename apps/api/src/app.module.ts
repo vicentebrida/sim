@@ -8,6 +8,7 @@ import { AttachmentsModule, AttachmentStoreModule } from './attachments/attachme
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { BrandingModule } from './branding/branding.module';
+import { RealtimeModule } from './realtime/realtime.module';
 import { SemanticModule } from './semantic/semantic.module';
 import { SettingsModule } from './settings/settings.module';
 import { StatusesModule } from './statuses/statuses.module';
@@ -57,6 +58,7 @@ function webModule(): DynamicModule[] {
     AuditModule,
     SettingsModule,
     SemanticModule,
+    RealtimeModule,
     ...webModule(),
   ],
   providers: [

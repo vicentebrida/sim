@@ -1,6 +1,6 @@
 # Tarefas em segundo plano com BullMQ + Redis; Postgres como fonte da verdade
 
-Tarefas assíncronas (e-mails, embeddings, verificação de Ideias Paradas, inativação automática) rodam em BullMQ sobre Redis. Escolhemos BullMQ em vez de pg-boss pela maturidade do ecossistema NestJS e porque o Redis também servirá para pub/sub (tempo real futuro), cache e rate limiting — ao custo de um serviço a mais na instalação mínima (SIM + Postgres + Redis).
+Tarefas assíncronas (e-mails, embeddings, verificação de Ideias Paradas, inativação automática) rodam em BullMQ sobre Redis. Escolhemos BullMQ em vez de pg-boss pela maturidade do ecossistema NestJS e porque o Redis também servirá para cache e rate limiting (o tempo real acabou usando o Postgres, veja a [ADR-0009](./0009-tempo-real-com-sse-e-listen-notify.md)) — ao custo de um serviço a mais na instalação mínima (SIM + Postgres + Redis).
 
 Como o enfileiramento no Redis não participa da transação do Postgres, o banco é a fonte da verdade: o trabalho pendente é registrado na mesma transação (ex.: `embedding_status` na Ideia, `email_status` na Notificação), a API enfileira após o commit como caminho rápido, e um job periódico de reconciliação reenfileira itens pendentes há mais de alguns minutos. Jobs são idempotentes.
 

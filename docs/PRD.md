@@ -115,7 +115,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 | Ideia Duplicada         | Seguidores da Duplicada                 |
 | Ideia Parada            | Avaliadores e depois Administradores    |
 
-- Canais: sininho no sistema (polling) e e-mail (na hora, num resumo diário ou desligado, escolhido pelo Colaborador; o resumo sai uma vez por dia em `SIM_DIGEST_HOUR`/`SIM_TIMEZONE`, e quem muda de ideia antes do envio não perde nada). O sininho entrou no Marco 1; o e-mail na hora, no Marco 2, com SMTP e Redis configurados — sem `SMTP_URL` o SIM não envia e-mail. O e-mail diz o que aconteceu e traz o link da Ideia, nunca o texto do Comentário. Ideia Parada fica para uma etapa seguinte do Marco 2.
+- Canais: sininho no sistema (em tempo real; volta ao polling de 30 s se a conexão cair, [ADR-0009](./adr/0009-tempo-real-com-sse-e-listen-notify.md)) e e-mail (na hora, num resumo diário ou desligado, escolhido pelo Colaborador; o resumo sai uma vez por dia em `SIM_DIGEST_HOUR`/`SIM_TIMEZONE`, e quem muda de ideia antes do envio não perde nada). O sininho entrou no Marco 1; o e-mail na hora, no Marco 2, com SMTP e Redis configurados — sem `SMTP_URL` o SIM não envia e-mail. O e-mail diz o que aconteceu e traz o link da Ideia, nunca o texto do Comentário. Ideia Parada fica para uma etapa seguinte do Marco 2.
 - **Canais de chat (webhooks):** Slack, Microsoft Teams e Google Chat recebem uma mensagem quando uma Ideia é publicada e quando muda de Status (eventos escolhidos em `SIM_WEBHOOK_EVENTS`). Cada canal é uma URL de webhook de entrada em variável de ambiente (`SIM_WEBHOOK_SLACK_URL`, `SIM_WEBHOOK_TEAMS_URL`, `SIM_WEBHOOK_GOOGLE_CHAT_URL`). A mensagem traz número, título, Categoria, Autor (respeitando a Autoria Oculta), os nomes de Status dados pelo Administrador e o link, nunca o texto da Ideia, porque o canal pode ter gente de fora do SIM. O envio roda em segundo plano, com as mesmas novas tentativas do e-mail. A tela Integrações mostra os canais e manda uma mensagem de teste.
 - Cada Comentário gera no máximo uma Notificação por pessoa, a mais específica: Menção, depois Resposta, depois novo Comentário. Ninguém é notificado do que ele mesmo fez.
 - Nova Ideia numa Categoria sem Avaliadores notifica os Administradores, que avaliam essas Ideias. Recategorizar conta como nova Ideia para os Avaliadores da Categoria de destino.
@@ -228,7 +228,7 @@ sim/
 
 ### Backlog (depois dos marcos)
 
-SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM · arquivamento automático · subetapas de _Em execução_ · sobrescrever textos da interface · editor rico (Tiptap) · tempo real (SSE) · gamificação (premiando Ideias Concluídas, nunca volume).
+SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM · arquivamento automático · subetapas de _Em execução_ · sobrescrever textos da interface · editor rico (Tiptap) · gamificação (premiando Ideias Concluídas, nunca volume).
 
 ## 7. Fora de escopo (decidido)
 

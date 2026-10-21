@@ -50,6 +50,8 @@ Com `worker.enabled=true`, as tarefas em segundo plano (e-mail, Ideias Paradas, 
 canais de chat) vão para um pod próprio e `web.replicas` pode crescer. Os Anexos ficam em `/data`:
 com mais de um pod, use `persistence.accessMode=ReadWriteMany` ou o S3 (`env.SIM_STORAGE=s3` e
 `persistence.enabled=false`). As sessões ficam no banco, então não é preciso afinidade.
+O tempo real (SSE em `/api/events`) também passa pelo banco, então funciona entre réplicas; o
+ingress-nginx já respeita o `X-Accel-Buffering: no` que o SIM manda.
 
 ### Antivírus
 
