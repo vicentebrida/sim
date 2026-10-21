@@ -2,6 +2,8 @@
 
 ## Não lançado
 
+- A imagem arm64 passa a ser construída numa máquina ARM, sem emulação: a publicação de uma versão volta a levar minutos em vez de mais de uma hora. O CI também constrói a imagem arm64 em cada PR.
+
 ## 0.10.1
 
 Correções encontradas ao validar a 0.10.0 de ponta a ponta, e imagem também para arm64.

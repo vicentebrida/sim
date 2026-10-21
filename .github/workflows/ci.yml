@@ -47,7 +47,16 @@ jobs:
             --set ingress.enabled=true --set 'ingress.hosts[0].host=sim.example.com' > /dev/null
 
   docker:
-    runs-on: ubuntu-latest
+    # As duas arquiteturas da imagem publicada, cada uma numa máquina dela.
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-latest
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    name: docker (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v7
       - uses: docker/setup-buildx-action@v4
@@ -56,5 +65,5 @@ jobs:
           context: .
           file: docker/Dockerfile
           push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=image-${{ matrix.arch }}
+          cache-to: type=gha,scope=image-${{ matrix.arch }},mode=max
