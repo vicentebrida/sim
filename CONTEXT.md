@@ -16,6 +16,11 @@ _Avoid_: Melhoria (como entidade), sugestão, ticket, post, tópico
 _Code_: `Category` (tabela `categories`)
 _Avoid_: Departamento, setor, área, tag
 
+**Perfil**:
+Página pública de um Colaborador com as Ideias dele que foram Concluídas e as Curtidas que elas receberam. É o reconhecimento do SIM: premia o que foi feito, nunca o volume enviado.
+_Code_: `RecognitionService`, rota `/people/:id`
+_Avoid_: Ranking, pontuação, conquistas
+
 **Etiqueta**:
 Rótulo criado pelo Administrador que agrupa Ideias de Categorias diferentes (ex.: Custo, Segurança). Uma Ideia tem nenhuma ou várias. Diferente da Categoria, não define quem avalia.
 _Code_: `Tag` (tabelas `tags` e `idea_tags`)

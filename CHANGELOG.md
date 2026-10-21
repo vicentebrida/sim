@@ -2,6 +2,8 @@
 
 ## Não lançado
 
+- **Reconhecimento**: cada Colaborador tem um perfil, aberto pelo nome do Autor na Ideia, com as Ideias dele que foram Concluídas e as Curtidas que elas receberam. A página inicial mostra as Ideias concluídas recentemente, com o Autor. Sem pontos nem ranking, e nada que premie quantidade. Ideias com Autoria Oculta ficam fora do perfil público.
+
 - **Textos da interface**: na tela Identidade, o Administrador troca, em português e em inglês, o título, o subtítulo e o botão da página inicial, a ajuda do título da Ideia e o título e o texto das Ideias Semelhantes, e pode escrever uma orientação que aparece no topo do formulário de nova Ideia. Campo vazio usa o texto padrão do SIM.
 
 ## 0.9.0

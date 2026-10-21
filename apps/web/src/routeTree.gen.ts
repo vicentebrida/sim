@@ -25,6 +25,7 @@ import { Route as AppAdminSettingsRouteImport } from './routes/_app/admin/settin
 import { Route as AppAdminStatusesRouteImport } from './routes/_app/admin/statuses'
 import { Route as AppAdminTagsRouteImport } from './routes/_app/admin/tags'
 import { Route as AppIdeasNewRouteImport } from './routes/_app/ideas/new'
+import { Route as AppPeopleIdRouteImport } from './routes/_app/people/$id'
 import { Route as AppIdeasNumberIndexRouteImport } from './routes/_app/ideas/$number/index'
 import { Route as AppIdeasNumberEditRouteImport } from './routes/_app/ideas/$number/edit'
 
@@ -107,6 +108,11 @@ const AppIdeasNewRoute = AppIdeasNewRouteImport.update({
   path: '/ideas/new',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPeopleIdRoute = AppPeopleIdRouteImport.update({
+  id: '/people/$id',
+  path: '/people/$id',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppIdeasNumberIndexRoute = AppIdeasNumberIndexRouteImport.update({
   id: '/ideas/$number/',
   path: '/ideas/$number/',
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/admin/statuses': typeof AppAdminStatusesRoute
   '/admin/tags': typeof AppAdminTagsRoute
   '/ideas/new': typeof AppIdeasNewRoute
+  '/people/$id': typeof AppPeopleIdRoute
   '/ideas/$number/edit': typeof AppIdeasNumberEditRoute
   '/ideas/$number/': typeof AppIdeasNumberIndexRoute
 }
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/admin/statuses': typeof AppAdminStatusesRoute
   '/admin/tags': typeof AppAdminTagsRoute
   '/ideas/new': typeof AppIdeasNewRoute
+  '/people/$id': typeof AppPeopleIdRoute
   '/ideas/$number/edit': typeof AppIdeasNumberEditRoute
   '/ideas/$number': typeof AppIdeasNumberIndexRoute
 }
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/_app/admin/statuses': typeof AppAdminStatusesRoute
   '/_app/admin/tags': typeof AppAdminTagsRoute
   '/_app/ideas/new': typeof AppIdeasNewRoute
+  '/_app/people/$id': typeof AppPeopleIdRoute
   '/_app/ideas/$number/edit': typeof AppIdeasNumberEditRoute
   '/_app/ideas/$number/': typeof AppIdeasNumberIndexRoute
 }
@@ -195,6 +204,7 @@ export interface FileRouteTypes {
     | '/admin/statuses'
     | '/admin/tags'
     | '/ideas/new'
+    | '/people/$id'
     | '/ideas/$number/edit'
     | '/ideas/$number/'
   fileRoutesByTo: FileRoutesByTo
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/admin/statuses'
     | '/admin/tags'
     | '/ideas/new'
+    | '/people/$id'
     | '/ideas/$number/edit'
     | '/ideas/$number'
   id:
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/_app/admin/statuses'
     | '/_app/admin/tags'
     | '/_app/ideas/new'
+    | '/_app/people/$id'
     | '/_app/ideas/$number/edit'
     | '/_app/ideas/$number/'
   fileRoutesById: FileRoutesById
@@ -358,6 +370,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIdeasNewRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/people/$id': {
+      id: '/_app/people/$id'
+      path: '/people/$id'
+      fullPath: '/people/$id'
+      preLoaderRoute: typeof AppPeopleIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/ideas/$number/': {
       id: '/_app/ideas/$number/'
       path: '/ideas/$number'
@@ -409,6 +428,7 @@ interface AppRouteChildren {
   AppAdminRouteRoute: typeof AppAdminRouteRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
   AppIdeasNewRoute: typeof AppIdeasNewRoute
+  AppPeopleIdRoute: typeof AppPeopleIdRoute
   AppIdeasNumberEditRoute: typeof AppIdeasNumberEditRoute
   AppIdeasNumberIndexRoute: typeof AppIdeasNumberIndexRoute
 }
@@ -417,6 +437,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminRouteRoute: AppAdminRouteRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
   AppIdeasNewRoute: AppIdeasNewRoute,
+  AppPeopleIdRoute: AppPeopleIdRoute,
   AppIdeasNumberEditRoute: AppIdeasNumberEditRoute,
   AppIdeasNumberIndexRoute: AppIdeasNumberIndexRoute,
 }

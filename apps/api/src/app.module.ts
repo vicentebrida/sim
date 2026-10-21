@@ -9,6 +9,7 @@ import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { BrandingModule } from './branding/branding.module';
 import { RealtimeModule } from './realtime/realtime.module';
+import { RecognitionModule } from './recognition/recognition.module';
 import { SemanticModule } from './semantic/semantic.module';
 import { SettingsModule } from './settings/settings.module';
 import { StatusesModule } from './statuses/statuses.module';
@@ -61,6 +62,7 @@ function webModule(): DynamicModule[] {
     SettingsModule,
     SemanticModule,
     RealtimeModule,
+    RecognitionModule,
     ...webModule(),
   ],
   providers: [

@@ -46,6 +46,7 @@ export function simulateAuth(options: {
     http.get('*/api/statuses', () => HttpResponse.json([])),
     http.get('*/api/tags', () => HttpResponse.json([])),
     http.get('*/api/execution-stages', () => HttpResponse.json([])),
+    http.get('*/api/recognition/recently-completed', () => HttpResponse.json([])),
     http.get('*/api/branding', () =>
       HttpResponse.json({
         name: 'SIM',

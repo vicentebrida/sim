@@ -352,7 +352,8 @@
     "apply": "Aplicar",
     "recategorize": "Mudar Categoria",
     "newCategory": "Nova Categoria",
-    "notFound": "Ideia não encontrada."
+    "notFound": "Ideia não encontrada.",
+    "byPrefix": "por"
   },
   "fields": {
     "title": "Campos do formulário",
@@ -608,5 +609,18 @@
     },
     "empty": "(nenhum texto por padrão)",
     "save": "Salvar textos"
+  },
+  "recognition": {
+    "recent": "{{status}} recentemente",
+    "by": "por",
+    "notFound": "Perfil não encontrado.",
+    "inactive": "Não está mais no SIM",
+    "completed": "Ideias que viraram {{status}}",
+    "none": "Nenhuma ideia concluída ainda.",
+    "summary_one": "{{count}} ideia concluída · {{likes}} curtidas recebidas nela",
+    "summary_other": "{{count}} ideias concluídas · {{likes}} curtidas recebidas nelas",
+    "likes_one": "{{count}} curtida",
+    "likes_other": "{{count}} curtidas",
+    "onlyYou": "Só você vê: seu nome está oculto nesta ideia"
   }
 }

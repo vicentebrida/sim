@@ -38,6 +38,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { formatDate } from '@/lib/dates';
 import { apiErrorMessage } from '@/lib/errors';
 import { useStatusInfo } from '@/lib/use-statuses';
+import { PersonLink } from '@/components/recognition';
 
 export const Route = createFileRoute('/_app/ideas/$number/')({ component: IdeaPage });
 
@@ -76,7 +77,7 @@ function IdeaPage() {
           <FollowButton idea={idea} />
         </div>
         <p className="text-sm text-muted-foreground">
-          {t('ideas.by', { name: idea.author.name })} ·{' '}
+          {t('ideas.byPrefix')} <PersonLink person={idea.author} hidden={idea.hiddenAuthorship} /> ·{' '}
           {idea.publishedAt
             ? t('ideas.publishedOn', { date: formatDate(idea.publishedAt) })
             : t('ideas.createdOn', { date: formatDate(idea.createdAt) })}
