@@ -2,6 +2,13 @@
 
 ## Não lançado
 
+## 0.10.1
+
+Correções encontradas ao validar a 0.10.0 de ponta a ponta, e imagem também para arm64.
+
+- **Para atualizar**: nada é obrigatório; sem migrações e sem variáveis novas. A imagem `ghcr.io/vicentebrida/sim` passa a ser publicada para `linux/amd64` e `linux/arm64`, então o `docker compose` roda direto em Macs com Apple Silicon e em servidores ARM (Graviton, Ampere).
+
+- **Imagem arm64**: antes só havia amd64, e o `docker compose up` falhava em máquinas ARM.
 - **Correções da validação de ponta a ponta**:
   - O menu do Administrador virou um botão "Administração" com as dez telas. Antes, os links estouravam o cabeçalho: no celular a página rolava para o lado e o sininho e o "Sair" sumiam, e mesmo no computador o "Sair" ficava cortado.
   - O selo "Servidor no ar" saiu do cabeçalho; só aparece quando o servidor está com problemas ou fora do ar.
