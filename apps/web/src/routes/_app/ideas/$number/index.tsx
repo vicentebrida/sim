@@ -11,7 +11,9 @@ import {
   useIdeasRevealAuthor,
   useIdeasPublish,
   useIdeasRecategorize,
+  useIdeasSetStage,
   useIdeasSetTags,
+  useExecutionStagesList,
   useTagsList,
 } from '@sim/api-client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -64,7 +66,7 @@ function IdeaPage() {
     <article className="mx-auto max-w-3xl space-y-6">
       <header className="space-y-2">
         <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-          <StatusBadge status={idea.status} />
+          <StatusBadge status={idea.status} stage={idea.stage} />
           {idea.stalled && <StalledBadge />}
           <span>#{idea.number}</span>
           <span>· {idea.category.name}</span>
@@ -123,9 +125,9 @@ function IdeaPage() {
 
       {idea.status !== 'draft' && <Likes idea={idea} />}
 
-      {(idea.permissions.transitions.length > 0 || idea.permissions.canRecategorize) && (
-        <ReviewPanel idea={idea} />
-      )}
+      {(idea.permissions.transitions.length > 0 ||
+        idea.permissions.canRecategorize ||
+        idea.permissions.canSetStage) && <ReviewPanel idea={idea} />}
 
       <Discussion idea={idea} />
     </article>
@@ -274,10 +276,82 @@ function ReviewPanel({ idea }: { idea: IdeaDtoOutput }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-8 md:grid-cols-2">
+        {idea.permissions.canSetStage && <ChangeStage idea={idea} />}
         {idea.permissions.transitions.length > 0 && <ChangeStatus idea={idea} />}
         {idea.permissions.canRecategorize && <Recategorize idea={idea} />}
       </CardContent>
     </Card>
+  );
+}
+
+/** The step inside In progress: any step, in any order; the reason is optional. */
+function ChangeStage({ idea }: { idea: IdeaDtoOutput }) {
+  const { t } = useTranslation();
+  const { data } = useExecutionStagesList();
+  const stages = data?.data ?? [];
+  const refresh = useRefreshIdea(idea.number);
+  const [stageId, setStageId] = useState('');
+  const [justification, setJustification] = useState('');
+  const change = useIdeasSetStage({
+    mutation: {
+      onSuccess: async () => {
+        setStageId('');
+        setJustification('');
+        await refresh();
+      },
+    },
+  });
+  // Without steps there is nothing to choose; the Administrator creates them on the Statuses page.
+  if (stages.length === 0) return null;
+
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    if (stageId) {
+      change.mutate({
+        number: idea.number,
+        data: { stageId, justification: justification.trim() || undefined },
+      });
+    }
+  }
+
+  const failure = apiErrorMessage(change.error, t);
+  return (
+    <form className="grid gap-3" onSubmit={submit}>
+      <div className="grid gap-2">
+        <Label htmlFor="new-stage-of-idea">{t('stages.newStage')}</Label>
+        <NativeSelect
+          id="new-stage-of-idea"
+          value={stageId}
+          onChange={(event) => setStageId(event.target.value)}
+        >
+          <option value="">{t('stages.chooseStage')}</option>
+          {stages
+            .filter((stage) => stage.id !== idea.stage?.id)
+            .map((stage) => (
+              <option key={stage.id} value={stage.id}>
+                {stage.name}
+              </option>
+            ))}
+        </NativeSelect>
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="stage-justification">{t('stages.justification')}</Label>
+        <Textarea
+          id="stage-justification"
+          rows={2}
+          value={justification}
+          onChange={(event) => setJustification(event.target.value)}
+        />
+      </div>
+      {failure && (
+        <p role="alert" className="text-sm text-destructive">
+          {failure}
+        </p>
+      )}
+      <Button type="submit" className="justify-self-start" disabled={!stageId || change.isPending}>
+        {t('stages.apply')}
+      </Button>
+    </form>
   );
 }
 

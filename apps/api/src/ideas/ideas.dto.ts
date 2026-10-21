@@ -31,6 +31,14 @@ export class NewIdeaDto extends createZodDto(
 
 export class IdeaTagsDto extends createZodDto(z.object({ tagIds: TagIds })) {}
 
+export class IdeaStageDto extends createZodDto(
+  z.object({
+    stageId: z.uuid(),
+    // Optional: the step is informative, unlike a Status change.
+    justification: z.string().trim().max(2000).optional(),
+  }),
+) {}
+
 export class IdeaUpdateDto extends createZodDto(
   z.object({
     title: title.optional(),
@@ -117,6 +125,8 @@ const IdeaSummarySchema = z.object({
   status: StatusSchema,
   category: Reference,
   tags: z.array(TagSchema),
+  // Step inside In progress, when the Reviewers set one.
+  stage: z.object({ id: z.uuid(), name: z.string() }).nullable(),
   // For anyone but the Author, a stand-in when the Author chose to hide the name.
   author: Reference,
   hiddenAuthorship: z.boolean(),
@@ -156,7 +166,7 @@ export class IdeaDto extends createZodDto(
     history: z.array(
       z.object({
         id: z.uuid(),
-        type: z.enum(['status', 'category']),
+        type: z.enum(['status', 'category', 'stage']),
         from: z.string().nullable(),
         to: z.string(),
         justification: z.string().nullable(),
@@ -171,6 +181,7 @@ export class IdeaDto extends createZodDto(
       canPublish: z.boolean(),
       // Change the Tags (PUT /ideas/:number/tags).
       canTag: z.boolean(),
+      canSetStage: z.boolean(),
       canLike: z.boolean(),
       canReview: z.boolean(),
       canRecategorize: z.boolean(),

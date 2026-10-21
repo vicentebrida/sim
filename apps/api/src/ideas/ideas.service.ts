@@ -30,6 +30,7 @@ import { isStalledSql } from './domain/stalled';
 import { StalledIdeasService } from './stalled-ideas.service';
 import { TagsService } from '../tags/tags.service';
 import { WebhooksService } from '../webhooks/webhooks.service';
+import { ExecutionStagesService } from '../execution-stages/execution-stages.service';
 import { DB, type Database, type Transaction } from '../database/database.module';
 import {
   categories,
@@ -55,6 +56,7 @@ import {
   assertCanLike,
   assertCanPublish,
   assertCanRecategorize,
+  assertCanSetStage,
   assertCanTag,
   canView,
   permissions,
@@ -115,6 +117,7 @@ export class IdeasService {
     private readonly semantic: SemanticService,
     private readonly tags: TagsService,
     private readonly webhooks: WebhooksService,
+    private readonly stages: ExecutionStagesService,
     @Inject(ENV) private readonly env: Env,
   ) {}
 
@@ -176,9 +179,10 @@ export class IdeasService {
     ]);
 
     const tagsOf = await this.tags.ofIdeas(rows.map((row) => row.idea.id));
+    const stageNames = await this.stages.names();
     return {
       items: rows.map((row) => ({
-        ...this.summary(row.idea),
+        ...this.summary(row.idea, stageNames),
         category: row.category,
         tags: tagsOf.get(row.idea.id) ?? [],
         author: presentPerson(row.idea, row.author, collaborator.id, this.env.SIM_LOCALE),
@@ -298,7 +302,7 @@ export class IdeasService {
       disabledStatuses: await this.statuses.disabled(),
     });
     return {
-      ...this.summary(idea),
+      ...this.summary(idea, await this.stages.names()),
       editedAt: iso(idea.editedAt),
       category: category!,
       tags: tagsOf.get(idea.id) ?? [],
@@ -485,6 +489,33 @@ export class IdeasService {
     return this.detail(collaborator, number);
   }
 
+  async setStage(
+    collaborator: Collaborator,
+    number: number,
+    data: { stageId: string; justification?: string },
+  ) {
+    const { idea, actor } = await this.access(collaborator, { number });
+    assertCanSetStage(idea, actor);
+    const names = await this.stages.names();
+    const name = names.get(data.stageId);
+    if (!name) throw new DomainError('UNKNOWN_STAGE', 'This step does not exist');
+    if (data.stageId === idea.executionStageId) return this.detail(collaborator, number);
+
+    await this.db.transaction(async (tx) => {
+      await tx.update(ideas).set({ executionStageId: data.stageId }).where(eq(ideas.id, idea.id));
+      await tx.insert(ideaHistory).values({
+        ideaId: idea.id,
+        type: 'stage',
+        fromValue: (idea.executionStageId && names.get(idea.executionStageId)) || null,
+        toValue: name,
+        justification: data.justification || null,
+        collaboratorId: collaborator.id,
+      });
+      await this.notifications.onStageChanged(tx, idea, name, collaborator.id);
+    });
+    return this.detail(collaborator, number);
+  }
+
   async publish(collaborator: Collaborator, number: number) {
     const { idea, actor } = await this.access(collaborator, { number });
     assertCanPublish(idea, actor);
@@ -535,6 +566,8 @@ export class IdeasService {
           status: data.to,
           originalIdeaId: originalIdea?.id ?? null,
           statusChangedAt: new Date(),
+          // A step belongs to one In progress period.
+          executionStageId: null,
         })
         .where(eq(ideas.id, idea.id));
       if (originalIdea) await this.moveLikes(tx, idea, originalIdea);
@@ -761,7 +794,8 @@ export class IdeasService {
     return { idea, actor };
   }
 
-  private summary(idea: Idea) {
+  private summary(idea: Idea, stageNames: Map<string, string>) {
+    const stageName = idea.executionStageId && stageNames.get(idea.executionStageId);
     return {
       id: idea.id,
       number: idea.number,
@@ -769,6 +803,7 @@ export class IdeasService {
       status: idea.status,
       createdAt: idea.createdAt.toISOString(),
       publishedAt: iso(idea.publishedAt),
+      stage: stageName ? { id: idea.executionStageId!, name: stageName } : null,
     };
   }
 

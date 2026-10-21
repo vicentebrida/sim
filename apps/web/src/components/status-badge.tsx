@@ -29,7 +29,14 @@ export function StalledBadge() {
   );
 }
 
-export function StatusBadge({ status }: { status: IdeaDtoOutputStatus }) {
+/** The Status, followed by the step when an In progress Idea has one. */
+export function StatusBadge({
+  status,
+  stage,
+}: {
+  status: IdeaDtoOutputStatus;
+  stage?: { name: string } | null;
+}) {
   const info = useStatusInfo();
   const color = info.color(status);
   return (
@@ -42,6 +49,7 @@ export function StatusBadge({ status }: { status: IdeaDtoOutputStatus }) {
       title={info.description(status)}
     >
       {info.label(status)}
+      {status === 'in_progress' && stage && ` · ${stage.name}`}
     </span>
   );
 }

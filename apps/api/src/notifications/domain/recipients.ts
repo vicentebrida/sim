@@ -13,6 +13,7 @@ export const NOTIFICATION_TYPES = [
   'stalled',
   'stalled_escalated',
   'archive_warning',
+  'stage',
 ] as const;
 
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];

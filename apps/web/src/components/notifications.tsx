@@ -49,6 +49,7 @@ function describeNotification(
     status?: string;
     original?: { number: number; title: string };
     archiveOn?: string;
+    stage?: string;
   };
   return t(`notifications.types.${notification.type}`, {
     actor: notification.actor?.name ?? 'SIM',
@@ -57,6 +58,7 @@ function describeNotification(
     status: data.status ? statusLabel(data.status) : '',
     original: data.original?.number,
     date: data.archiveOn ? formatDate(data.archiveOn) : '',
+    stage: data.stage ?? '',
   });
 }
 

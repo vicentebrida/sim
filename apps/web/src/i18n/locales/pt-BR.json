@@ -138,7 +138,12 @@
       "TAG_NAME_TAKEN": "Já existe uma Etiqueta com este nome.",
       "UNKNOWN_TAG": "Uma das Etiquetas não existe mais. Recarregue a página.",
       "ATTACHMENT_INFECTED": "O antivírus encontrou uma ameaça neste arquivo, e ele não foi enviado.",
-      "ANTIVIRUS_UNAVAILABLE": "Não foi possível verificar o arquivo com o antivírus agora. Tente de novo em instantes."
+      "ANTIVIRUS_UNAVAILABLE": "Não foi possível verificar o arquivo com o antivírus agora. Tente de novo em instantes.",
+      "STAGE_NAME_TAKEN": "Já existe uma etapa com esse nome.",
+      "TOO_MANY_STAGES": "O limite de 10 etapas foi atingido.",
+      "STAGE_ORDER_MISMATCH": "As etapas mudaram. Recarregue a página.",
+      "UNKNOWN_STAGE": "Esta etapa não existe mais. Recarregue a página.",
+      "STAGE_UNAVAILABLE": "Só ideias Em execução têm etapa."
     },
     "fields": {
       "required": "Campo obrigatório.",
@@ -439,7 +444,8 @@
       "stalled": "A ideia #{{number}} está parada ({{status}}) e aguarda avaliação",
       "stalled_escalated": "A ideia #{{number}} continua parada ({{status}}) e precisa de um administrador",
       "new_idea": "Nova ideia para avaliar: #{{number}}",
-      "archive_warning": "A ideia #{{number}} está sem apoio e será arquivada em {{date}}"
+      "archive_warning": "A ideia #{{number}} está sem apoio e será arquivada em {{date}}",
+      "stage": "{{actor}} passou a ideia #{{number}} para a etapa {{stage}}"
     },
     "emailModes": {
       "instant": "Na hora",
@@ -560,5 +566,28 @@
     "cancel": "Cancelar",
     "edit": "Editar etiquetas",
     "add": "Adicionar etiquetas"
+  },
+  "stages": {
+    "title": "Etapas de {{status}}",
+    "help": "Etapas opcionais dentro de {{status}} (ex.: Planejamento, Desenvolvimento, Implantação), iguais para todas as Categorias. Os Avaliadores escolhem a etapa de cada ideia, em qualquer ordem; cada mudança fica no Histórico e avisa os Seguidores. As regras do Status não mudam.",
+    "list": "Etapas",
+    "new": "Nova etapa",
+    "name": "Nome",
+    "create": "Criar etapa",
+    "rename": "Renomear",
+    "renameNamed": "Renomear {{name}}",
+    "delete": "Excluir",
+    "deleteNamed": "Excluir {{name}}",
+    "deleteWarning": "As ideias nesta etapa ficam sem etapa; o Histórico continua mostrando o nome.",
+    "confirmDelete": "Excluir etapa",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "moveUp": "Subir {{name}}",
+    "moveDown": "Descer {{name}}",
+    "newStage": "Etapa",
+    "chooseStage": "Escolha a etapa",
+    "justification": "Comentário (opcional)",
+    "apply": "Mudar etapa",
+    "changed": "{{name}} mudou a etapa para {{to}}"
   }
 }

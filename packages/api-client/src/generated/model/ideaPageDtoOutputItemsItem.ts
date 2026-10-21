@@ -8,6 +8,7 @@
 import type { IdeaPageDtoOutputItemsItemAuthor } from './ideaPageDtoOutputItemsItemAuthor.ts';
 import type { IdeaPageDtoOutputItemsItemCategory } from './ideaPageDtoOutputItemsItemCategory.ts';
 import type { IdeaPageDtoOutputItemsItemLikes } from './ideaPageDtoOutputItemsItemLikes.ts';
+import type { IdeaPageDtoOutputItemsItemStage } from './ideaPageDtoOutputItemsItemStage.ts';
 import type { IdeaPageDtoOutputItemsItemStatus } from './ideaPageDtoOutputItemsItemStatus.ts';
 import type { IdeaPageDtoOutputItemsItemTagsItem } from './ideaPageDtoOutputItemsItemTagsItem.ts';
 
@@ -23,6 +24,7 @@ export type IdeaPageDtoOutputItemsItem = {
   status: IdeaPageDtoOutputItemsItemStatus;
   category: IdeaPageDtoOutputItemsItemCategory;
   tags: IdeaPageDtoOutputItemsItemTagsItem[];
+  stage: IdeaPageDtoOutputItemsItemStage;
   author: IdeaPageDtoOutputItemsItemAuthor;
   hiddenAuthorship: boolean;
   likes: IdeaPageDtoOutputItemsItemLikes;

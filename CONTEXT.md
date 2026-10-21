@@ -152,6 +152,11 @@ Ideia cuja implementação está em andamento.
 _Code_: `in_progress`
 _Avoid_: Em andamento, em desenvolvimento
 
+**Etapa**:
+Passo dentro de Em execução (ex.: Planejamento, Desenvolvimento, Implantação), de uma lista única que o Administrador mantém. Os Avaliadores escolhem a etapa da Ideia em qualquer ordem; é só informativa e não muda as regras do Status. Sai da Ideia quando o Status muda.
+_Code_: `ExecutionStage` (tabela `execution_stages`, coluna `ideas.execution_stage_id`)
+_Avoid_: Subetapa, fase, sub-status
+
 **Concluída**:
 Ideia implementada e entregue.
 _Code_: `done`

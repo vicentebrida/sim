@@ -80,6 +80,8 @@ function sentence(context: EmailContext): string {
         return `Idea ${idea} has been ${statusName(locale, data.status, context.statusLabels)} for too long and is waiting for a Reviewer.`;
       case 'stalled_escalated':
         return `Idea ${idea} is still ${statusName(locale, data.status, context.statusLabels)} after its Reviewers were told. It needs an Administrator.`;
+      case 'stage':
+        return `Idea ${idea} is now in the step "${String(data.stage)}".`;
       case 'archive_warning':
         return `Idea ${idea} has had no Likes, Comments or edits for a long time and will be archived on ${archiveOn(locale, data)}. Share it to gather support.`;
     }
@@ -103,6 +105,8 @@ function sentence(context: EmailContext): string {
       return `A Ideia ${idea} está há tempo demais como ${statusName(locale, data.status, context.statusLabels)} e aguarda um Avaliador.`;
     case 'stalled_escalated':
       return `A Ideia ${idea} continua como ${statusName(locale, data.status, context.statusLabels)} mesmo após o aviso aos Avaliadores. Ela precisa de um Administrador.`;
+    case 'stage':
+      return `A Ideia ${idea} passou para a etapa "${String(data.stage)}".`;
     case 'archive_warning':
       return `A Ideia ${idea} está há muito tempo sem Curtidas, Comentários nem edições e será arquivada em ${archiveOn(locale, data)}. Divulgue-a para conseguir apoio.`;
   }

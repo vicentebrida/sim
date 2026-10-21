@@ -138,7 +138,12 @@
       "TAG_NAME_TAKEN": "A tag with this name already exists.",
       "UNKNOWN_TAG": "One of the tags no longer exists. Reload the page.",
       "ATTACHMENT_INFECTED": "The antivirus found a threat in this file, so it was not sent.",
-      "ANTIVIRUS_UNAVAILABLE": "The file could not be checked by the antivirus right now. Try again shortly."
+      "ANTIVIRUS_UNAVAILABLE": "The file could not be checked by the antivirus right now. Try again shortly.",
+      "STAGE_NAME_TAKEN": "A step with this name already exists.",
+      "TOO_MANY_STAGES": "The limit of 10 steps was reached.",
+      "STAGE_ORDER_MISMATCH": "The steps changed. Reload the page.",
+      "UNKNOWN_STAGE": "This step no longer exists. Reload the page.",
+      "STAGE_UNAVAILABLE": "Only ideas in progress have a step."
     },
     "fields": {
       "required": "Required.",
@@ -439,7 +444,8 @@
       "stalled": "Idea #{{number}} is stalled ({{status}}) and waiting for review",
       "stalled_escalated": "Idea #{{number}} is still stalled ({{status}}) and needs an administrator",
       "new_idea": "New idea to review: #{{number}}",
-      "archive_warning": "Idea #{{number}} has no support and will be archived on {{date}}"
+      "archive_warning": "Idea #{{number}} has no support and will be archived on {{date}}",
+      "stage": "{{actor}} moved idea #{{number}} to the step {{stage}}"
     },
     "emailModes": {
       "instant": "As they happen",
@@ -560,5 +566,28 @@
     "cancel": "Cancel",
     "edit": "Edit tags",
     "add": "Add tags"
+  },
+  "stages": {
+    "title": "{{status}} steps",
+    "help": "Optional steps inside {{status}} (e.g. Planning, Development, Rollout), the same for every category. Reviewers choose the step of each idea, in any order; each change goes to the history and tells the followers. The status rules do not change.",
+    "list": "Steps",
+    "new": "New step",
+    "name": "Name",
+    "create": "Create step",
+    "rename": "Rename",
+    "renameNamed": "Rename {{name}}",
+    "delete": "Delete",
+    "deleteNamed": "Delete {{name}}",
+    "deleteWarning": "Ideas in this step are left without a step; the history keeps showing the name.",
+    "confirmDelete": "Delete step",
+    "save": "Save",
+    "cancel": "Cancel",
+    "moveUp": "Move {{name}} up",
+    "moveDown": "Move {{name}} down",
+    "newStage": "Step",
+    "chooseStage": "Choose the step",
+    "justification": "Comment (optional)",
+    "apply": "Change step",
+    "changed": "{{name}} changed the step to {{to}}"
   }
 }
