@@ -589,5 +589,24 @@
     "justification": "Comentário (opcional)",
     "apply": "Mudar etapa",
     "changed": "{{name}} mudou a etapa para {{to}}"
+  },
+  "interfaceTexts": {
+    "title": "Textos da interface",
+    "help": "Troque alguns textos que os colaboradores veem, em português e em inglês. Deixe vazio para usar o texto padrão do SIM, que aparece em cinza. Só texto simples.",
+    "keys": {
+      "homeTitle": "Página inicial: título",
+      "homeSubtitle": "Página inicial: subtítulo",
+      "newIdeaButton": "Botão de nova ideia",
+      "newIdeaGuidance": "Nova ideia: orientação no topo do formulário",
+      "titleHelp": "Nova ideia: ajuda do título",
+      "similarTitle": "Ideias semelhantes: título",
+      "similarHelp": "Ideias semelhantes: texto"
+    },
+    "languages": {
+      "pt-BR": "Português",
+      "en": "Inglês"
+    },
+    "empty": "(nenhum texto por padrão)",
+    "save": "Salvar textos"
   }
 }

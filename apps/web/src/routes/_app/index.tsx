@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { formatDate } from '@/lib/dates';
 import { useStatusInfo } from '@/lib/use-statuses';
+import { useText } from '@/lib/use-text';
 
 const FILTERABLE_STATUSES = [
   'open',
@@ -46,6 +47,7 @@ const PAGE_SIZE = 20;
 
 function HomePage() {
   const { t } = useTranslation();
+  const text = useText();
   const statusInfo = useStatusInfo();
   const filters = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
@@ -73,13 +75,13 @@ function HomePage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">{t('home.title')}</h1>
-          <p className="text-muted-foreground">{t('home.subtitle')}</p>
+          <h1 className="text-2xl font-semibold">{text('homeTitle')}</h1>
+          <p className="text-muted-foreground">{text('homeSubtitle')}</p>
         </div>
         <Button asChild>
           <Link to="/ideas/new">
             <Lightbulb />
-            {t('home.newIdea')}
+            {text('newIdeaButton')}
           </Link>
         </Button>
       </div>

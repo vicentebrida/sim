@@ -5,12 +5,14 @@
  * SIM REST API
  * OpenAPI spec version: 0.0.0
  */
+import type { BrandingDtoOutputTexts } from './brandingDtoOutputTexts.ts';
 
 export interface BrandingDtoOutput {
   name: string;
   primaryColor: string | null;
   loginTitle: string;
   loginText: string;
+  texts: BrandingDtoOutputTexts;
   logoLight: string | null;
   logoDark: string | null;
   favicon: string | null;

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { LikeCount } from '@/components/likes';
 import { StatusBadge } from '@/components/status-badge';
 import { useDebouncedValue } from '@/lib/use-debounced-value';
+import { useText } from '@/lib/use-text';
 
 const MIN_TITLE_LENGTH = 3;
 const DEBOUNCE_MS = 400;
@@ -24,6 +25,7 @@ export function SimilarIdeas({
   exclude?: number;
 }) {
   const { t } = useTranslation();
+  const customText = useText();
   const search = useDebouncedValue({ title: title.trim(), text: text.trim() }, DEBOUNCE_MS);
   const enabled = search.title.length >= MIN_TITLE_LENGTH;
   const { data } = useIdeasSimilar(
@@ -42,9 +44,9 @@ export function SimilarIdeas({
           <div className="space-y-1">
             <h2 id="similar-ideas" className="flex items-center gap-2 font-medium">
               <Lightbulb className="size-4" aria-hidden />
-              {t('similar.title')}
+              {customText('similarTitle')}
             </h2>
-            <p className="text-sm text-muted-foreground">{t('similar.help')}</p>
+            <p className="text-sm text-muted-foreground">{customText('similarHelp')}</p>
           </div>
           <ul className="space-y-2">
             {ideas.map((idea) => (

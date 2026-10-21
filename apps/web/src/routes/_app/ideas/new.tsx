@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { type IdeaData, IdeaForm } from '@/components/idea-form';
 import { uploadAll } from '@/lib/uploads';
+import { useText } from '@/lib/use-text';
 import { useStatusInfo } from '@/lib/use-statuses';
 
 export const Route = createFileRoute('/_app/ideas/new')({ component: NewIdeaPage });
@@ -11,6 +12,7 @@ function NewIdeaPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const drafts = useStatusInfo().enabled('draft');
+  const guidance = useText()('newIdeaGuidance');
 
   async function create(data: IdeaData, files: File[], publish: boolean) {
     const { data: idea } = await ideasCreate({ ...data, publish });
@@ -24,6 +26,9 @@ function NewIdeaPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <h1 className="text-2xl font-semibold">{t('ideas.new')}</h1>
+      {guidance && (
+        <p className="rounded-lg border bg-muted/40 p-4 text-sm whitespace-pre-wrap">{guidance}</p>
+      )}
       <IdeaForm
         withTags
         actions={[

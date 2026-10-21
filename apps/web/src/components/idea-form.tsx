@@ -22,6 +22,7 @@ import { AttachmentsNotSent } from '@/lib/uploads';
 import { detectionText } from '@/lib/detection-text';
 import { useFilesProblem } from '@/lib/attachments';
 import { apiErrorMessage } from '@/lib/errors';
+import { useText } from '@/lib/use-text';
 
 export type FieldValue = string | number | boolean | string[] | null;
 
@@ -81,6 +82,7 @@ export function IdeaForm({
   onRemoveAttachment?: (attachment: AttachmentDtoOutput) => void;
 }) {
   const { t } = useTranslation();
+  const text = useText();
   const { data: categoriesResponse } = useCategoriesList();
   const { data: fieldsResponse } = useCustomFieldsList();
   const { data: settings } = useSettingsGet();
@@ -157,7 +159,7 @@ export function IdeaForm({
         id="title"
         label={t('ideas.title')}
         maxLength={120}
-        placeholder={t('ideas.titleHelp')}
+        placeholder={text('titleHelp')}
         error={errors.title?.message}
         {...form.register('title')}
       />

@@ -5,6 +5,7 @@
  * SIM REST API
  * OpenAPI spec version: 0.0.0
  */
+import type { BrandingUpdateDtoTexts } from './brandingUpdateDtoTexts.ts';
 
 export interface BrandingUpdateDto {
   /**
@@ -17,4 +18,5 @@ export interface BrandingUpdateDto {
   loginTitle?: string;
   /** @maxLength 500 */
   loginText?: string;
+  texts?: BrandingUpdateDtoTexts;
 }

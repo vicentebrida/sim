@@ -2,6 +2,8 @@
 
 ## Não lançado
 
+- **Textos da interface**: na tela Identidade, o Administrador troca, em português e em inglês, o título, o subtítulo e o botão da página inicial, a ajuda do título da Ideia e o título e o texto das Ideias Semelhantes, e pode escrever uma orientação que aparece no topo do formulário de nova Ideia. Campo vazio usa o texto padrão do SIM.
+
 ## 0.9.0
 
 Arquivamento automático de Ideias sem apoio e etapas dentro de Em execução.

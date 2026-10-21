@@ -10,6 +10,10 @@ import {
   branding,
   type BrandingAssetKind,
   BRANDING_ASSETS,
+  CUSTOM_TEXTS,
+  type CustomTextKey,
+  type CustomTexts,
+  TEXT_LANGUAGES,
 } from '../database/schema';
 
 export const MAX_BRANDING_IMAGE_BYTES = 2 * 1024 * 1024;
@@ -17,6 +21,26 @@ export const MAX_BRANDING_IMAGE_BYTES = 2 * 1024 * 1024;
 export const MAX_EMAIL_LOGO_BYTES = 300 * 1024;
 /** What e-mail clients show; SVG, WebP and ICO are often blocked or broken. */
 const EMAIL_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/gif'];
+
+/** Applies the texts sent over the current ones; an empty text is removed (back to default). */
+export function mergeTexts(current: CustomTexts, changes: CustomTexts): CustomTexts {
+  const merged: CustomTexts = structuredClone(current);
+  for (const [key, languages] of Object.entries(changes) as [
+    CustomTextKey,
+    Record<string, string>,
+  ][]) {
+    if (!languages) continue;
+    const entry = { ...merged[key] };
+    for (const [language, text] of Object.entries(languages)) {
+      if (text === undefined) continue;
+      if (text) entry[language as (typeof TEXT_LANGUAGES)[number]] = text;
+      else delete entry[language as (typeof TEXT_LANGUAGES)[number]];
+    }
+    if (Object.keys(entry).length) merged[key] = entry;
+    else delete merged[key];
+  }
+  return merged;
+}
 
 @Injectable()
 export class BrandingService {
@@ -44,6 +68,12 @@ export class BrandingService {
       primaryColor: row.primaryColor,
       loginTitle: row.loginTitle,
       loginText: row.loginText,
+      texts: Object.fromEntries(
+        (Object.keys(CUSTOM_TEXTS) as CustomTextKey[]).map((key) => [
+          key,
+          { 'pt-BR': row.texts[key]?.['pt-BR'] || null, en: row.texts[key]?.en || null },
+        ]),
+      ) as Record<CustomTextKey, { 'pt-BR': string | null; en: string | null }>,
       logoLight: url('logoLight'),
       logoDark: url('logoDark'),
       favicon: url('favicon'),
@@ -56,11 +86,14 @@ export class BrandingService {
     primaryColor?: string | null;
     loginTitle?: string;
     loginText?: string;
+    texts?: CustomTexts;
   }) {
-    await this.get();
+    const current = await this.get();
+    const { texts: changes, ...rest } = data;
+    const texts = changes ? mergeTexts(current.texts, changes) : undefined;
     await this.db
       .update(branding)
-      .set({ ...data, updatedAt: new Date() })
+      .set({ ...rest, ...(texts && { texts }), updatedAt: new Date() })
       .where(eq(branding.id, 1));
     return this.present();
   }
