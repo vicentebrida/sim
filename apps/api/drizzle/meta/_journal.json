@@ -183,6 +183,13 @@
       "when": 1792585349889,
       "tag": "0025_execution_stages",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1792592072458,
+      "tag": "0026_custom_texts",
+      "breakpoints": true
     }
   ]
 }

@@ -80,6 +80,17 @@ describe('Branding', () => {
       primaryColor: null,
       loginTitle: '',
       loginText: '',
+      texts: Object.fromEntries(
+        [
+          'homeTitle',
+          'homeSubtitle',
+          'newIdeaButton',
+          'newIdeaGuidance',
+          'titleHelp',
+          'similarTitle',
+          'similarHelp',
+        ].map((key) => [key, { 'pt-BR': null, en: null }]),
+      ),
       logoLight: null,
       logoDark: null,
       favicon: null,
@@ -109,6 +120,44 @@ describe('Branding', () => {
     await admin.patch('/api/branding').send({ primaryColor: 'verde' }).expect(400);
     await admin.patch('/api/branding').send({ name: '   ' }).expect(400);
     await admin.patch('/api/branding').send({ primaryColor: null }).expect(200);
+  });
+
+  it('replaces chosen interface texts per language, and goes back to the default when emptied', async () => {
+    await admin
+      .patch('/api/branding')
+      .send({
+        texts: {
+          homeTitle: { 'pt-BR': '  Melhoria Contínua  ', en: 'Continuous Improvement' },
+          newIdeaGuidance: { 'pt-BR': 'Pense no custo.\nE em quem é afetado.' },
+        },
+      })
+      .expect(200);
+    // Texts not sent stay as they are.
+    const { body } = await admin
+      .patch('/api/branding')
+      .send({ texts: { homeTitle: { en: '' } } })
+      .expect(200);
+    expect(body.texts.homeTitle).toEqual({ 'pt-BR': 'Melhoria Contínua', en: null });
+    expect(body.texts.newIdeaGuidance).toEqual({
+      'pt-BR': 'Pense no custo.\nE em quem é afetado.',
+      en: null,
+    });
+    expect(body.texts.similarHelp).toEqual({ 'pt-BR': null, en: null });
+
+    // Only the chosen texts exist, with their limits.
+    await admin
+      .patch('/api/branding')
+      .send({ texts: { homeTitle: { 'pt-BR': 'x'.repeat(81) } } })
+      .expect(400);
+    const unknown = await admin
+      .patch('/api/branding')
+      .send({ texts: { 'nav.ideas': { 'pt-BR': 'Sugestões' } } })
+      .expect(200);
+    expect(unknown.body.texts).not.toHaveProperty(['nav.ideas']);
+    await ana
+      .patch('/api/branding')
+      .send({ texts: { homeTitle: { en: 'x' } } })
+      .expect(403);
   });
 
   it('stores images, serves them without login, and replaces or removes them', async () => {

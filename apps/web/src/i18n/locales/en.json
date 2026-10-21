@@ -589,5 +589,24 @@
     "justification": "Comment (optional)",
     "apply": "Change step",
     "changed": "{{name}} changed the step to {{to}}"
+  },
+  "interfaceTexts": {
+    "title": "Interface texts",
+    "help": "Replace some texts collaborators see, in Portuguese and in English. Leave empty to use the SIM default, shown in grey. Plain text only.",
+    "keys": {
+      "homeTitle": "Home page: title",
+      "homeSubtitle": "Home page: subtitle",
+      "newIdeaButton": "New idea button",
+      "newIdeaGuidance": "New idea: guidance at the top of the form",
+      "titleHelp": "New idea: title help",
+      "similarTitle": "Similar ideas: title",
+      "similarHelp": "Similar ideas: text"
+    },
+    "languages": {
+      "pt-BR": "Portuguese",
+      "en": "English"
+    },
+    "empty": "(no text by default)",
+    "save": "Save texts"
   }
 }

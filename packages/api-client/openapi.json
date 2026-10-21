@@ -5260,6 +5260,175 @@
           "loginText": {
             "type": "string"
           },
+          "texts": {
+            "type": "object",
+            "properties": {
+              "homeTitle": {
+                "type": "object",
+                "properties": {
+                  "pt-BR": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "en": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "pt-BR",
+                  "en"
+                ],
+                "additionalProperties": false
+              },
+              "homeSubtitle": {
+                "type": "object",
+                "properties": {
+                  "pt-BR": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "en": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "pt-BR",
+                  "en"
+                ],
+                "additionalProperties": false
+              },
+              "newIdeaButton": {
+                "type": "object",
+                "properties": {
+                  "pt-BR": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "en": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "pt-BR",
+                  "en"
+                ],
+                "additionalProperties": false
+              },
+              "newIdeaGuidance": {
+                "type": "object",
+                "properties": {
+                  "pt-BR": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "en": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "pt-BR",
+                  "en"
+                ],
+                "additionalProperties": false
+              },
+              "titleHelp": {
+                "type": "object",
+                "properties": {
+                  "pt-BR": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "en": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "pt-BR",
+                  "en"
+                ],
+                "additionalProperties": false
+              },
+              "similarTitle": {
+                "type": "object",
+                "properties": {
+                  "pt-BR": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "en": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "pt-BR",
+                  "en"
+                ],
+                "additionalProperties": false
+              },
+              "similarHelp": {
+                "type": "object",
+                "properties": {
+                  "pt-BR": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "en": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "pt-BR",
+                  "en"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "homeTitle",
+              "homeSubtitle",
+              "newIdeaButton",
+              "newIdeaGuidance",
+              "titleHelp",
+              "similarTitle",
+              "similarHelp"
+            ],
+            "additionalProperties": false
+          },
           "logoLight": {
             "anyOf": [
               {
@@ -5306,6 +5475,7 @@
           "primaryColor",
           "loginTitle",
           "loginText",
+          "texts",
           "logoLight",
           "logoDark",
           "favicon",
@@ -5339,6 +5509,102 @@
           "loginText": {
             "type": "string",
             "maxLength": 500
+          },
+          "texts": {
+            "type": "object",
+            "properties": {
+              "homeTitle": {
+                "type": "object",
+                "properties": {
+                  "pt-BR": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 80
+                  }
+                }
+              },
+              "homeSubtitle": {
+                "type": "object",
+                "properties": {
+                  "pt-BR": {
+                    "type": "string",
+                    "maxLength": 300
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 300
+                  }
+                }
+              },
+              "newIdeaButton": {
+                "type": "object",
+                "properties": {
+                  "pt-BR": {
+                    "type": "string",
+                    "maxLength": 40
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 40
+                  }
+                }
+              },
+              "newIdeaGuidance": {
+                "type": "object",
+                "properties": {
+                  "pt-BR": {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                }
+              },
+              "titleHelp": {
+                "type": "object",
+                "properties": {
+                  "pt-BR": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 120
+                  }
+                }
+              },
+              "similarTitle": {
+                "type": "object",
+                "properties": {
+                  "pt-BR": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 80
+                  }
+                }
+              },
+              "similarHelp": {
+                "type": "object",
+                "properties": {
+                  "pt-BR": {
+                    "type": "string",
+                    "maxLength": 300
+                  },
+                  "en": {
+                    "type": "string",
+                    "maxLength": 300
+                  }
+                }
+              }
+            }
           }
         }
       },

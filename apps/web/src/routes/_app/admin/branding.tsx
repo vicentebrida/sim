@@ -12,6 +12,7 @@ import { Trash2, Upload } from 'lucide-react';
 import { type FormEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormField } from '@/components/form-field';
+import { InterfaceTexts } from '@/components/interface-texts';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -36,6 +37,7 @@ function BrandingPage() {
         <p className="text-muted-foreground">{t('branding.subtitle')}</p>
       </div>
       {branding && <TextsForm branding={branding} />}
+      {branding && <InterfaceTexts branding={branding} />}
       {branding && <Images branding={branding} />}
     </div>
   );

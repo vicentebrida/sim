@@ -1,5 +1,17 @@
-import type { CurrentCollaboratorDtoOutput } from '@sim/api-client';
+import type { BrandingDtoOutputTexts, CurrentCollaboratorDtoOutput } from '@sim/api-client';
 import { http, HttpResponse } from 'msw';
+
+const none = { 'pt-BR': null, en: null };
+/** No replaced interface text: every page shows the SIM defaults. */
+export const DEFAULT_TEXTS: BrandingDtoOutputTexts = {
+  homeTitle: none,
+  homeSubtitle: none,
+  newIdeaButton: none,
+  newIdeaGuidance: none,
+  titleHelp: none,
+  similarTitle: none,
+  similarHelp: none,
+};
 import { server } from './server';
 
 export const ana: CurrentCollaboratorDtoOutput = {
@@ -40,6 +52,7 @@ export function simulateAuth(options: {
         primaryColor: null,
         loginTitle: '',
         loginText: '',
+        texts: DEFAULT_TEXTS,
         logoLight: null,
         logoDark: null,
         favicon: null,

@@ -155,6 +155,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 
 - Categorias (com descrição) e Avaliadores, Campos Personalizados, aparência dos Status, prazos de Ideia Parada, Autoria Oculta e login local.
 - **Identidade visual:** nome da instalação, logo clara e escura, favicon, cor primária, texto e imagem da página de login, e-mails com a marca. Fica na tela **Identidade** (Administradores). A leitura é pública, porque a página de login já usa a identidade. Imagens de até 2 MB (PNG, JPG, GIF, WebP, SVG e ICO, conferidos pelo conteúdo), servidas com política que impede execução. Nos e-mails entram o nome, a cor do botão e a logo clara (ou a escura, se for a única), embutida na mensagem para aparecer mesmo quando o SIM não é acessível de fora; só PNG, JPG ou GIF de até 300 KB, porque os leitores de e-mail não mostram bem SVG, WebP nem ICO. A cor principal vale para os dois temas; o texto sobre ela é escolhido pelo contraste.
+- **Textos da interface:** na tela **Identidade**, o Administrador troca um conjunto escolhido de textos que os colaboradores veem, separados em português e inglês: título, subtítulo e botão da página inicial; orientação no topo do formulário de nova Ideia (novo, vazio por padrão); ajuda do título; título e texto das Ideias Semelhantes. Campo vazio usa o texto padrão do SIM (o da língua da página). Só texto simples. Os demais textos e os termos do domínio não são editáveis (seção 7), para não quebrar a cada versão nem renomear "Ideia", "Curtida"....
 - **i18n:** pt-BR e en.
 - Integrações (SSO, SMTP, IA, armazenamento) aparecem na tela só para leitura, com botões "testar conexão" ([ADR-0007](./adr/0007-integracoes-configuradas-por-ambiente.md)).
 
@@ -232,7 +233,7 @@ sim/
 
 ### Backlog (depois dos marcos)
 
-SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM · sobrescrever textos da interface · editor rico (Tiptap) · gamificação (premiando Ideias Concluídas, nunca volume).
+SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM · editor rico (Tiptap) · gamificação (premiando Ideias Concluídas, nunca volume).
 
 ## 7. Fora de escopo (decidido)
 
