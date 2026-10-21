@@ -188,7 +188,7 @@ function HomePage() {
               className="block rounded-xl border bg-card p-4 transition-colors hover:bg-muted/50"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <StatusBadge status={idea.status} />
+                <StatusBadge status={idea.status} stage={idea.stage} />
                 {idea.stalled && <StalledBadge />}
                 <span className="text-sm text-muted-foreground">#{idea.number}</span>
                 <span className="text-sm text-muted-foreground">· {idea.category.name}</span>

@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ExecutionStages } from '@/components/execution-stages';
 import { FormField } from '@/components/form-field';
 import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,7 @@ function StatusesPage() {
           </li>
         ))}
       </ul>
+      <ExecutionStages />
     </div>
   );
 }

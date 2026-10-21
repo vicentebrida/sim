@@ -238,6 +238,7 @@ describe('permissions computed for the web app', () => {
       canDelete: true,
       canPublish: false,
       canTag: true,
+      canSetStage: false,
       canLike: false,
       canReview: false,
       canRecategorize: false,

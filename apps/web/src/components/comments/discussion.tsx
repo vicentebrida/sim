@@ -114,13 +114,15 @@ function HistoryEntry({ event }: { event: HistoryEvent }) {
   const description =
     event.type === 'category'
       ? t('ideas.changedCategory', { name, from: event.from, to: event.to })
-      : event.from
-        ? t('ideas.changedStatus', {
-            name,
-            from: statusInfo.label(event.from),
-            to: statusInfo.label(event.to),
-          })
-        : t('ideas.published', { name });
+      : event.type === 'stage'
+        ? t('stages.changed', { name, to: event.to })
+        : event.from
+          ? t('ideas.changedStatus', {
+              name,
+              from: statusInfo.label(event.from),
+              to: statusInfo.label(event.to),
+            })
+          : t('ideas.published', { name });
   return (
     <div className="space-y-1">
       <p className="text-sm">

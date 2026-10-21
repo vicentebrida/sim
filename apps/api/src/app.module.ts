@@ -14,6 +14,7 @@ import { SettingsModule } from './settings/settings.module';
 import { StatusesModule } from './statuses/statuses.module';
 import { CategoriesModule } from './categories/categories.module';
 import { TagsModule } from './tags/tags.module';
+import { ExecutionStagesModule } from './execution-stages/execution-stages.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { CollaboratorsModule } from './collaborators/collaborators.module';
 import { CommentsModule } from './comments/comments.module';
@@ -43,6 +44,7 @@ function webModule(): DynamicModule[] {
     AuthModule,
     CategoriesModule,
     TagsModule,
+    ExecutionStagesModule,
     WebhooksModule,
     CustomFieldsModule,
     IdeasModule,

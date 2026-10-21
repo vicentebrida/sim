@@ -169,6 +169,16 @@ export function assertCanTag(idea: IdeaForRules, actor: Actor) {
   }
 }
 
+/** The step of an In progress Idea is set by its Reviewers (and Administrators), in any order. */
+export function assertCanSetStage(idea: IdeaForRules, actor: Actor) {
+  if (idea.status === 'draft' || !canReview(idea, actor)) {
+    throw new DomainError('FORBIDDEN', 'Only Reviewers or Administrators set the step');
+  }
+  if (idea.status !== 'in_progress') {
+    throw new DomainError('STAGE_UNAVAILABLE', 'Only an Idea In progress has a step');
+  }
+}
+
 export function assertCanPublish(idea: IdeaForRules, actor: Actor) {
   if (!isAuthor(idea, actor)) {
     throw new DomainError('FORBIDDEN', 'Only the Author publishes the Idea');
@@ -233,6 +243,7 @@ export function permissions(
     canDelete: allows(() => assertCanDelete(idea, actor, context)),
     canPublish: allows(() => assertCanPublish(idea, actor)),
     canTag: allows(() => assertCanTag(idea, actor)),
+    canSetStage: allows(() => assertCanSetStage(idea, actor)),
     canLike: allows(() => assertCanLike(idea, actor)),
     canReview: reviews,
     canRecategorize: reviews && RECATEGORIZABLE.includes(idea.status),

@@ -108,6 +108,21 @@ export class NotificationsService {
     );
   }
 
+  /** A new step of an In progress Idea, for its Followers. */
+  async onStageChanged(executor: Executor, idea: Idea, stage: string, actorId: string) {
+    const recipients = recipientsExcept(actorId, await this.activeFollowers(executor, idea));
+    await this.record(
+      executor,
+      recipients.map((recipientId) => ({
+        recipientId,
+        type: 'stage',
+        ideaId: idea.id,
+        actorId,
+        data: { stage },
+      })),
+    );
+  }
+
   /** Tells the Author their Open Idea will be archived for lack of support. */
   async onArchiveWarning(executor: Executor, idea: Idea, archiveOn: Date) {
     const [author] = await executor

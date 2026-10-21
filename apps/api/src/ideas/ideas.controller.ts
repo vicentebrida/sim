@@ -20,6 +20,7 @@ import {
   FollowingDto,
   IdeaDto,
   IdeaPageDto,
+  IdeaStageDto,
   IdeaTagsDto,
   IdeaUpdateDto,
   IdeaVersionDto,
@@ -106,6 +107,16 @@ export class IdeasController {
     @Body() data: IdeaTagsDto,
   ) {
     return this.ideas.setTags(collaborator, number, data.tagIds);
+  }
+
+  @Put(':number/stage')
+  @ZodResponse({ status: 200, type: IdeaDto })
+  setStage(
+    @CurrentCollaborator() collaborator: Collaborator,
+    @Param('number', ParseIntPipe) number: number,
+    @Body() data: IdeaStageDto,
+  ) {
+    return this.ideas.setStage(collaborator, number, data);
   }
 
   @Post(':number/publish')

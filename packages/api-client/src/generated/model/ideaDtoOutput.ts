@@ -13,6 +13,7 @@ import type { IdeaDtoOutputHistoryItem } from './ideaDtoOutputHistoryItem.ts';
 import type { IdeaDtoOutputLikes } from './ideaDtoOutputLikes.ts';
 import type { IdeaDtoOutputOriginalIdea } from './ideaDtoOutputOriginalIdea.ts';
 import type { IdeaDtoOutputPermissions } from './ideaDtoOutputPermissions.ts';
+import type { IdeaDtoOutputStage } from './ideaDtoOutputStage.ts';
 import type { IdeaDtoOutputStatus } from './ideaDtoOutputStatus.ts';
 import type { IdeaDtoOutputTagsItem } from './ideaDtoOutputTagsItem.ts';
 import type { IdeaDtoOutputValues } from './ideaDtoOutputValues.ts';
@@ -29,6 +30,7 @@ export interface IdeaDtoOutput {
   status: IdeaDtoOutputStatus;
   category: IdeaDtoOutputCategory;
   tags: IdeaDtoOutputTagsItem[];
+  stage: IdeaDtoOutputStage;
   author: IdeaDtoOutputAuthor;
   hiddenAuthorship: boolean;
   likes: IdeaDtoOutputLikes;

@@ -12,4 +12,5 @@ export type IdeaDtoOutputHistoryItemType = typeof IdeaDtoOutputHistoryItemType[k
 export const IdeaDtoOutputHistoryItemType = {
   status: 'status',
   category: 'category',
+  stage: 'stage',
 } as const;

@@ -571,6 +571,154 @@
         ]
       }
     },
+    "/api/execution-stages": {
+      "get": {
+        "operationId": "executionStages_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExecutionStageDto_Output"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "execution-stages"
+        ]
+      },
+      "post": {
+        "operationId": "executionStages_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecutionStageDataDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutionStageDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "execution-stages"
+        ]
+      }
+    },
+    "/api/execution-stages/order": {
+      "put": {
+        "operationId": "executionStages_reorder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecutionStageOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExecutionStageDto_Output"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "execution-stages"
+        ]
+      }
+    },
+    "/api/execution-stages/{id}": {
+      "patch": {
+        "operationId": "executionStages_rename",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecutionStageDataDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutionStageDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "execution-stages"
+        ]
+      },
+      "delete": {
+        "operationId": "executionStages_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "execution-stages"
+        ]
+      }
+    },
     "/api/custom-fields": {
       "get": {
         "operationId": "customFields_list",
@@ -1088,6 +1236,46 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/IdeaTagsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdeaDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "ideas"
+        ]
+      }
+    },
+    "/api/ideas/{number}/stage": {
+      "put": {
+        "operationId": "ideas_setStage",
+        "parameters": [
+          {
+            "name": "number",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdeaStageDto"
               }
             }
           }
@@ -2880,6 +3068,54 @@
           "name"
         ]
       },
+      "ExecutionStageDto_Output": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "ExecutionStageDataDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ExecutionStageOrderDto": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        },
+        "required": [
+          "ids"
+        ]
+      },
       "CustomFieldDto_Output": {
         "type": "object",
         "properties": {
@@ -3138,6 +3374,31 @@
                     "additionalProperties": false
                   }
                 },
+                "stage": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "author": {
                   "type": "object",
                   "properties": {
@@ -3205,6 +3466,7 @@
                 "status",
                 "category",
                 "tags",
+                "stage",
                 "author",
                 "hiddenAuthorship",
                 "likes",
@@ -3372,6 +3634,31 @@
               ],
               "additionalProperties": false
             }
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "author": {
             "type": "object",
@@ -3605,7 +3892,8 @@
                   "type": "string",
                   "enum": [
                     "status",
-                    "category"
+                    "category",
+                    "stage"
                   ]
                 },
                 "from": {
@@ -3681,6 +3969,9 @@
               "canTag": {
                 "type": "boolean"
               },
+              "canSetStage": {
+                "type": "boolean"
+              },
               "canLike": {
                 "type": "boolean"
               },
@@ -3713,6 +4004,7 @@
               "canDelete",
               "canPublish",
               "canTag",
+              "canSetStage",
               "canLike",
               "canReview",
               "canRecategorize",
@@ -3728,6 +4020,7 @@
           "status",
           "category",
           "tags",
+          "stage",
           "author",
           "hiddenAuthorship",
           "likes",
@@ -3994,6 +4287,23 @@
           "tagIds"
         ]
       },
+      "IdeaStageDto": {
+        "type": "object",
+        "properties": {
+          "stageId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "justification": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "stageId"
+        ]
+      },
       "StatusChangeDto": {
         "type": "object",
         "properties": {
@@ -4132,7 +4442,8 @@
                     "new_idea",
                     "stalled",
                     "stalled_escalated",
-                    "archive_warning"
+                    "archive_warning",
+                    "stage"
                   ]
                 },
                 "idea": {

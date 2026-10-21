@@ -64,6 +64,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 - **Arquivamento automático** (desligado por padrão; o Administrador liga e escolhe os dias, no mínimo 14, na tela **Configurações**, e cada mudança vai para a Auditoria): uma Ideia _Aberta_ sem Curtidas, Comentários, edições nem mudança de Status por esse tempo é arquivada pelo SIM. O Autor é avisado 7 dias antes e o arquivamento só acontece depois desse aviso, mesmo quando a regra é ligada com Ideias já antigas; qualquer atividade recomeça a contagem, e mudar a regra cancela os avisos já dados. O Histórico mostra "SIM" como autor, com a justificativa automática, e os Seguidores recebem a Notificação de mudança de Status. _Em análise_ fica de fora: ali quem deve resposta é o Avaliador, e para isso existe a Ideia Parada. Os Avaliadores desarquivam como sempre.
 - **Duplicada:** Curtidas e Seguidores migram para a Ideia Original, sem contar em dobro quem já estava nas duas. Os Seguidores são notificados com o link.
 - **Recategorização:** Avaliador ou Administrador pode mudar a Categoria, com justificativa. A mudança fica no Histórico e notifica os novos Avaliadores.
+- **Etapas de _Em execução_:** o Administrador mantém, na tela **Status**, uma lista única de até 10 etapas (ex.: Planejamento, Desenvolvimento, Implantação), com nome e ordem. Os Avaliadores e Administradores escolhem a etapa de uma Ideia _Em execução_, em qualquer ordem (pular e voltar valem), com comentário opcional. Cada mudança fica no Histórico (com o nome da etapa, que continua lá mesmo se ela for renomeada ou excluída) e notifica os Seguidores. A etapa aparece junto do Status na Ideia e na lista, e sai da Ideia quando o Status muda. Excluir uma etapa deixa suas Ideias _Em execução_ sem etapa. As etapas são só informativas: não mudam as regras do Status ([ADR-0004](./adr/0004-status-com-semantica-fixa.md)).
 - **Personalização pelo Administrador:** rótulo, cor e descrição de cada Status. Pode desligar _Rascunho_, _Aprovada_ e _Em execução_. Não pode criar Status novos.
 
 ### 3.4 Ideias Semelhantes ([ADR-0002](./adr/0002-deteccao-de-semelhantes-textual-mais-semantica-opcional.md))
@@ -116,6 +117,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 | Ideia Duplicada         | Seguidores da Duplicada                 |
 | Ideia Parada            | Avaliadores e depois Administradores    |
 | Aviso de arquivamento   | Autor                                   |
+| Nova etapa              | Seguidores                              |
 
 - Canais: sininho no sistema (em tempo real; volta ao polling de 30 s se a conexão cair, [ADR-0009](./adr/0009-tempo-real-com-sse-e-listen-notify.md)) e e-mail (na hora, num resumo diário ou desligado, escolhido pelo Colaborador; o resumo sai uma vez por dia em `SIM_DIGEST_HOUR`/`SIM_TIMEZONE`, e quem muda de ideia antes do envio não perde nada). O sininho entrou no Marco 1; o e-mail na hora, no Marco 2, com SMTP e Redis configurados — sem `SMTP_URL` o SIM não envia e-mail. O e-mail diz o que aconteceu e traz o link da Ideia, nunca o texto do Comentário. Ideia Parada fica para uma etapa seguinte do Marco 2.
 - **Canais de chat (webhooks):** Slack, Microsoft Teams e Google Chat recebem uma mensagem quando uma Ideia é publicada e quando muda de Status (eventos escolhidos em `SIM_WEBHOOK_EVENTS`). Cada canal é uma URL de webhook de entrada em variável de ambiente (`SIM_WEBHOOK_SLACK_URL`, `SIM_WEBHOOK_TEAMS_URL`, `SIM_WEBHOOK_GOOGLE_CHAT_URL`). A mensagem traz número, título, Categoria, Autor (respeitando a Autoria Oculta), os nomes de Status dados pelo Administrador e o link, nunca o texto da Ideia, porque o canal pode ter gente de fora do SIM. O envio roda em segundo plano, com as mesmas novas tentativas do e-mail. A tela Integrações mostra os canais e manda uma mensagem de teste.
@@ -230,7 +232,7 @@ sim/
 
 ### Backlog (depois dos marcos)
 
-SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM · subetapas de _Em execução_ · sobrescrever textos da interface · editor rico (Tiptap) · gamificação (premiando Ideias Concluídas, nunca volume).
+SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM · sobrescrever textos da interface · editor rico (Tiptap) · gamificação (premiando Ideias Concluídas, nunca volume).
 
 ## 7. Fora de escopo (decidido)
 

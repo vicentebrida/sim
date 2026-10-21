@@ -2,6 +2,8 @@
 
 ## Não lançado
 
+- **Etapas de Em execução**: na tela Status, o Administrador cria até 10 etapas (ex.: Planejamento, Desenvolvimento, Implantação), iguais para todas as Categorias, e escolhe a ordem. Os Avaliadores marcam em que etapa está cada Ideia Em execução, em qualquer ordem e com comentário opcional; a etapa aparece ao lado do Status, vai para o Histórico e avisa os Seguidores. As regras do Status não mudam.
+
 - **Arquivamento automático** (desligado por padrão): na tela Configurações, o Administrador escolhe depois de quantos dias (no mínimo 14) uma Ideia Aberta sem Curtidas, Comentários nem edições é arquivada pelo SIM. O Autor é avisado 7 dias antes e o arquivamento só acontece depois desse aviso, mesmo para Ideias já antigas quando a regra é ligada. Qualquer Curtida ou Comentário recomeça a contagem. O Histórico mostra "SIM" como autor, os Seguidores são notificados e os Avaliadores podem desarquivar. Ideias Em análise não são arquivadas (para elas valem as Ideias Paradas). Precisa do Redis, como as Ideias Paradas.
 
 ## 0.8.0

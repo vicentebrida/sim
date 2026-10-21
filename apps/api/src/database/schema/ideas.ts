@@ -17,6 +17,7 @@ import type { FieldType, FieldValues } from '../../ideas/domain/fields';
 import type { Status } from '../../ideas/domain/idea';
 import { categories } from './categories';
 import { collaborators } from './collaborators';
+import { executionStages } from './execution-stages';
 
 const tsvector = customType<{ data: string }>({ dataType: () => 'tsvector' });
 
@@ -56,6 +57,8 @@ export const ideas = pgTable(
     // The Author asked to be shown as anonymous (needs the setting on when chosen).
     hiddenAuthorship: boolean().notNull().default(false),
     originalIdeaId: uuid().references((): AnyPgColumn => ideas.id),
+    // Step of an In progress Idea; cleared on every Status change. Deleting the step clears it.
+    executionStageId: uuid().references(() => executionStages.id, { onDelete: 'set null' }),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     publishedAt: timestamp({ withTimezone: true }),
     // Last edit by the Author after publishing (the Idea shows as "edited").
@@ -96,7 +99,7 @@ export const ideas = pgTable(
   ],
 );
 
-export type HistoryEventType = 'status' | 'category';
+export type HistoryEventType = 'status' | 'category' | 'stage';
 
 /** Idea History: Status and Category changes, with who changed them and the justification. */
 export const ideaHistory = pgTable(
@@ -107,7 +110,8 @@ export const ideaHistory = pgTable(
       .notNull()
       .references(() => ideas.id, { onDelete: 'cascade' }),
     type: text().$type<HistoryEventType>().notNull(),
-    // Status or Category id, depending on the type. `fromValue` is null on publication.
+    // Status, Category id or step name (kept as text, so renaming or deleting the step does not
+    // rewrite the past), depending on the type. `fromValue` is null on publication.
     fromValue: text(),
     toValue: text().notNull(),
     justification: text(),
