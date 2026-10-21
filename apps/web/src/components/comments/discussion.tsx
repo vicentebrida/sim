@@ -109,7 +109,8 @@ export function Discussion({ idea }: { idea: IdeaDtoOutput }) {
 function HistoryEntry({ event }: { event: HistoryEvent }) {
   const { t } = useTranslation();
   const statusInfo = useStatusInfo();
-  const name = event.collaborator.name;
+  // No one: the SIM did it by itself (automatic archiving).
+  const name = event.collaborator?.name ?? 'SIM';
   const description =
     event.type === 'category'
       ? t('ideas.changedCategory', { name, from: event.from, to: event.to })

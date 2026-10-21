@@ -11,6 +11,7 @@ import { ENV } from '../config/config.module';
 import type { Env } from '../config/env';
 import { CollaboratorsService } from '../collaborators/collaborators.service';
 import { SemanticService } from '../semantic/semantic.service';
+import { AutoArchiveService } from '../ideas/auto-archive.service';
 import { StalledIdeasService } from '../ideas/stalled-ideas.service';
 import { EmailDispatcher } from '../notifications/email/email-dispatcher.service';
 import { WebhooksService } from '../webhooks/webhooks.service';
@@ -22,6 +23,7 @@ const DIGESTS = 'send-daily-digests';
 const EMBEDDINGS = 'embed-ideas';
 const INACTIVITY = 'deactivate-inactive-collaborators';
 const WEBHOOKS = 'dispatch-webhooks';
+const AUTO_ARCHIVE = 'auto-archive-ideas';
 
 /**
  * Background jobs through BullMQ (ADR-0006): sending e-mail every 15 s and looking for Stalled
@@ -39,6 +41,7 @@ export class JobsWorker implements OnApplicationBootstrap, OnApplicationShutdown
     @Inject(ENV) private readonly env: Env,
     private readonly dispatcher: EmailDispatcher,
     private readonly stalled: StalledIdeasService,
+    private readonly autoArchive: AutoArchiveService,
     private readonly collaborators: CollaboratorsService,
     private readonly semantic: SemanticService,
     private readonly webhooks: WebhooksService,
@@ -65,6 +68,8 @@ export class JobsWorker implements OnApplicationBootstrap, OnApplicationShutdown
       );
     }
     await this.queue.upsertJobScheduler(STALLED, { every: 3_600_000 }, { name: STALLED });
+    // Does nothing while the Administrator has not turned it on.
+    await this.queue.upsertJobScheduler(AUTO_ARCHIVE, { every: 3_600_000 }, { name: AUTO_ARCHIVE });
     if (this.webhooks.channels.length) {
       await this.queue.upsertJobScheduler(WEBHOOKS, { every: 15_000 }, { name: WEBHOOKS });
     }
@@ -87,6 +92,7 @@ export class JobsWorker implements OnApplicationBootstrap, OnApplicationShutdown
     if (job.name === EMAILS) return this.dispatcher.dispatchPending();
     if (job.name === DIGESTS) return this.dispatcher.dispatchDigests();
     if (job.name === STALLED) return this.stalled.check();
+    if (job.name === AUTO_ARCHIVE) return this.autoArchive.check();
     if (job.name === WEBHOOKS) return this.webhooks.dispatchPending();
     if (job.name === EMBEDDINGS) return this.semantic.indexPending();
     if (job.name === INACTIVITY && this.env.SIM_INACTIVITY_DAYS) {

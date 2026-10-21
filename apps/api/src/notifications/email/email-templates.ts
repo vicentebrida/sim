@@ -52,6 +52,9 @@ export const statusName = (
 const who = (context: EmailContext) =>
   context.actorName ?? (context.locale === 'en' ? 'Someone' : 'Alguém');
 
+const archiveOn = (locale: Locale, data: Record<string, unknown>) =>
+  new Date(String(data.archiveOn)).toLocaleDateString(locale, { dateStyle: 'long' });
+
 /** One sentence saying what happened, in the language of the installation. */
 function sentence(context: EmailContext): string {
   const { locale, type, data } = context;
@@ -77,6 +80,8 @@ function sentence(context: EmailContext): string {
         return `Idea ${idea} has been ${statusName(locale, data.status, context.statusLabels)} for too long and is waiting for a Reviewer.`;
       case 'stalled_escalated':
         return `Idea ${idea} is still ${statusName(locale, data.status, context.statusLabels)} after its Reviewers were told. It needs an Administrator.`;
+      case 'archive_warning':
+        return `Idea ${idea} has had no Likes, Comments or edits for a long time and will be archived on ${archiveOn(locale, data)}. Share it to gather support.`;
     }
   }
   switch (type) {
@@ -98,6 +103,8 @@ function sentence(context: EmailContext): string {
       return `A Ideia ${idea} está há tempo demais como ${statusName(locale, data.status, context.statusLabels)} e aguarda um Avaliador.`;
     case 'stalled_escalated':
       return `A Ideia ${idea} continua como ${statusName(locale, data.status, context.statusLabels)} mesmo após o aviso aos Avaliadores. Ela precisa de um Administrador.`;
+    case 'archive_warning':
+      return `A Ideia ${idea} está há muito tempo sem Curtidas, Comentários nem edições e será arquivada em ${archiveOn(locale, data)}. Divulgue-a para conseguir apoio.`;
   }
 }
 

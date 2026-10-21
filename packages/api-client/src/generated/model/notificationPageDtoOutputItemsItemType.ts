@@ -18,4 +18,5 @@ export const NotificationPageDtoOutputItemsItemType = {
   new_idea: 'new_idea',
   stalled: 'stalled',
   stalled_escalated: 'stalled_escalated',
+  archive_warning: 'archive_warning',
 } as const;

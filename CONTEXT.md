@@ -168,7 +168,7 @@ _Code_: `duplicate`
 _Avoid_: Mesclada, repetida
 
 **Arquivada**:
-Ideia Aberta ou Em análise retirada de circulação por inatividade ou perda de relevância, sem julgamento de mérito. Pode ser desarquivada, voltando para Aberta.
+Ideia Aberta ou Em análise retirada de circulação por inatividade ou perda de relevância, sem julgamento de mérito. Pode ser desarquivada, voltando para Aberta. Com o arquivamento automático ligado, o SIM arquiva sozinho as Ideias Abertas sem apoio, depois de avisar o Autor.
 _Code_: `archived`
 _Avoid_: Inativa, pausada, congelada
 

@@ -303,4 +303,31 @@ describe('Ideas list', () => {
       expect(received.some((r) => r.url.searchParams.get('sort') === 'most_liked')).toBe(true),
     );
   });
+
+  it('shows "SIM" in the History when the SIM archived the Idea by itself', async () => {
+    simulateAuth({ session: ana });
+    const idea = sampleIdea();
+    simulateIdeas({
+      idea: {
+        ...idea,
+        status: 'archived',
+        history: [
+          ...idea.history,
+          {
+            id: '66666666-6666-4666-8666-666666666667',
+            type: 'status',
+            from: 'open',
+            to: 'archived',
+            justification:
+              'Arquivada automaticamente: sem Curtidas, Comentários nem edições há 90 dias.',
+            collaborator: null,
+            createdAt: '2027-01-01T12:00:00.000Z',
+          },
+        ],
+      },
+    });
+    renderApp('/ideas/7');
+    expect(await screen.findByText('SIM mudou de Aberta para Arquivada')).toBeInTheDocument();
+    expect(screen.getByText(/há 90 dias/)).toBeInTheDocument();
+  });
 });

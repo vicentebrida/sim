@@ -12,6 +12,7 @@ export const NOTIFICATION_TYPES = [
   'new_idea',
   'stalled',
   'stalled_escalated',
+  'archive_warning',
 ] as const;
 
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];

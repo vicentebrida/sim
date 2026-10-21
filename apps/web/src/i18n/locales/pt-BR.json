@@ -279,7 +279,8 @@
       "authorship.revealed": "Revelou o autor de uma ideia",
       "settings.hidden_authorship_changed": "Alterou a configuração de autoria oculta",
       "settings.stalled_deadlines_changed": "Alterou os prazos de ideia parada",
-      "attachment.infected": "Teve um anexo bloqueado pelo antivírus"
+      "attachment.infected": "Teve um anexo bloqueado pelo antivírus",
+      "settings.auto_archive_changed": "Alterou o arquivamento automático"
     }
   },
   "status": {
@@ -437,7 +438,8 @@
       "mention": "{{actor}} mencionou você na ideia #{{number}}",
       "stalled": "A ideia #{{number}} está parada ({{status}}) e aguarda avaliação",
       "stalled_escalated": "A ideia #{{number}} continua parada ({{status}}) e precisa de um administrador",
-      "new_idea": "Nova ideia para avaliar: #{{number}}"
+      "new_idea": "Nova ideia para avaliar: #{{number}}",
+      "archive_warning": "A ideia #{{number}} está sem apoio e será arquivada em {{date}}"
     },
     "emailModes": {
       "instant": "Na hora",
@@ -470,7 +472,12 @@
       "escalationDays": "Escalar após (dias)"
     },
     "saved": "Configurações salvas.",
-    "save": "Salvar"
+    "save": "Salvar",
+    "autoArchive": "Arquivamento automático",
+    "autoArchiveHelp": "Ideias Abertas sem Curtidas, Comentários nem edições por um tempo são arquivadas pelo SIM. O Autor é avisado 7 dias antes e pode divulgar a ideia para conseguir apoio; qualquer Curtida ou Comentário recomeça a contagem. Ideias Em análise não são arquivadas (para elas valem as Ideias Paradas). Os Avaliadores podem desarquivar.",
+    "autoArchiveEnable": "Arquivar automaticamente Ideias Abertas sem apoio",
+    "autoArchiveDays": "Dias sem atividade",
+    "autoArchiveMinimum": "No mínimo {{min}} dias."
   },
   "authorship": {
     "hide": "Ocultar meu nome nesta ideia",

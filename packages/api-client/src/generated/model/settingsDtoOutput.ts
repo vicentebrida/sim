@@ -5,9 +5,11 @@
  * SIM REST API
  * OpenAPI spec version: 0.0.0
  */
+import type { SettingsDtoOutputAutoArchive } from './settingsDtoOutputAutoArchive.ts';
 import type { SettingsDtoOutputStalled } from './settingsDtoOutputStalled.ts';
 
 export interface SettingsDtoOutput {
   hiddenAuthorshipEnabled: boolean;
   stalled: SettingsDtoOutputStalled;
+  autoArchive: SettingsDtoOutputAutoArchive;
 }

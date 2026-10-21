@@ -28,6 +28,7 @@ export function simulateAuth(options: {
       HttpResponse.json({
         hiddenAuthorshipEnabled: false,
         stalled: { openDays: 15, reviewDays: 30, escalationDays: 7 },
+        autoArchive: { days: null },
       }),
     ),
     http.get('*/api/statuses', () => HttpResponse.json([])),

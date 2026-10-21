@@ -254,7 +254,7 @@ export class IdeasService {
           collaborator: { id: changedBy.id, name: changedBy.name },
         })
         .from(ideaHistory)
-        .innerJoin(changedBy, eq(ideaHistory.collaboratorId, changedBy.id))
+        .leftJoin(changedBy, eq(ideaHistory.collaboratorId, changedBy.id))
         .where(eq(ideaHistory.ideaId, idea.id))
         .orderBy(asc(ideaHistory.createdAt)),
       idea.originalIdeaId
@@ -324,7 +324,8 @@ export class IdeasService {
         from: display(event.type, event.fromValue),
         to: display(event.type, event.toValue)!,
         justification: event.justification,
-        collaborator: presentPerson(idea, who, collaborator.id, this.env.SIM_LOCALE),
+        // Null when the SIM did it by itself.
+        collaborator: who ? presentPerson(idea, who, collaborator.id, this.env.SIM_LOCALE) : null,
         createdAt: event.createdAt.toISOString(),
       })),
       permissions: actions,

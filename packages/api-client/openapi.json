@@ -3624,22 +3624,29 @@
                   ]
                 },
                 "collaborator": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ],
+                      "additionalProperties": false
                     },
-                    "name": {
-                      "type": "string"
+                    {
+                      "type": "null"
                     }
-                  },
-                  "required": [
-                    "id",
-                    "name"
-                  ],
-                  "additionalProperties": false
+                  ]
                 },
                 "createdAt": {
                   "type": "string",
@@ -4124,7 +4131,8 @@
                     "mention",
                     "new_idea",
                     "stalled",
-                    "stalled_escalated"
+                    "stalled_escalated",
+                    "archive_warning"
                   ]
                 },
                 "idea": {
@@ -5242,11 +5250,33 @@
               "escalationDays"
             ],
             "additionalProperties": false
+          },
+          "autoArchive": {
+            "type": "object",
+            "properties": {
+              "days": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "days"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
           "hiddenAuthorshipEnabled",
-          "stalled"
+          "stalled",
+          "autoArchive"
         ],
         "additionalProperties": false
       },
@@ -5296,6 +5326,26 @@
                 ]
               }
             }
+          },
+          "autoArchive": {
+            "type": "object",
+            "properties": {
+              "days": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 14,
+                    "maximum": 730
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "days"
+            ]
           }
         }
       },

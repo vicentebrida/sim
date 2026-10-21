@@ -63,6 +63,7 @@ function SettingsPage() {
         </Card>
       )}
       {settings && <StalledDeadlines stalled={settings.stalled} />}
+      {settings && <AutoArchive days={settings.autoArchive.days} />}
     </div>
   );
 }
@@ -122,6 +123,90 @@ function StalledDeadlines({ stalled }: { stalled: SettingsDtoOutput['stalled'] }
               />
             ))}
           </div>
+          {failure && (
+            <p role="alert" className="text-sm text-destructive">
+              {failure}
+            </p>
+          )}
+          {saved && !failure && (
+            <p role="status" className="text-sm text-muted-foreground">
+              {t('settings.saved')}
+            </p>
+          )}
+          <Button
+            type="submit"
+            className="justify-self-start"
+            disabled={!valid || update.isPending}
+          >
+            {t('settings.save')}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+
+const MIN_AUTO_ARCHIVE_DAYS = 14;
+
+/** Archiving Open Ideas nobody supported for a while (off unless chosen here). */
+function AutoArchive({ days: current }: { days: number | null }) {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const [enabled, setEnabled] = useState(current !== null);
+  const [days, setDays] = useState(String(current ?? 90));
+  const [saved, setSaved] = useState(false);
+  const update = useSettingsUpdate({
+    mutation: {
+      onSuccess: async () => {
+        setSaved(true);
+        await queryClient.invalidateQueries({ queryKey: getSettingsGetQueryKey() });
+      },
+    },
+  });
+  const valid =
+    !enabled ||
+    (/^\d{1,3}$/.test(days) && Number(days) >= MIN_AUTO_ARCHIVE_DAYS && Number(days) <= 730);
+
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    setSaved(false);
+    update.mutate({ data: { autoArchive: { days: enabled ? Number(days) : null } } });
+  }
+
+  const failure = apiErrorMessage(update.error, t);
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          <h2>{t('settings.autoArchive')}</h2>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form className="grid gap-4" onSubmit={submit}>
+          <p className="text-sm text-muted-foreground">{t('settings.autoArchiveHelp')}</p>
+          <label className="flex items-center gap-2 text-sm font-medium">
+            <input
+              type="checkbox"
+              className="size-4"
+              checked={enabled}
+              onChange={(event) => setEnabled(event.target.checked)}
+            />
+            {t('settings.autoArchiveEnable')}
+          </label>
+          {enabled && (
+            <div className="grid max-w-48 gap-1">
+              <FormField
+                id="auto-archive-days"
+                label={t('settings.autoArchiveDays')}
+                inputMode="numeric"
+                value={days}
+                onChange={(event) => setDays(event.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                {t('settings.autoArchiveMinimum', { min: MIN_AUTO_ARCHIVE_DAYS })}
+              </p>
+            </div>
+          )}
           {failure && (
             <p role="alert" className="text-sm text-destructive">
               {failure}
