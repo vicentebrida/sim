@@ -182,7 +182,7 @@ Rascunho ─► Aberta ─► Em análise ─► Aprovada ─► Em execução �
 | Backend  | NestJS, Drizzle ORM + drizzle-kit ([ADR-0005](./adr/0005-drizzle-como-orm.md)), `nestjs-zod` (validação + OpenAPI)                                                                                                                                                                           |
 | Banco    | PostgreSQL com full-text em português, pg_trgm e pgvector                                                                                                                                                                                                                                    |
 | Filas    | BullMQ + Redis, com reconciliação periódica e jobs idempotentes                                                                                                                                                                                                                              |
-| Frontend | React + Vite + TypeScript (SPA), TanStack Router, TanStack Query, shadcn/ui (Radix + Tailwind), React Hook Form + Zod, react-i18next, editor Markdown com preview                                                                                                                            |
+| Frontend | React + Vite + TypeScript (SPA), TanStack Router, TanStack Query, shadcn/ui (Radix + Tailwind), React Hook Form + Zod, react-i18next, editor Tiptap que salva em Markdown                                                                                                                    |
 | Contrato | Zod no backend → OpenAPI → Orval gera tipos e hooks TanStack Query em `packages/api-client`                                                                                                                                                                                                  |
 | Monorepo | pnpm workspaces + Turborepo, Node 26 LTS, ESLint (flat config) + Prettier, Conventional Commits + Changesets                                                                                                                                                                                 |
 | Testes   | Vitest em tudo. Regras de domínio em código puro com testes unitários. Integração com Testcontainers (Postgres+pgvector, Redis), sem mock do banco. Supertest na API. Testing Library + MSW no front. Playwright no E2E, com Keycloak de teste. Provedor de embeddings _fake_ determinístico |
@@ -240,7 +240,7 @@ sim/
 
 ### Backlog (depois dos marcos)
 
-SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM · editor rico (Tiptap).
+SAML 2.0 e LDAP direto · SCIM · sugestão de Categoria por IA · explicação de semelhança por LLM. (O editor rico, com Tiptap, saiu do Backlog: os textos longos e os Comentários são editados nele e continuam salvos em Markdown.)
 
 ## 7. Fora de escopo (decidido)
 

@@ -25,6 +25,7 @@ import { Discussion } from '@/components/comments/discussion';
 import { IdeaVersions } from '@/components/idea-versions';
 import { FollowButton } from '@/components/follow-button';
 import { Likes } from '@/components/likes';
+import { MarkdownText } from '@/components/markdown-text';
 import { NativeSelect } from '@/components/native-select';
 import { AttachmentList } from '@/components/attachments';
 import { StalledBadge, StatusBadge } from '@/components/status-badge';
@@ -111,7 +112,11 @@ function IdeaPage() {
         {idea.answers.map((answer) => (
           <section key={answer.fieldId} className="space-y-1">
             <h2 className="text-sm font-semibold text-muted-foreground">{answer.label}</h2>
-            <p className="whitespace-pre-wrap">{displayValue(answer.value, t)}</p>
+            {answer.type === 'long_text' && typeof answer.value === 'string' ? (
+              <MarkdownText text={answer.value} />
+            ) : (
+              <p className="whitespace-pre-wrap">{displayValue(answer.value, t)}</p>
+            )}
           </section>
         ))}
         {idea.attachments.length > 0 && (

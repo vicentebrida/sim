@@ -52,7 +52,7 @@ describe('Idea discussion', () => {
     expect(screen.queryByRole('option', { name: 'Carla Dias' })).not.toBeInTheDocument();
     expect(suggestion).toHaveAttribute('aria-selected', 'true');
     await user.keyboard('{Enter}');
-    expect(editor).toHaveValue('Ótima ideia, @Bruno Lima ');
+    expect(editor).toHaveTextContent('Ótima ideia, @Bruno Lima');
 
     await user.type(editor, 'pode ajudar?');
     await user.click(screen.getByRole('button', { name: 'Comentar' }));
@@ -64,7 +64,7 @@ describe('Idea discussion', () => {
     );
     const comment = await screen.findByRole('article', { name: 'Comentário de Ana Souza' });
     expect(within(comment).getByText('@Bruno Lima')).toHaveClass('text-primary');
-    expect(editor).toHaveValue('');
+    expect(editor).toHaveTextContent('');
   });
 
   it('replies to a Comment', async () => {
@@ -82,7 +82,7 @@ describe('Idea discussion', () => {
     const replies = screen.getByRole('list', { name: 'Respostas' });
     await user.click(within(replies).getByRole('button', { name: 'Responder' }));
 
-    // `selector: 'p'`: the controlled textarea also holds the typed text until it unmounts.
+    // `selector: 'p'`: the editor also holds the typed text until it unmounts.
     await waitFor(() =>
       expect(
         within(screen.getByRole('list', { name: 'Respostas' })).getByText('Obrigada pelo apoio', {

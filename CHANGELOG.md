@@ -2,7 +2,7 @@
 
 ## Não lançado
 
-- A imagem arm64 passa a ser construída numa máquina ARM, sem emulação: a publicação de uma versão volta a levar minutos em vez de mais de uma hora. O CI também constrói a imagem arm64 em cada PR.
+- **Editor rico**: os campos de texto longo da Ideia e os Comentários ganharam uma barra com negrito, itálico, listas, citação e link, além dos atalhos de teclado (Ctrl+B, Ctrl+I). O texto continua salvo em Markdown, então os textos antigos abrem como estavam, sem conversão, e a página da Ideia, as versões e a Discussão mostram o texto formatado. HTML digitado aparece como texto, e os links só aceitam endereços http(s) e mailto. As Menções (@) funcionam dentro do editor como antes. Em textos antigos, asteriscos e sublinhados (`*assim*`) passam a virar formatação.
 
 ## 0.10.1
 
@@ -10,7 +10,7 @@ Correções encontradas ao validar a 0.10.0 de ponta a ponta, e imagem também p
 
 - **Para atualizar**: nada é obrigatório; sem migrações e sem variáveis novas. A imagem `ghcr.io/vicentebrida/sim` passa a ser publicada para `linux/amd64` e `linux/arm64`, então o `docker compose` roda direto em Macs com Apple Silicon e em servidores ARM (Graviton, Ampere).
 
-- **Imagem arm64**: antes só havia amd64, e o `docker compose up` falhava em máquinas ARM.
+- **Imagem arm64**: antes só havia amd64, e o `docker compose up` falhava em máquinas ARM. Cada arquitetura é construída numa máquina dela, sem emulação, e o CI também constrói a imagem arm64 em cada PR.
 - **Correções da validação de ponta a ponta**:
   - O menu do Administrador virou um botão "Administração" com as dez telas. Antes, os links estouravam o cabeçalho: no celular a página rolava para o lado e o sininho e o "Sair" sumiam, e mesmo no computador o "Sair" ficava cortado.
   - O selo "Servidor no ar" saiu do cabeçalho; só aparece quando o servidor está com problemas ou fora do ar.

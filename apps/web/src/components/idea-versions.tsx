@@ -1,6 +1,7 @@
 import { type IdeaDtoOutput, useIdeasVersions } from '@sim/api-client';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { MarkdownText } from '@/components/markdown-text';
 import { Button } from '@/components/ui/button';
 import { formatDateTime } from '@/lib/dates';
 
@@ -45,9 +46,13 @@ export function IdeaVersions({ idea }: { idea: IdeaDtoOutput }) {
               {version.answers.map((answer) => (
                 <div key={answer.fieldId}>
                   <h4 className="text-sm font-semibold text-muted-foreground">{answer.label}</h4>
-                  <p className="whitespace-pre-wrap">
-                    {show(answer.value, t('ideas.yes'), t('ideas.no'))}
-                  </p>
+                  {answer.type === 'long_text' && typeof answer.value === 'string' ? (
+                    <MarkdownText text={answer.value} />
+                  ) : (
+                    <p className="whitespace-pre-wrap">
+                      {show(answer.value, t('ideas.yes'), t('ideas.no'))}
+                    </p>
+                  )}
                 </div>
               ))}
             </li>

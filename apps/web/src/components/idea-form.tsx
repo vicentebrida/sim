@@ -11,13 +11,13 @@ import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { AttachmentList, FilePicker } from '@/components/attachments';
 import { FormField } from '@/components/form-field';
+import { MarkdownEditor } from '@/components/markdown-editor';
 import { NativeSelect } from '@/components/native-select';
 import { SimilarIdeas } from '@/components/similar-ideas';
 import { TagPicker } from '@/components/tags';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { AttachmentsNotSent } from '@/lib/uploads';
 import { detectionText } from '@/lib/detection-text';
 import { useFilesProblem } from '@/lib/attachments';
@@ -279,7 +279,21 @@ function DynamicField({
       break;
     case 'long_text':
       control = (
-        <Textarea id={id} rows={4} maxLength={10_000} {...common} {...form.register(name)} />
+        <Controller
+          control={form.control}
+          name={name}
+          render={({ field: control }) => (
+            <MarkdownEditor
+              id={id}
+              labelId={`${id}-label`}
+              initial={typeof control.value === 'string' ? control.value : ''}
+              onChange={control.onChange}
+              onBlur={control.onBlur}
+              invalid={Boolean(error)}
+              describedBy={describedBy || undefined}
+            />
+          )}
+        />
       );
       break;
     case 'number':
@@ -371,7 +385,9 @@ function DynamicField({
 
   return (
     <div className="grid gap-2">
-      <Label htmlFor={id}>{label}</Label>
+      <Label id={`${id}-label`} htmlFor={id}>
+        {label}
+      </Label>
       {control}
       <Help id={id} field={field} />
       <FieldError id={id} error={error} />
