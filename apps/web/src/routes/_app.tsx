@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from '@tanstack/react-router';
 import { LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { AdminMenu } from '@/components/admin-menu';
 import { BrandMark } from '@/components/brand';
 import { ApiStatus } from '@/components/api-status';
 import { NotificationBell } from '@/components/notifications';
@@ -43,50 +44,17 @@ function AppLayout() {
   return (
     <div className="min-h-svh">
       <header className="border-b">
-        <div className="mx-auto flex h-14 max-w-5xl items-center gap-6 px-4">
+        <div className="mx-auto flex h-14 max-w-5xl items-center gap-4 px-4 sm:gap-6">
           <Link to="/" className="flex items-center">
-            <BrandMark />
+            <BrandMark compact />
           </Link>
-          <nav className="flex gap-4 text-sm">
+          <nav className="flex items-center gap-4 text-sm">
             <Link to="/" className={NAV_LINK}>
               {t('nav.ideas')}
             </Link>
-            {collaborator.administrator && (
-              <>
-                <Link to="/admin/dashboard" className={NAV_LINK}>
-                  {t('nav.dashboard')}
-                </Link>
-                <Link to="/admin/categories" className={NAV_LINK}>
-                  {t('nav.categories')}
-                </Link>
-                <Link to="/admin/custom-fields" className={NAV_LINK}>
-                  {t('nav.fields')}
-                </Link>
-                <Link to="/admin/tags" className={NAV_LINK}>
-                  {t('nav.tags')}
-                </Link>
-                <Link to="/admin/statuses" className={NAV_LINK}>
-                  {t('nav.statuses')}
-                </Link>
-                <Link to="/admin/branding" className={NAV_LINK}>
-                  {t('nav.branding')}
-                </Link>
-                <Link to="/admin/collaborators" className={NAV_LINK}>
-                  {t('nav.collaborators')}
-                </Link>
-                <Link to="/admin/integrations" className={NAV_LINK}>
-                  {t('nav.integrations')}
-                </Link>
-                <Link to="/admin/settings" className={NAV_LINK}>
-                  {t('nav.settings')}
-                </Link>
-                <Link to="/admin/audit" className={NAV_LINK}>
-                  {t('nav.audit')}
-                </Link>
-              </>
-            )}
+            {collaborator.administrator && <AdminMenu />}
           </nav>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <ApiStatus />
             <NotificationBell />
             <span className="hidden text-sm sm:inline">{collaborator.name}</span>
@@ -95,9 +63,10 @@ function AppLayout() {
               size="sm"
               onClick={() => logout.mutate()}
               disabled={logout.isPending}
+              aria-label={t('nav.logout')}
             >
               <LogOut />
-              {t('nav.logout')}
+              <span className="hidden sm:inline">{t('nav.logout')}</span>
             </Button>
           </div>
         </div>

@@ -13,8 +13,11 @@ export function IdentityEffects() {
   return null;
 }
 
-/** Logo (light or dark, by theme) or, without one, the installation name. */
-export function BrandMark({ className }: { className?: string }) {
+/**
+ * Logo (light or dark, by theme) or, without one, the installation name. `compact` (the header)
+ * shows the SIM full name only on wide screens.
+ */
+export function BrandMark({ className, compact }: { className?: string; compact?: boolean }) {
   const { t } = useTranslation();
   const identity = useIdentity();
   const name = identity?.name ?? 'SIM';
@@ -45,7 +48,14 @@ export function BrandMark({ className }: { className?: string }) {
     <span className={cn('flex items-baseline gap-2', className)}>
       <span className="text-lg font-bold text-primary">{name}</span>
       {name === 'SIM' && (
-        <span className="hidden text-sm text-muted-foreground md:inline">{t('app.fullName')}</span>
+        <span
+          className={cn(
+            'hidden text-sm text-muted-foreground',
+            compact ? 'lg:inline' : 'md:inline',
+          )}
+        >
+          {t('app.fullName')}
+        </span>
       )}
     </span>
   );

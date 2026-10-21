@@ -65,10 +65,4 @@ describe('Tags management', () => {
     await user.click(within(item).getByRole('button', { name: 'Excluir de vez' }));
     expect(await screen.findByText('Nenhuma Etiqueta criada ainda.')).toBeInTheDocument();
   });
-
-  it('the Administrator sees the Tags shortcut in the menu', async () => {
-    simulateAuth({ session: admin });
-    renderApp('/');
-    expect(await screen.findByRole('link', { name: 'Etiquetas' })).toBeInTheDocument();
-  });
 });

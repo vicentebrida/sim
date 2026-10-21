@@ -6,6 +6,7 @@ import type { Env } from '../config/env';
 import { DB, type Database } from '../database/database.module';
 import { categories, type Collaborator, collaborators, ideas, likes } from '../database/schema';
 import { presentPerson } from '../ideas/domain/authorship';
+import { viewerLocale } from '../common/viewer-locale';
 
 const RECENT = 5;
 const likeCount = sql<number>`(select count(*) from ${likes} where ${likes.ideaId} = ${ideas.id})::int`;
@@ -81,7 +82,7 @@ export class RecognitionService {
       category,
       completedAt: idea.statusChangedAt.toISOString(),
       hiddenAuthorship: idea.hiddenAuthorship,
-      author: presentPerson(idea, person, viewer.id, this.env.SIM_LOCALE),
+      author: presentPerson(idea, person, viewer.id, viewerLocale(this.env.SIM_LOCALE)),
     }));
   }
 }

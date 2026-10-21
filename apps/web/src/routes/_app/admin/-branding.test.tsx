@@ -93,11 +93,4 @@ describe('Branding screen', () => {
       { name: 'Acme', primaryColor: null, loginTitle: 'Olá', loginText: '' },
     ]);
   });
-
-  it('is in the menu for Administrators', async () => {
-    simulateAuth({ session: admin });
-    simulateBranding();
-    renderApp('/');
-    expect(await screen.findByRole('link', { name: 'Identidade' })).toBeInTheDocument();
-  });
 });

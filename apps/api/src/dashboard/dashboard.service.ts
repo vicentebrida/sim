@@ -10,6 +10,7 @@ import { isStalledSql } from '../ideas/domain/stalled';
 import { StalledIdeasService } from '../ideas/stalled-ideas.service';
 import { anonymousName } from '../ideas/domain/authorship';
 import { toCsv } from './csv';
+import { viewerLocale } from '../common/viewer-locale';
 
 /** Statuses that answer the Author: the first time an Idea reaches one, it was decided. */
 export const DECISION_STATUSES: Status[] = [
@@ -127,7 +128,7 @@ export class DashboardService {
         title: ideas.title,
         status: ideas.status,
         category: categories.name,
-        author: sql<string>`case when ${ideas.hiddenAuthorship} then ${anonymousName(this.env.SIM_LOCALE)} else ${author.name} end`,
+        author: sql<string>`case when ${ideas.hiddenAuthorship} then ${anonymousName(viewerLocale(this.env.SIM_LOCALE))} else ${author.name} end`,
         publishedAt: ideas.publishedAt,
         statusChangedAt: ideas.statusChangedAt,
         firstDecisionAt,
