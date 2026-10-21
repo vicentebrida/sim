@@ -9,8 +9,6 @@
     "newIdea": "New idea"
   },
   "apiStatus": {
-    "checking": "Checking server…",
-    "ok": "Server is up",
     "degraded": "Server has issues",
     "offline": "Server unavailable"
   },
@@ -26,7 +24,8 @@
     "logout": "Sign out",
     "settings": "Settings",
     "integrations": "Integrations",
-    "tags": "Tags"
+    "tags": "Tags",
+    "admin": "Admin"
   },
   "login": {
     "title": "Sign in to SIM",

@@ -46,11 +46,4 @@ describe('Dashboard', () => {
     renderApp('/admin/dashboard');
     expect(await screen.findByText('Ainda sem decisões')).toBeInTheDocument();
   });
-
-  it('is in the menu only for Administrators', async () => {
-    simulateAuth({ session: admin });
-    server.use(http.get('*/api/dashboard', () => HttpResponse.json(dashboard(null))));
-    renderApp('/');
-    expect(await screen.findByRole('link', { name: 'Painel' })).toBeInTheDocument();
-  });
 });

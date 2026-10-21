@@ -6,7 +6,7 @@ import {
   useIdeasUnfollow,
 } from '@sim/api-client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Bell, BellOff } from 'lucide-react';
+import { Bell, BellRing } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 
@@ -35,7 +35,7 @@ export function FollowButton({ idea }: { idea: IdeaDtoOutput }) {
           : follow.mutate({ number: idea.number })
       }
     >
-      {idea.following ? <BellOff /> : <Bell />}
+      {idea.following ? <BellRing /> : <Bell />}
       {idea.following ? t('follow.following') : t('follow.follow')}
     </Button>
   );

@@ -9,8 +9,6 @@
     "newIdea": "Nova ideia"
   },
   "apiStatus": {
-    "checking": "Verificando servidor…",
-    "ok": "Servidor no ar",
     "degraded": "Servidor com problemas",
     "offline": "Servidor indisponível"
   },
@@ -26,7 +24,8 @@
     "logout": "Sair",
     "settings": "Configurações",
     "integrations": "Integrações",
-    "tags": "Etiquetas"
+    "tags": "Etiquetas",
+    "admin": "Administração"
   },
   "login": {
     "title": "Entrar no SIM",

@@ -1,3 +1,5 @@
+import i18n from '@/i18n';
+
 /** Black or white text, whichever reads better on this `#rrggbb` color. */
 export function readableForeground(color: string) {
   const [r, g, b] = [1, 3, 5].map((i) => Number.parseInt(color.slice(i, i + 2), 16));
@@ -10,8 +12,6 @@ export interface Identity {
   favicon: string | null;
 }
 
-const DEFAULT_TITLE = 'SIM — Sistema de Ideias e Melhorias';
-
 /** Puts the installation identity on the page: color, tab title and icon. */
 export function applyIdentity(identity: Identity) {
   const root = document.documentElement.style;
@@ -22,7 +22,7 @@ export function applyIdentity(identity: Identity) {
     root.removeProperty('--primary');
     root.removeProperty('--primary-foreground');
   }
-  document.title = identity.name === 'SIM' ? DEFAULT_TITLE : identity.name;
+  document.title = identity.name === 'SIM' ? `SIM — ${i18n.t('app.fullName')}` : identity.name;
   const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
   if (icon) {
     if (!icon.dataset.original) icon.dataset.original = icon.href;

@@ -277,8 +277,8 @@ function ReviewPanel({ idea }: { idea: IdeaDtoOutput }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-8 md:grid-cols-2">
-        {idea.permissions.canSetStage && <ChangeStage idea={idea} />}
         {idea.permissions.transitions.length > 0 && <ChangeStatus idea={idea} />}
+        {idea.permissions.canSetStage && <ChangeStage idea={idea} />}
         {idea.permissions.canRecategorize && <Recategorize idea={idea} />}
       </CardContent>
     </Card>
@@ -459,6 +459,8 @@ function Recategorize({ idea }: { idea: IdeaDtoOutput }) {
   });
   const others = (data?.data ?? []).filter((category) => category.id !== idea.category.id);
   const failure = apiErrorMessage(recategorize.error, t);
+  // With a single Category there is nowhere to move the Idea.
+  if (others.length === 0) return null;
 
   return (
     <form

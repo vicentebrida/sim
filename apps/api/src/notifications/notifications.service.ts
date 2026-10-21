@@ -17,6 +17,7 @@ import {
 import { presentPerson } from '../ideas/domain/authorship';
 import type { Status } from '../ideas/domain/idea';
 import { commentRecipients, type NotificationType, recipientsExcept } from './domain/recipients';
+import { viewerLocale } from '../common/viewer-locale';
 
 interface NewNotification {
   recipientId: string;
@@ -276,7 +277,8 @@ export class NotificationsService {
         type: notification.type,
         idea,
         // A hidden Author acting on their own Idea (publishing, commenting) stays hidden.
-        actor: who && presentPerson(authorship, who, collaborator.id, this.env.SIM_LOCALE),
+        actor:
+          who && presentPerson(authorship, who, collaborator.id, viewerLocale(this.env.SIM_LOCALE)),
         commentId: notification.commentId,
         data: notification.data,
         createdAt: notification.createdAt.toISOString(),

@@ -26,6 +26,7 @@ import {
   commentPermissions,
 } from './domain/comment';
 import { mentionedIds, normalizeMentions } from './domain/mentions';
+import { viewerLocale } from '../common/viewer-locale';
 
 type Reference = { id: string; name: string };
 type CommentWithNames = { comment: Comment; author: Reference; hiddenBy: Reference | null };
@@ -179,7 +180,7 @@ export class CommentsService {
     return {
       id: comment.id,
       // Whoever wrote the Idea with a hidden name stays hidden in their own Comments there.
-      author: presentPerson(idea, author, actor.id, this.env.SIM_LOCALE),
+      author: presentPerson(idea, author, actor.id, viewerLocale(this.env.SIM_LOCALE)),
       text: canReadText(rules, idea, actor) ? comment.text : null,
       state,
       createdAt: comment.createdAt.toISOString(),

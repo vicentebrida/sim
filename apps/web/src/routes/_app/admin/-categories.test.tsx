@@ -173,11 +173,4 @@ describe('Categories management', () => {
       'Já existe uma Categoria com este nome.',
     );
   });
-
-  it('the Administrator sees the Categories shortcut in the menu', async () => {
-    simulateAuth({ session: admin });
-    simulateCategories();
-    renderApp('/');
-    expect(await screen.findByRole('link', { name: 'Categorias' })).toBeInTheDocument();
-  });
 });

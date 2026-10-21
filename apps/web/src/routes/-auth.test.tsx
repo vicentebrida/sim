@@ -100,7 +100,7 @@ describe('access to SIM', () => {
     simulateAuth({ session: ana });
     const { router } = renderApp('/admin/collaborators');
     await waitFor(() => expect(router.state.location.pathname).toBe('/'));
-    expect(screen.queryByRole('link', { name: 'Colaboradores' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Administração' })).not.toBeInTheDocument();
   });
 
   it('signing out ends the session and goes back to login', async () => {

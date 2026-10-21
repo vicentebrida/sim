@@ -26,7 +26,7 @@ function StatusesPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">{t('statuses.title')}</h1>
-        <p className="text-muted-foreground">{t('statuses.subtitle')}</p>
+        <p className="text-muted-foreground">{t('statuses.sub')}</p>
       </div>
       <ul className="space-y-3">
         {(data?.data ?? []).map((setting) => (

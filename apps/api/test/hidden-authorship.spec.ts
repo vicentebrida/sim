@@ -144,6 +144,20 @@ describe('Hidden authorship', () => {
       });
     });
 
+    it('names the anonymous Author in the language of whoever asks', async () => {
+      const inEnglish = async (path: string) =>
+        (await carla.get(path).set('Accept-Language', 'en-US,en;q=0.9').expect(200)).body;
+      expect((await inEnglish(`/api/ideas/${number}`)).author.name).toBe('Anonymous collaborator');
+      const comments = await inEnglish(`/api/ideas/${number}/comments`);
+      expect(comments[0].replies[0].author.name).toBe('Anonymous collaborator');
+
+      const inPortuguese = await carla
+        .get(`/api/ideas/${number}`)
+        .set('Accept-Language', 'pt-PT')
+        .expect(200);
+      expect(inPortuguese.body.author.name).toBe('Colaborador anônimo');
+    });
+
     it('lists, History, Notifications and e-mail data do not leak the name', async () => {
       const list = (await carla.get('/api/ideas?pageSize=50').expect(200)).body.items;
       expect(list.find((i: { number: number }) => i.number === number).author.name).toBe(

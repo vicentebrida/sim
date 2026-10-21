@@ -48,6 +48,7 @@ import {
 } from '../database/schema';
 import { refreshDetectionText } from './detection-text';
 import { type FieldValues, fieldsFor, normalizeValues } from './domain/fields';
+import { viewerLocale } from '../common/viewer-locale';
 import {
   type Actor,
   assertCanChangeStatus,
@@ -185,7 +186,12 @@ export class IdeasService {
         ...this.summary(row.idea, stageNames),
         category: row.category,
         tags: tagsOf.get(row.idea.id) ?? [],
-        author: presentPerson(row.idea, row.author, collaborator.id, this.env.SIM_LOCALE),
+        author: presentPerson(
+          row.idea,
+          row.author,
+          collaborator.id,
+          viewerLocale(this.env.SIM_LOCALE),
+        ),
         hiddenAuthorship: row.idea.hiddenAuthorship,
         likes: row.likes,
         stalled: row.stalled,
@@ -306,7 +312,7 @@ export class IdeasService {
       editedAt: iso(idea.editedAt),
       category: category!,
       tags: tagsOf.get(idea.id) ?? [],
-      author: presentPerson(idea, author!, collaborator.id, this.env.SIM_LOCALE),
+      author: presentPerson(idea, author!, collaborator.id, viewerLocale(this.env.SIM_LOCALE)),
       hiddenAuthorship: idea.hiddenAuthorship,
       likes: likeState,
       following,
@@ -329,7 +335,9 @@ export class IdeasService {
         to: display(event.type, event.toValue)!,
         justification: event.justification,
         // Null when the SIM did it by itself.
-        collaborator: who ? presentPerson(idea, who, collaborator.id, this.env.SIM_LOCALE) : null,
+        collaborator: who
+          ? presentPerson(idea, who, collaborator.id, viewerLocale(this.env.SIM_LOCALE))
+          : null,
         createdAt: event.createdAt.toISOString(),
       })),
       permissions: actions,

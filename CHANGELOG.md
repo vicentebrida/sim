@@ -2,6 +2,14 @@
 
 ## Não lançado
 
+- **Correções da validação de ponta a ponta**:
+  - O menu do Administrador virou um botão "Administração" com as dez telas. Antes, os links estouravam o cabeçalho: no celular a página rolava para o lado e o sininho e o "Sair" sumiam, e mesmo no computador o "Sair" ficava cortado.
+  - O selo "Servidor no ar" saiu do cabeçalho; só aparece quando o servidor está com problemas ou fora do ar.
+  - As telas Status e Identidade mostravam o nome interno do subtítulo em vez do texto.
+  - "Colaborador anônimo" aparece no idioma de quem vê (antes vinha sempre no idioma da instalação). Os e-mails e os canais de chat continuam no idioma da instalação.
+  - O título da aba segue o idioma da interface.
+  - Na avaliação da Ideia, o Status vem antes da etapa, e "Nova categoria" some quando não há outra Categoria para onde mover.
+
 ## 0.10.0
 
 Perfil com as Ideias Concluídas de cada pessoa e textos da interface ajustáveis.
