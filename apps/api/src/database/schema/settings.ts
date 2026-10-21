@@ -12,12 +12,18 @@ export const installationSettings = pgTable(
     stalledOpenDays: integer(),
     stalledReviewDays: integer(),
     stalledEscalationDays: integer(),
+    // Automatic archiving of Open Ideas without Likes or Comments for this many days; null is off.
+    autoArchiveDays: integer(),
   },
   (table) => [
     check('installation_settings_single_row', sql`${table.id} = 1`),
     check(
       'installation_settings_valid_stalled_days',
       sql`(${table.stalledOpenDays} is null or ${table.stalledOpenDays} > 0) and (${table.stalledReviewDays} is null or ${table.stalledReviewDays} > 0) and (${table.stalledEscalationDays} is null or ${table.stalledEscalationDays} > 0)`,
+    ),
+    check(
+      'installation_settings_valid_auto_archive_days',
+      sql`${table.autoArchiveDays} is null or ${table.autoArchiveDays} > 0`,
     ),
   ],
 );

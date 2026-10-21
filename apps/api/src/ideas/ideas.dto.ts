@@ -160,7 +160,8 @@ export class IdeaDto extends createZodDto(
         from: z.string().nullable(),
         to: z.string(),
         justification: z.string().nullable(),
-        collaborator: Reference,
+        // Null when the SIM did it by itself (automatic archiving).
+        collaborator: Reference.nullable(),
         createdAt: z.iso.datetime(),
       }),
     ),

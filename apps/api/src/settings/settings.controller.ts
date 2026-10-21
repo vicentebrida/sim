@@ -4,6 +4,7 @@ import { createZodDto, ZodResponse } from 'nestjs-zod';
 import { z } from 'zod';
 import { AdministratorOnly, CurrentCollaborator } from '../auth/decorators';
 import type { Collaborator } from '../database/schema';
+import { MIN_AUTO_ARCHIVE_DAYS } from '../ideas/domain/auto-archive';
 import { SettingsService } from './settings.service';
 
 const days = z.number().int().min(1).max(365);
@@ -17,6 +18,7 @@ class SettingsDto extends createZodDto(
       reviewDays: z.number().int(),
       escalationDays: z.number().int(),
     }),
+    autoArchive: z.object({ days: z.number().int().nullable() }),
   }),
 ) {}
 class SettingsUpdateDto extends createZodDto(
@@ -29,6 +31,10 @@ class SettingsUpdateDto extends createZodDto(
         reviewDays: days.nullable().optional(),
         escalationDays: days.nullable().optional(),
       })
+      .optional(),
+    // Null turns automatic archiving off.
+    autoArchive: z
+      .object({ days: z.number().int().min(MIN_AUTO_ARCHIVE_DAYS).max(730).nullable() })
       .optional(),
   }),
 ) {}

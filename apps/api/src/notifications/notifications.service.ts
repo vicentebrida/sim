@@ -108,6 +108,23 @@ export class NotificationsService {
     );
   }
 
+  /** Tells the Author their Open Idea will be archived for lack of support. */
+  async onArchiveWarning(executor: Executor, idea: Idea, archiveOn: Date) {
+    const [author] = await executor
+      .select({ active: collaborators.active })
+      .from(collaborators)
+      .where(eq(collaborators.id, idea.authorId));
+    if (!author?.active) return;
+    await this.record(executor, [
+      {
+        recipientId: idea.authorId,
+        type: 'archive_warning',
+        ideaId: idea.id,
+        data: { archiveOn: archiveOn.toISOString() },
+      },
+    ]);
+  }
+
   /**
    * Reviewers of the Category; Categories without Reviewers are handled by the Administrators.
    * The Author does not review their own Idea, so they are never in the list.
@@ -135,9 +152,10 @@ export class NotificationsService {
     executor: Executor,
     idea: Idea,
     change: { from: Status; to: Status; original?: Idea },
-    actorId: string,
+    // Null when the SIM changed it by itself (automatic archiving).
+    actorId: string | null,
   ) {
-    const recipients = recipientsExcept(actorId, await this.activeFollowers(executor, idea));
+    const recipients = recipientsExcept(actorId ?? '', await this.activeFollowers(executor, idea));
     const { original } = change;
     await this.record(
       executor,
@@ -145,7 +163,7 @@ export class NotificationsService {
         recipientId,
         type: original ? 'duplicate' : 'status',
         ideaId: idea.id,
-        actorId,
+        actorId: actorId ?? undefined,
         data: original
           ? { original: { number: original.number, title: original.title } }
           : { from: change.from, to: change.to },

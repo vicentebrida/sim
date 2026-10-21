@@ -169,6 +169,13 @@
       "when": 1792548532659,
       "tag": "0023_realtime",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1792549993060,
+      "tag": "0024_auto_archive",
+      "breakpoints": true
     }
   ]
 }

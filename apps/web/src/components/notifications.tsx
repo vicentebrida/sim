@@ -20,7 +20,7 @@ import { NativeSelect } from '@/components/native-select';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { formatDateTime } from '@/lib/dates';
+import { formatDate, formatDateTime } from '@/lib/dates';
 import { useRealtimeConnected } from '@/lib/realtime';
 import { cn } from '@/lib/utils';
 import { useStatusInfo } from '@/lib/use-statuses';
@@ -48,6 +48,7 @@ function describeNotification(
     to?: string;
     status?: string;
     original?: { number: number; title: string };
+    archiveOn?: string;
   };
   return t(`notifications.types.${notification.type}`, {
     actor: notification.actor?.name ?? 'SIM',
@@ -55,6 +56,7 @@ function describeNotification(
     to: data.to ? statusLabel(data.to) : '',
     status: data.status ? statusLabel(data.status) : '',
     original: data.original?.number,
+    date: data.archiveOn ? formatDate(data.archiveOn) : '',
   });
 }
 

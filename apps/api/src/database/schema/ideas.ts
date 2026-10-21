@@ -64,6 +64,9 @@ export const ideas = pgTable(
     // Stalled Idea notices. Valid only if later than `statusChangedAt`: a Status change starts over.
     stalledNotifiedAt: timestamp({ withTimezone: true }),
     stalledEscalatedAt: timestamp({ withTimezone: true }),
+    // When the Author was told the Idea will be archived for lack of support. Valid only if later
+    // than the last activity: a Like, a Comment or an edit starts the count over.
+    archiveWarnedAt: timestamp({ withTimezone: true }),
     // Values of the Custom Fields used for detection, kept up to date by IdeasService.
     detectionText: text().notNull().default(''),
     // Title weighs more than the other fields when ranking Similar Ideas.
@@ -108,9 +111,8 @@ export const ideaHistory = pgTable(
     fromValue: text(),
     toValue: text().notNull(),
     justification: text(),
-    collaboratorId: uuid()
-      .notNull()
-      .references(() => collaborators.id),
+    // Null when the SIM did it by itself (automatic archiving).
+    collaboratorId: uuid().references(() => collaborators.id),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index().on(table.ideaId, table.createdAt)],

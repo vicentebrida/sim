@@ -159,4 +159,33 @@ describe('Following', () => {
       expect(received.some((r) => r.url.searchParams.get('following') === 'true')).toBe(true),
     );
   });
+
+  it('tells the Author when their Idea is going to be archived, and when the SIM archived it', async () => {
+    simulateAuth({ session: ana });
+    simulateIdeas();
+    simulateNotifications([
+      notification({
+        id: 'bbbbbbbb-bbbb-4bbb-8bbb-000000000003',
+        type: 'archive_warning',
+        actor: null,
+        data: { archiveOn: '2026-10-28T12:00:00.000Z' },
+      }),
+      notification({
+        id: 'bbbbbbbb-bbbb-4bbb-8bbb-000000000004',
+        type: 'status',
+        actor: null,
+        data: { from: 'open', to: 'archived' },
+      }),
+    ]);
+    renderApp('/');
+    const user = userEvent.setup();
+
+    await user.click(await screen.findByRole('button', { name: /Notificações/ }));
+    const panel = await screen.findByRole('region', { name: 'Notificações' });
+    const [warning, archived] = within(panel).getAllByRole('link');
+    expect(warning).toHaveTextContent(
+      'A ideia #7 está sem apoio e será arquivada em 28 de out. de 2026',
+    );
+    expect(archived).toHaveTextContent('SIM mudou a ideia #7 para Arquivada');
+  });
 });

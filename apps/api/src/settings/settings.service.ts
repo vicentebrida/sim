@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { eq, isNotNull } from 'drizzle-orm';
 import { AuditService } from '../audit/audit.service';
 import { ENV } from '../config/config.module';
 import type { Env } from '../config/env';
 import { DB, type Database } from '../database/database.module';
-import { type Collaborator, installationSettings } from '../database/schema';
+import { type Collaborator, ideas, installationSettings } from '../database/schema';
 
 export interface StalledSettings {
   openDays: number;
@@ -38,19 +38,27 @@ export class SettingsService {
         reviewDays: row!.stalledReviewDays ?? this.env.SIM_STALLED_REVIEW_DAYS,
         escalationDays: row!.stalledEscalationDays ?? this.env.SIM_STALLED_ESCALATION_DAYS,
       } satisfies StalledSettings,
+      // Days without Likes, Comments or edits before an Open Idea is archived; null is off.
+      autoArchive: { days: row!.autoArchiveDays },
     };
   }
 
   async update(
     actor: Collaborator,
-    data: { hiddenAuthorshipEnabled?: boolean; stalled?: StalledChange },
+    data: {
+      hiddenAuthorshipEnabled?: boolean;
+      stalled?: StalledChange;
+      autoArchive?: { days: number | null };
+    },
   ) {
     const current = await this.get();
     const authorship =
       data.hiddenAuthorshipEnabled !== undefined &&
       data.hiddenAuthorshipEnabled !== current.hiddenAuthorshipEnabled;
     const stalled = data.stalled && Object.keys(data.stalled).length > 0;
-    if (!authorship && !stalled) return current;
+    const autoArchive =
+      data.autoArchive !== undefined && data.autoArchive.days !== current.autoArchive.days;
+    if (!authorship && !stalled && !autoArchive) return current;
 
     await this.db.transaction(async (tx) => {
       if (authorship) {
@@ -84,6 +92,25 @@ export class SettingsService {
           targetType: 'settings',
           targetId: 'stalled_deadlines',
           details: { ...change },
+        });
+      }
+      if (autoArchive) {
+        const days = data.autoArchive!.days;
+        await tx
+          .update(installationSettings)
+          .set({ autoArchiveDays: days })
+          .where(eq(installationSettings.id, 1));
+        // Warnings given under the old rule no longer hold: every Author is told again.
+        await tx
+          .update(ideas)
+          .set({ archiveWarnedAt: null })
+          .where(isNotNull(ideas.archiveWarnedAt));
+        await this.audit.record(tx, {
+          actorId: actor.id,
+          action: 'settings.auto_archive_changed',
+          targetType: 'settings',
+          targetId: 'auto_archive',
+          details: { days },
         });
       }
     });

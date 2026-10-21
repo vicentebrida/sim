@@ -56,7 +56,7 @@ export class WebhooksService {
     tx: Executor,
     event: WebhookEvent,
     ideaId: string,
-    actorId: string,
+    actorId: string | null,
     data: Record<string, unknown> = {},
   ) {
     if (!this.events.includes(event) || !this.channels.length) return;

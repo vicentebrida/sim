@@ -279,7 +279,8 @@
       "authorship.revealed": "Revealed the author of an idea",
       "settings.hidden_authorship_changed": "Changed the hidden authorship setting",
       "settings.stalled_deadlines_changed": "Changed the stalled idea deadlines",
-      "attachment.infected": "Had an attachment blocked by the antivirus"
+      "attachment.infected": "Had an attachment blocked by the antivirus",
+      "settings.auto_archive_changed": "Changed automatic archiving"
     }
   },
   "status": {
@@ -437,7 +438,8 @@
       "mention": "{{actor}} mentioned you on idea #{{number}}",
       "stalled": "Idea #{{number}} is stalled ({{status}}) and waiting for review",
       "stalled_escalated": "Idea #{{number}} is still stalled ({{status}}) and needs an administrator",
-      "new_idea": "New idea to review: #{{number}}"
+      "new_idea": "New idea to review: #{{number}}",
+      "archive_warning": "Idea #{{number}} has no support and will be archived on {{date}}"
     },
     "emailModes": {
       "instant": "As they happen",
@@ -470,7 +472,12 @@
       "escalationDays": "Escalate after (days)"
     },
     "saved": "Settings saved.",
-    "save": "Save"
+    "save": "Save",
+    "autoArchive": "Automatic archiving",
+    "autoArchiveHelp": "Open ideas without likes, comments or edits for a while are archived by SIM. The author is told 7 days before and can share the idea to gather support; any like or comment starts the count over. Ideas under review are not archived (stalled ideas cover them). Reviewers can unarchive.",
+    "autoArchiveEnable": "Automatically archive open ideas without support",
+    "autoArchiveDays": "Days without activity",
+    "autoArchiveMinimum": "At least {{min}} days."
   },
   "authorship": {
     "hide": "Hide my name on this idea",
