@@ -40,14 +40,29 @@ Quando alguém começa a escrever uma Ideia que já existe, o SIM mostra as **Id
 
 ## Instalação (Docker)
 
+Precisa do Docker com o Compose (Docker Desktop no Windows e no macOS).
+
 ```bash
-cp .env.example .env        # ajuste POSTGRES_PASSWORD e a conta de emergência (SIM_EMERGENCY_*)
-docker compose -f docker/compose.yml up -d --build
+git clone https://github.com/vicentebrida/sim.git
+cd sim
+cp .env.example .env
 ```
 
-A imagem pronta também é publicada a cada versão em `ghcr.io/vicentebrida/sim` (defina `SIM_IMAGE` no `.env` para usá-la em vez de construir).
+No `.env`, defina pelo menos `POSTGRES_PASSWORD` e a conta de emergência, que é o primeiro Administrador: `SIM_EMERGENCY_EMAIL` e `SIM_EMERGENCY_PASSWORD` (no mínimo 12 caracteres). Os campos deixados vazios ficam desligados. Para usar a imagem pronta, publicada a cada versão em `ghcr.io/vicentebrida/sim` para amd64 e arm64, descomente a linha `SIM_IMAGE` do `.env` e suba:
 
-O SIM fica disponível em `http://localhost:3000`, e a documentação da API em `http://localhost:3000/api/docs`.
+```bash
+docker compose --env-file .env -f docker/compose.yml up -d
+```
+
+Ou, sem `SIM_IMAGE`, construa a imagem a partir do código:
+
+```bash
+docker compose --env-file .env -f docker/compose.yml up -d --build
+```
+
+O `--env-file .env` é necessário: sem ele, o Compose procura o `.env` na pasta `docker/` e ignora a senha do banco e a imagem escolhidas.
+
+O SIM fica disponível em `http://localhost:3000` (entre com a conta de emergência), e a documentação da API em `http://localhost:3000/api/docs`. Para acessar de outros computadores, ajuste `SIM_PUBLIC_URL` para o endereço usado por eles (ex.: `http://192.168.0.10:3000`). Para ver os registros: `docker compose --env-file .env -f docker/compose.yml logs -f sim`.
 
 ## Instalação (Kubernetes)
 
