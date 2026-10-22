@@ -1,5 +1,7 @@
 # Instalação de produção mínima: SIM + Postgres + Redis (ADR-0006).
-# Uso: copie .env.example para .env, ajuste e rode `docker compose -f docker/compose.yml up -d`.
+# Uso: copie .env.example para .env, ajuste e rode, da raiz do repositório,
+# `docker compose --env-file .env -f docker/compose.yml up -d` (sem o --env-file, o Compose procura
+# o .env aqui em docker/ e ignora POSTGRES_PASSWORD e SIM_IMAGE).
 services:
   sim:
     image: ${SIM_IMAGE:-sim:local}
@@ -22,8 +24,8 @@ services:
     restart: unless-stopped
 
   # Opcional, para a busca semântica sem enviar dados a terceiros:
-  #   docker compose -f docker/compose.yml --profile ollama up -d
-  #   docker compose -f docker/compose.yml exec ollama ollama pull nomic-embed-text
+  #   docker compose --env-file .env -f docker/compose.yml --profile ollama up -d
+  #   docker compose --env-file .env -f docker/compose.yml exec ollama ollama pull nomic-embed-text
   # e no .env: SIM_EMBEDDINGS_URL=http://ollama:11434/v1  SIM_EMBEDDINGS_MODEL=nomic-embed-text
   ollama:
     image: ollama/ollama:latest
@@ -34,7 +36,7 @@ services:
 
   # Opcional, antivírus nos Anexos (precisa de uns 2 GB de memória; na primeira subida baixa as
   # assinaturas, o que leva alguns minutos):
-  #   docker compose -f docker/compose.yml --profile clamav up -d
+  #   docker compose --env-file .env -f docker/compose.yml --profile clamav up -d
   # e no .env: SIM_CLAMAV_URL=tcp://clamav:3310
   clamav:
     image: clamav/clamav-debian:stable

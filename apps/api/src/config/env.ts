@@ -205,7 +205,9 @@ export const envSchema = z.intersection(baseSchema, ssoSchema);
 export type Env = z.infer<typeof envSchema>;
 
 export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
-  const result = envSchema.safeParse(source);
+  // An empty variable (`SMTP_URL=` in the .env) is an unset one, so it gets the default.
+  const set = Object.fromEntries(Object.entries(source).filter(([, value]) => value !== ''));
+  const result = envSchema.safeParse(set);
   if (!result.success) {
     throw new Error(`Invalid configuration:\n${z.prettifyError(result.error)}`);
   }
