@@ -2,8 +2,13 @@
 
 ## Não lançado
 
+## 0.11.1
+
+Instalação com Docker Compose seguindo o README.
+
+- **Para atualizar**: sem migrações e sem variáveis novas. Quem já instalou com o Compose tem o banco criado com a senha `sim`: antes de subir com `--env-file .env`, troque a senha do banco para a do `.env`: `docker compose --env-file .env -f docker/compose.yml exec postgres psql -U sim -c "ALTER USER sim PASSWORD 'a-senha-do-env'"`. Ou então defina `POSTGRES_PASSWORD=sim` no `.env`. O chart Helm não é afetado.
+
 - **Instalação com Docker Compose**: com o `.env.example` copiado como está, o SIM não subia, porque os campos vazios (`SMTP_URL=`, `SIM_WEBHOOK_SLACK_URL=`...) eram recusados como URL inválida. Agora variável vazia vale como não definida. O README também passa a mandar rodar o compose com `--env-file .env`: sem isso, o Compose procurava o `.env` na pasta `docker/`, e a `POSTGRES_PASSWORD` e a `SIM_IMAGE` escritas no `.env` eram ignoradas, ou seja, o banco ficava com a senha `sim` e a imagem era sempre construída. O README ganhou também o `git clone`, a entrada com a conta de emergência e o acesso a partir de outros computadores.
-  - **Para atualizar uma instalação feita antes com o Compose**: o banco foi criado com a senha `sim`. Antes de subir com `--env-file .env`, troque a senha do banco para a do `.env`: `docker compose --env-file .env -f docker/compose.yml exec postgres psql -U sim -c "ALTER USER sim PASSWORD 'a-senha-do-env'"`. Ou então defina `POSTGRES_PASSWORD=sim` no `.env`. O chart Helm não é afetado.
 
 ## 0.11.0
 
