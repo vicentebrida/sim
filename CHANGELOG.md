@@ -2,7 +2,13 @@
 
 ## Não lançado
 
-- **Editor rico**: os campos de texto longo da Ideia e os Comentários ganharam uma barra com negrito, itálico, listas, citação e link, além dos atalhos de teclado (Ctrl+B, Ctrl+I). O texto continua salvo em Markdown, então os textos antigos abrem como estavam, sem conversão, e a página da Ideia, as versões e a Discussão mostram o texto formatado. HTML digitado aparece como texto, e os links só aceitam endereços http(s) e mailto. As Menções (@) funcionam dentro do editor como antes. Em textos antigos, asteriscos e sublinhados (`*assim*`) passam a virar formatação.
+## 0.11.0
+
+Editor rico nos textos longos e nos Comentários.
+
+- **Para atualizar**: nada é obrigatório; sem migrações e sem variáveis novas. Os textos já gravados não são convertidos: continuam em Markdown e abrem como estavam. Só asteriscos e sublinhados (`*assim*`) e linhas começando com `- ` ou `1. ` passam a aparecer como formatação.
+
+- **Editor rico**: os campos de texto longo da Ideia e os Comentários ganharam uma barra com negrito, itálico, listas, citação e link, além dos atalhos de teclado (Ctrl+B, Ctrl+I). O texto continua salvo em Markdown, então os textos antigos abrem como estavam, sem conversão, e a página da Ideia, as versões e a Discussão mostram o texto formatado. HTML digitado aparece como texto, e os links só aceitam endereços http(s) e mailto. As Menções (@) funcionam dentro do editor como antes.
 
 ## 0.10.1
 
