@@ -6,7 +6,7 @@ para instalações pequenas, Postgres com pgvector e Redis dentro do próprio ch
 ## Instalação rápida
 
 ```bash
-helm install sim oci://ghcr.io/vicentebrida/charts/sim --version 0.10.1 \
+helm install sim oci://ghcr.io/vicentebrida/charts/sim --version 0.11.0 \
   --namespace sim --create-namespace \
   --set publicUrl=https://ideias.empresa.com.br \
   --set ingress.enabled=true --set 'ingress.hosts[0].host=ideias.empresa.com.br' \
